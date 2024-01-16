@@ -19,6 +19,10 @@ public class BoardRepostiory {
         em.persist(board);
     }
 
+    public Board findOne(Long id) {
+        return em.find(Board.class, id);
+    }
+
     public List<Board> findAll() {
         return em.createQuery("select b from Board b order by b.createdAt desc", Board.class)
                 .getResultList();
@@ -34,6 +38,14 @@ public class BoardRepostiory {
         } catch (NonUniqueResultException e) {
             throw new IllegalStateException("게시글이 2개이상 잡힘 오류");
         }
+    }
+
+    public void updateBoard(Long boardId, String newTitle, String newContent) {
+        em.createQuery("UPDATE Board b SET b.title = :newTitle, b.content = :newContent WHERE b.id = :boardId")
+                .setParameter("newTitle", newTitle)
+                .setParameter("newContent", newContent)
+                .setParameter("boardId", boardId)
+                .executeUpdate();
     }
 
 }

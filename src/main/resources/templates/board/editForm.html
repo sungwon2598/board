@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"></head>
+<body>
+
+<div th:replace="fragments/bodyHeader :: bodyHeader"></div>
+
+<div class="container my-4">
+    <!-- 게시글 수정 폼 -->
+    <div class="card">
+        <div class="card-header">
+            <h5>게시글 수정</h5>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/board/{id}/edit(id=${board.id})}" method="post">
+                <!-- 제목 입력 필드 -->
+                <div class="form-group">
+                    <label for="title">제목</label>
+                    <input type="text" class="form-control" id="title" name="title" th:value="${board.title}" required>
+                </div>
+
+                <!-- 내용 입력 필드 -->
+                <div class="form-group">
+                    <label for="content">내용</label>
+                    <textarea class="form-control" id="content" name="content" rows="5" required th:text="${board.content}"></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary">수정하기</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>

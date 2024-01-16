@@ -66,4 +66,27 @@ public class BoardController {
 
         return "board/postDetail"; // 게시글 상세 페이지의 Thymeleaf 템플릿 이름
     }
+
+    @PostMapping("/board/{id}/editForm")
+    public String editForm(@PathVariable Long id, String userId, String password, Model model) {
+        Board board = boardService.findOneBoard(id);
+        if (board == null || !boardService.checkCredentials(id, userId, password)) {
+            return "redirect:/board/" + id + "?error=auth";
+        }
+
+        model.addAttribute("board", board);
+        return "board/editForm"; // 게시글 수정 폼의 Thymeleaf 템플릿 이름
+    }
+
+    @PostMapping("/board/{id}/edit")
+    public String editPost(@PathVariable Long id, String title, String content, Model model) {
+        Board board = boardService.findOneBoard(id);
+        if (board == null) {
+            // 게시글이 없을 경우 처리
+            return "redirect:/"; // 혹은 적절한 에러 페이지로 리다이렉트
+        }
+        boardService.update(id, title, content);
+        return "redirect:/board/" + id; // 수정된 게시글의 상세 페이지로 리다이렉트
+    }
+
 }
