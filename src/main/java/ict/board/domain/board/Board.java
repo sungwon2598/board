@@ -4,7 +4,10 @@ import ict.board.domain.CreateTime;
 import ict.board.domain.reply.Reply;
 import ict.board.domain.member.Member;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
@@ -49,4 +52,8 @@ public class Board extends CreateTime {
     @Lob
     @Column(columnDefinition = "TEXT")
     private String content;
+
+    // 민원상태 추가
+    @Enumerated(EnumType.STRING)
+    private BoardStatus boardStatus;
 }

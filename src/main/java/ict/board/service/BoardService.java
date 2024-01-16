@@ -2,6 +2,7 @@ package ict.board.service;
 
 
 import ict.board.domain.board.Board;
+import ict.board.domain.board.BoardStatus;
 import ict.board.repsoitory.BoardRepostiory;
 import ict.board.repsoitory.MemberRepository;
 import java.util.List;
@@ -23,6 +24,7 @@ public class BoardService {
 
         loginService.login(email, password);
         board.addMember(memberRepository.findMemberByEmail(email));
+        board.setBoardStatus(BoardStatus.UNCHECKED);
         boardRepostiory.save(board);
         return board.getId();
     }
