@@ -6,6 +6,7 @@ import ict.board.service.BoardService;
 import ict.board.service.ReplyService;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -87,6 +89,25 @@ public class BoardController {
         }
         boardService.update(id, title, content);
         return "redirect:/board/" + id; // 수정된 게시글의 상세 페이지로 리다이렉트
+    }
+
+    @PostMapping("/board/{id}/delete")
+    public String deletePost(@PathVariable Long id, String userId, String password,
+                             RedirectAttributes redirectAttributes) {
+        Board board = boardService.findOneBoard(id);
+        if (board == null || !boardService.checkCredentials(id, userId, password)) {
+            redirectAttributes.addFlashAttribute("error", "인증 실패");
+            return "redirect:/board/" + id;
+        }
+
+        List<Reply> replies = board.getReplies();
+        List<Long> ids = new ArrayList<>();
+        for (Reply reply : replies) {
+            ids.add(reply.getId());
+        }
+
+        boardService.delete(ids, id);
+        return "redirect:/";
     }
 
 }

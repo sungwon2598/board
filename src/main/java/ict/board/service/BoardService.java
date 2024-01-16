@@ -67,4 +67,10 @@ public class BoardService {
         return true;
     }
 
+    @Transactional
+    public void delete(List<Long> ids, Long id) {
+        replyService.deleteAll(ids);
+        boardRepostiory.deleteOne(id);
+    }
+
 }

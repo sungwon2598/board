@@ -5,6 +5,7 @@ import ict.board.domain.board.Board;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -17,6 +18,12 @@ public class BoardRepostiory {
 
     public void save(Board board) {
         em.persist(board);
+    }
+
+    public void deleteOne(Long id) {
+        em.createQuery("delete from Board b where id =:id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     public Board findOne(Long id) {
@@ -41,9 +48,13 @@ public class BoardRepostiory {
     }
 
     public void updateBoard(Long boardId, String newTitle, String newContent) {
-        em.createQuery("UPDATE Board b SET b.title = :newTitle, b.content = :newContent WHERE b.id = :boardId")
+        LocalDateTime newlastModifiedTime = LocalDateTime.now();
+
+        em.createQuery(
+                        "UPDATE Board b SET b.title = :newTitle, b.content = :newContent, b.lastModifiedAt = :newlastModifiedTime WHERE b.id = :boardId")
                 .setParameter("newTitle", newTitle)
                 .setParameter("newContent", newContent)
+                .setParameter("newlastModifiedTime", newlastModifiedTime)
                 .setParameter("boardId", boardId)
                 .executeUpdate();
     }

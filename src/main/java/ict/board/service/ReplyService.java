@@ -15,8 +15,19 @@ public class ReplyService {
 
     private final ReplyRepository replyRepository;
 
+    @Transactional
     public void save(Reply reply) {
         replyRepository.save(reply);
+    }
+
+    @Transactional
+    public void deleteAll(List<Long> ids) {
+        replyRepository.deleteAll(ids);
+    }
+
+    @Transactional
+    public void deleteOne(Long id) {
+        replyRepository.deleteOne(id);
     }
 
     public List<Reply> getCommentsByPostId(Long id) {
