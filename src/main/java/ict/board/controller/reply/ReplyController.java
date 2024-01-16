@@ -28,12 +28,10 @@ public class ReplyController {
     public String addReply(@PathVariable Long boardId, @ModelAttribute ReplyForm replyForm) {
         Board board = boardService.findOneBoard(boardId);
         if (board == null) {
-            // 게시글이 없을 경우 처리
             return "redirect:/";
         }
 
         try {
-            // 사용자 인증
             loginService.login(replyForm.getUserId(), replyForm.getPassword());
         } catch (IllegalStateException e) {
             return "redirect:/board/" + boardId;
@@ -41,14 +39,12 @@ public class ReplyController {
 
         Reply reply = new Reply();
         Member member = memberService.findMemberByEmail(replyForm.getUserId());
-        // 회원 정보 가져오기
         reply.addMember(member);
         if (reply.getMember() == null) {
-            // 회원 정보 없음 처리
             return "redirect:/board/" + boardId;
         }
-        reply.setContent(replyForm.getReply()); // 댓글 내용 설정
-        reply.addBoard(board); // 댓글이 속한 게시글 설정
+        reply.setContent(replyForm.getReply());
+        reply.addBoard(board);
 
         replyService.save(reply);
 

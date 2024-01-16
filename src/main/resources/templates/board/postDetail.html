@@ -1,12 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>게시글 상세</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <!-- 부트스트랩 CSS 추가 -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-</head>
+<head th:replace="fragments/header :: header"></head>
 <body>
+
+<div th:replace="fragments/bodyHeader :: bodyHeader"></div>
 
 <div class="container my-4">
     <!-- 게시글 세부 정보 -->
@@ -18,9 +15,13 @@
             <p th:text="${board.content}">게시글 내용</p>
         </div>
         <div class="card-footer">
-            <small>작성자: <span th:text="${board.member.getName()}"></span></small>
+            <small>
+                작성자: <span th:text="${board.member.getName()}"></span> |
+                작성시간: <span th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
+            </small>
         </div>
     </div>
+
 
     <!-- 댓글 섹션 -->
     <div class="mt-4">
@@ -44,7 +45,6 @@
         </form>
     </div>
 
-
     <!-- 댓글 리스트 -->
     <div class="mt-3">
         <ul class="list-unstyled">
@@ -54,13 +54,19 @@
                         <p th:text="${reply.content}">댓글 내용</p>
                     </div>
                     <div class="card-footer">
-                        <small th:text="${reply.getMember().getName()}"></small>
+                        <small>
+                            작성자: <span th:text="${reply.getMember().getName()}"></span> |
+                            작성시간: <span th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
+                        </small>
                     </div>
                 </div>
             </li>
         </ul>
     </div>
+
 </div>
+
+<div th:replace="fragments/footer :: footer"></div>
 
 </body>
 </html>
