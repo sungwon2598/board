@@ -34,14 +34,15 @@
             <th>작성자</th>
             <th>제목</th>
             <th>내용</th>
+            <th>민원상태</th>
         </tr>
         </thead>
         <tbody>
-        <!-- Thymeleaf를 사용하여 게시판 목록 동적 생성 -->
         <tr th:each="board : ${boards}">
             <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.member.name}">작성자 이름</a></td>
             <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 제목</a></td>
             <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.content}">게시글 내용</a></td>
+            <td th:text="${board.boardStatus.koreanName}">민원상태</td> <!-- Display Korean name of Board Status -->
         </tr>
         </tbody>
     </table>
