@@ -8,15 +8,17 @@
 <div class="container">
     <h1>민원 작성</h1>
     <form action="/board/new" th:object="${BoardForm}" method="post">
-        <div class="form-group">
-            <label th:for="email">이메일</label>
-            <input type="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요">
-            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger">올바른 이메일을 입력해주세요.</p>
-        </div>
-        <div class="form-group">
-            <label th:for="password">비밀번호</label>
-            <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
-            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger">올바른 비밀번호를 입력해주세요.</p>
+        <div class="row">
+            <div class="col-md-6 form-group">
+                <label th:for="email">이메일</label>
+                <input type="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요">
+                <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger">올바른 이메일을 입력해주세요.</p>
+            </div>
+            <div class="col-md-6 form-group">
+                <label th:for="password">비밀번호</label>
+                <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+                <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger">올바른 비밀번호를 입력해주세요.</p>
+            </div>
         </div>
         <div class="form-group">
             <label th:for="title">제목</label>

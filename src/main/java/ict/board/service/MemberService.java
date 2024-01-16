@@ -23,7 +23,7 @@ public class MemberService {
 
     private void validateDuplicate(Member member) {
         Long memberIdByEmail = memberRepository.findMemberIdByEmail(member.getEmail());
-        if (memberIdByEmail == null) {
+        if (memberIdByEmail != null) {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
         }
     }
