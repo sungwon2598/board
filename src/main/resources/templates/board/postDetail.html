@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>게시글 상세</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <!-- 부트스트랩 CSS 추가 -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
 </head>
@@ -26,12 +26,24 @@
     <div class="mt-4">
         <h4>댓글</h4>
         <form th:action="@{/board/{id}/reply(id=${board.id})}" method="post">
-            <div class="form-group">
+            <div class="row">
+                <!-- 아이디 입력 필드 -->
+                <div class="col">
+                    <input type="text" class="form-control" name="userId" placeholder="아이디">
+                </div>
+                <!-- 비밀번호 입력 필드 -->
+                <div class="col">
+                    <input type="password" class="form-control" name="password" placeholder="비밀번호">
+                </div>
+            </div>
+            <!-- 댓글 입력 필드 -->
+            <div class="form-group mt-2">
                 <textarea class="form-control" name="reply" placeholder="댓글을 입력하세요"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary">댓글 달기</button>
+            <button type="submit" class="btn btn-primary mt-2">댓글 달기</button>
         </form>
     </div>
+
 
     <!-- 댓글 리스트 -->
     <div class="mt-3">
