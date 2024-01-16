@@ -5,6 +5,7 @@ import ict.board.domain.reply.Reply;
 import ict.board.service.BoardService;
 import ict.board.service.ReplyService;
 import jakarta.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -28,7 +29,7 @@ public class BoardController {
     }
 
     @PostMapping("/board/new")
-    public String create(@Valid BoardForm form, BindingResult result) {
+    public String create(@Valid BoardForm form, BindingResult result) throws IOException, InterruptedException {
 
         if (result.hasErrors()) {
             return "/board/new";

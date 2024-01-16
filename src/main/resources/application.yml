@@ -5,6 +5,10 @@ spring:
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+openai:
+  api:
+    key: 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
+
   jpa:
     hibernate:
       ddl-auto: update

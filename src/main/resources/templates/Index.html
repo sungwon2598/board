@@ -1,25 +1,62 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <title>게시판</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <!-- 부트스트랩 CSS 추가 -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<head th:fragment="header">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <!-- Custom styles for this template -->
+    <link href="/css/jumbotron-narrow.css" rel="stylesheet">
+
+    <title>ICT 지원실 민원처리</title>
+
+
     <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
         .board-list {
             width: 100%;
             margin-top: 20px;
         }
         .board-list th, .board-list td {
-            padding: 8px;
-            text-align: left;
+            padding: 12px;
+            text-align: center;
+        }
+        .table {
+            border-collapse: separate;
+            border-spacing: 0 15px;
+        }
+        .btn {
+            margin-right: 10px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+        }
+        .container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        }
+        .thead-light th {
+            background-color: #e9ecef;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            color: black;
+            text-align: center;
+            padding: 10px 0;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+            font-size: 16px;
         }
     </style>
 </head>
 <body>
 
 <div class="container my-4">
-
     <!-- 버튼들 -->
     <div class="mb-3">
         <a href="/board/new" class="btn btn-primary">새 민원 접수</a>
@@ -42,11 +79,15 @@
             <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.member.name}">작성자 이름</a></td>
             <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 제목</a></td>
             <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.content}">게시글 내용</a></td>
-            <td th:text="${board.boardStatus.koreanName}">민원상태</td> <!-- Display Korean name of Board Status -->
+            <td th:text="${board.boardStatus.koreanName}">민원상태</td>
         </tr>
         </tbody>
     </table>
+</div>
 
+<!-- 푸터 -->
+<div class="footer">
+    <p>&copy; 2024 민원 게시판. SeoicUniv - ICT.</p>
 </div>
 
 </body>

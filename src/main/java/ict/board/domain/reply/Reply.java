@@ -42,6 +42,7 @@ public class Reply extends CreateTime {
     }
 
     @Lob
+    @Column(length = 10000)
     private String content;
 
 }
