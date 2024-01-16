@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"></head>
+<body>
+
+<div th:replace="fragments/bodyHeader :: bodyHeader"></div>
+
+<div class="container">
+    <h1>로그인</h1>
+    <form action="/login" th:object="${LoginForm}" method="post">
+        <div class="form-group">
+            <label th:for="email">이메일</label>
+            <input type="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요"
+                   th:classappend="${#fields.hasErrors('email')}? 'fieldError' : ''">
+            <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger">올바른 이메일을 입력해주세요.</p>
+        </div>
+        <div class="form-group">
+            <label th:for="password">비밀번호</label>
+            <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요"
+                   th:classappend="${#fields.hasErrors('password')}? 'fieldError' : ''">
+            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger">올바른 비밀번호를 입력해주세요.</p>
+        </div>
+        <button type="submit" class="btn btn-primary">로그인</button>
+    </form>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>
