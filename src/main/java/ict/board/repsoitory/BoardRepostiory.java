@@ -3,6 +3,7 @@ package ict.board.repsoitory;
 
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
+import ict.board.domain.member.Member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
@@ -36,18 +37,6 @@ public class BoardRepostiory {
                 .getResultList();
     }
 
-    public Board findBoardById(Long id) {
-        try {
-            return em.createQuery("select b from Board b where b.id = :id", Board.class)
-                    .setParameter("id", id)
-                    .getSingleResult();
-        } catch (NoResultException e) {
-            return null;
-        } catch (NonUniqueResultException e) {
-            throw new IllegalStateException("게시글이 2개이상 잡힘 오류");
-        }
-    }
-
     public void updateBoard(Long boardId, String newTitle, String newContent) {
         LocalDateTime newlastModifiedTime = LocalDateTime.now();
 
@@ -61,10 +50,16 @@ public class BoardRepostiory {
     }
 
     public void updateStatus(Long id, BoardStatus status) {
-        em.createQuery("update Board  b set b.boardStatus = :status where b.id =: id")
+        em.createQuery("update Board b set b.boardStatus = :status where b.id =: id")
                 .setParameter("status", status)
                 .setParameter("id", id)
                 .executeUpdate();
+    }
+
+    public List<Board> findBoardsMyMember(Member member) {
+        return em.createQuery("select b from Board b where b.member = :member",Board.class)
+                .setParameter("member", member)
+                .getResultList();
     }
 
 }

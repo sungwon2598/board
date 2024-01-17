@@ -50,12 +50,23 @@ public class BoardService {
         boardRepostiory.updateBoard(id, newTitle, newContent);
     }
 
+    @Transactional
+    public void delete(List<Long> ids, Long id) {
+        replyService.deleteAll(ids);
+        boardRepostiory.deleteOne(id);
+    }
+
+    @Transactional
+    public void updateStatus(Long id, BoardStatus status) {
+        boardRepostiory.updateStatus(id, status);
+    }
+
     public List<Board> findAllBoards() {
         return boardRepostiory.findAll();
     }
 
     public Board findOneBoard(Long id) {
-        return boardRepostiory.findBoardById(id);
+        return boardRepostiory.findOne(id);
     }
 
     public boolean checkCredentials(Long id, String userId, String password) {
@@ -67,15 +78,8 @@ public class BoardService {
         return true;
     }
 
-    @Transactional
-    public void delete(List<Long> ids, Long id) {
-        replyService.deleteAll(ids);
-        boardRepostiory.deleteOne(id);
-    }
-
-    @Transactional
-    public void updateStatus(Long id, BoardStatus status) {
-        boardRepostiory.updateStatus(id, status);
+    public List<Board> findBoardsbyMember(Member member) {
+        return boardRepostiory.findBoardsMyMember(member);
     }
 
 }

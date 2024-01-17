@@ -1,6 +1,7 @@
 package ict.board.service;
 
 
+import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.repsoitory.ReplyRepository;
 import java.util.List;
@@ -33,4 +34,9 @@ public class ReplyService {
     public List<Reply> getCommentsByPostId(Long id) {
         return replyRepository.findBoardsReplies(id);
     }
+
+    public List<Reply> getCommentsByMember(Member member) {
+        return replyRepository.findRepliesByMember(member);
+    }
+
 }
