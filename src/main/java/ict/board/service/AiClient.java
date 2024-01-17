@@ -32,10 +32,9 @@ public class AiClient {
         headers.setBearerAuth(apiKey);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-        prompt += "200자 이내로 핵심만 쉽게 알아듣게 설명해줘";
         // 요청 본문 구성
         String requestBody =
-                "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": \"Your prompt here\"}, {\"role\": \"user\", \"content\": \""
+                "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": \"이 시스템은 컴퓨터 고장 및 소프트웨어 오류 해결에 관한 질문에 답변하는 데 사용됩니다.\"}, {\"role\": \"user\", \"content\": \""
                         + prompt + "\"}]}";
         HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
