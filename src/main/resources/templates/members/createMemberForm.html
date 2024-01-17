@@ -20,7 +20,6 @@
                    th:classappend="${#fields.hasErrors('email')}? 'fieldError' : ''">
             <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger">올바른 이메일을 입력해주세요.</p>
         </div>
-        <!-- 비밀번호 필드 추가 -->
         <div class="form-group">
             <label th:for="password">비밀번호</label>
             <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요"
@@ -28,12 +27,18 @@
             <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger">올바른 비밀번호를 입력해주세요.</p>
         </div>
         <div class="form-group">
-            <label th:for="city">소속</label>
-            <input type="text" th:field="*{city}" class="form-control" placeholder="소속을 입력하세요">
+            <label th:for="team">소속</label>
+            <input type="text" th:field="*{team}" class="form-control" placeholder="소속을 입력하세요">
         </div>
+        <!-- Modified Building Field with Radio Buttons -->
         <div class="form-group">
-            <label th:for="street">소속건물</label>
-            <input type="text" th:field="*{street}" class="form-control" placeholder="소속건물을 입력하세요">
+            <label>소속건물</label>
+            <div>
+                <th:block th:each="building : ${T(ict.board.domain.member.Building).values()}">
+                    <input type="radio" th:field="*{building}" th:value="${building.name()}" />
+                    <label th:text="${building.getKoreanName()}">Building Name</label>
+                </th:block>
+            </div>
         </div>
         <div class="form-group">
             <label th:for="zipcode">학번 / 사번</label>

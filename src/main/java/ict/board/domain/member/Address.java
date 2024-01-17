@@ -1,22 +1,27 @@
 package ict.board.domain.member;
 
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 
 @Embeddable
 @Getter
 public class Address {
 
-    private String city;
-    private String street;
+    private String team;
+
+    @Enumerated(EnumType.STRING)
+    private Building building;
+
     private String zipcode;
 
     protected Address() {
     }
 
-    public Address(String city, String street, String zipcode) {
-        this.city = city;
-        this.street = street;
+    public Address(String team, Building building, String zipcode) {
+        this.team = team;
+        this.building = building;
         this.zipcode = zipcode;
     }
 }

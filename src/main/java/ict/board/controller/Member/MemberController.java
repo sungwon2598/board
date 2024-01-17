@@ -1,6 +1,7 @@
 package ict.board.controller.Member;
 
 import ict.board.domain.member.Address;
+import ict.board.domain.member.Building;
 import ict.board.domain.member.Member;
 import ict.board.service.MemberService;
 import jakarta.validation.Valid;
@@ -30,7 +31,7 @@ public class MemberController {
             return "members/createMemberForm";
         }
 
-        Address address = new Address(form.getCity(), form.getStreet(), form.getZipcode());
+        Address address = new Address(form.getTeam(), Building.valueOf(form.getBuilding()), form.getZipcode());
 
         Member member = new Member();
         member.setEmail(form.getEmail());

@@ -38,7 +38,7 @@ public class BoardService {
         String chat = aiClient.getResponseFromGPT(ask); // ChatGPT 응답 받기
         reply.setContent(chat);
 
-        Member member = memberRepository.findOne(702L);
+        Member member = memberRepository.findOne(903L);
         reply.addMember(member);
         replyService.save(reply);
 
