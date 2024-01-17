@@ -43,6 +43,7 @@ public class LoginController {
 
         model.addAttribute("boards", boards);
         model.addAttribute("replies", replies);
+        model.addAttribute("member",memeber);
         return "/members/mypage";
     }
 }
