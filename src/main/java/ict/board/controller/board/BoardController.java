@@ -1,6 +1,7 @@
 package ict.board.controller.board;
 
 import ict.board.domain.board.Board;
+import ict.board.domain.board.BoardStatus;
 import ict.board.domain.reply.Reply;
 import ict.board.service.BoardService;
 import ict.board.service.ReplyService;
@@ -108,6 +109,25 @@ public class BoardController {
 
         boardService.delete(ids, id);
         return "redirect:/";
+    }
+
+    @PostMapping("board/{id}/changeStatus")
+    public String changeStatus(@PathVariable Long id, String adminPassword, String status,
+                               RedirectAttributes redirectAttributes) {
+        if (!adminPassword.equals("024907345")) {
+            redirectAttributes.addFlashAttribute("error", "인증 실패");
+            return "redirect:/board/" + id;
+        }
+
+        BoardStatus boardStatus = BoardStatus.UNCHECKED;
+        if (status.equals("IN_PROGRESS")) {
+            boardStatus = BoardStatus.IN_PROGRESS;
+        } else if (status.equals("COMPLETED")) {
+            boardStatus = BoardStatus.COMPLETED;
+        }
+
+        boardService.updateStatus(id, boardStatus);
+        return "redirect:/board/" + id;
     }
 
 }

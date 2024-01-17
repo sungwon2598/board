@@ -2,6 +2,7 @@ package ict.board.repsoitory;
 
 
 import ict.board.domain.board.Board;
+import ict.board.domain.board.BoardStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
@@ -56,6 +57,13 @@ public class BoardRepostiory {
                 .setParameter("newContent", newContent)
                 .setParameter("newlastModifiedTime", newlastModifiedTime)
                 .setParameter("boardId", boardId)
+                .executeUpdate();
+    }
+
+    public void updateStatus(Long id, BoardStatus status) {
+        em.createQuery("update Board  b set b.boardStatus = :status where b.id =: id")
+                .setParameter("status", status)
+                .setParameter("id", id)
                 .executeUpdate();
     }
 

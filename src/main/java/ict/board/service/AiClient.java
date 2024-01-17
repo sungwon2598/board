@@ -32,7 +32,7 @@ public class AiClient {
         headers.setBearerAuth(apiKey);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-        prompt += "200자 이내로 핵심만 컴퓨터를 하나도 모르는 사람도 쉽게 알아듣게 설명해줘";
+        prompt += "200자 이내로 핵심만 쉽게 알아듣게 설명해줘";
         // 요청 본문 구성
         String requestBody =
                 "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": \"Your prompt here\"}, {\"role\": \"user\", \"content\": \""

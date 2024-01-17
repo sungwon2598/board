@@ -73,4 +73,9 @@ public class BoardService {
         boardRepostiory.deleteOne(id);
     }
 
+    @Transactional
+    public void updateStatus(Long id, BoardStatus status) {
+        boardRepostiory.updateStatus(id, status);
+    }
+
 }
