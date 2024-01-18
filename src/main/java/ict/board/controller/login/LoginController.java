@@ -7,7 +7,6 @@ import ict.board.service.BoardService;
 import ict.board.service.LoginService;
 import ict.board.service.ReplyService;
 import jakarta.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -31,7 +30,7 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String myPage(@Valid LoginForm form, BindingResult result , Model model) {
+    public String myPage(@Valid LoginForm form, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
             return "/login";
@@ -43,7 +42,7 @@ public class LoginController {
 
         model.addAttribute("boards", boards);
         model.addAttribute("replies", replies);
-        model.addAttribute("member",memeber);
+        model.addAttribute("member", memeber);
         return "/members/mypage";
     }
 }

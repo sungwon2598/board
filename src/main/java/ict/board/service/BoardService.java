@@ -72,10 +72,7 @@ public class BoardService {
     public boolean checkCredentials(Long id, String userId, String password) {
         Board board = boardRepostiory.findOne(id);
         Member member = board.getMember();
-        if (!member.getEmail().equals(userId) || !member.getPassword().equals(password)) {
-            return false;
-        }
-        return true;
+        return member.getEmail().equals(userId) && member.getPassword().equals(password);
     }
 
     public List<Board> findBoardsbyMember(Member member) {

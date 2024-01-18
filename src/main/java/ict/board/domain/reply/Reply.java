@@ -26,23 +26,21 @@ public class Reply extends CreateTime {
     @ManyToOne
     @JoinColumn(name = "board_id")
     private Board board;
+    @ManyToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+    @Lob
+    @Column(length = 10000)
+    private String content;
 
     public void addBoard(Board board) {
         board.getReplies().add(this);
         this.setBoard(board);
     }
 
-    @ManyToOne
-    @JoinColumn(name = "member_id")
-    private Member member;
-
     public void addMember(Member member) {
         member.getReplies().add(this);
         this.setMember(member);
     }
-
-    @Lob
-    @Column(length = 10000)
-    private String content;
 
 }

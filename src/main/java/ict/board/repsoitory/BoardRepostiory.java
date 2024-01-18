@@ -5,8 +5,6 @@ import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.NonUniqueResultException;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +55,7 @@ public class BoardRepostiory {
     }
 
     public List<Board> findBoardsMyMember(Member member) {
-        return em.createQuery("select b from Board b where b.member = :member",Board.class)
+        return em.createQuery("select b from Board b where b.member = :member", Board.class)
                 .setParameter("member", member)
                 .getResultList();
     }

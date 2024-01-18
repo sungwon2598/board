@@ -1,9 +1,8 @@
 package ict.board;
 
-import ict.board.domain.reply.Reply;
 import ict.board.domain.board.Board;
-import ict.board.domain.member.Address;
 import ict.board.domain.member.Member;
+import ict.board.domain.reply.Reply;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
@@ -44,7 +43,6 @@ public class BoardApplication {
             reply2.addMember(member1);
             reply2.setContent("두번째 댓글입니다");
             em.persist(reply2);
-
 
             tx.commit();
         } catch (Exception e) {

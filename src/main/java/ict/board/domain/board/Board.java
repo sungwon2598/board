@@ -1,10 +1,9 @@
 package ict.board.domain.board;
 
 import ict.board.domain.CreateTime;
-import ict.board.domain.reply.Reply;
 import ict.board.domain.member.Member;
+import ict.board.domain.reply.Reply;
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -23,7 +22,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Board extends CreateTime {
 
     @Id
@@ -34,26 +34,21 @@ public class Board extends CreateTime {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
+    @OneToMany(mappedBy = "board")
+    private List<Reply> replies = new ArrayList<>();
+    private String title;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_modified_at")
+    private LocalDateTime lastModifiedAt;
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String content;
+    // 민원상태 추가
+    @Enumerated(EnumType.STRING)
+    private BoardStatus boardStatus;
 
     public void addMember(Member member) {
         member.getBoards().add(this);
         this.setMember(member);
     }
-
-    @OneToMany(mappedBy = "board")
-    private List<Reply> replies = new ArrayList<>();
-
-    private String title;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "last_modified_at")
-    private LocalDateTime lastModifiedAt;
-
-    @Lob
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    // 민원상태 추가
-    @Enumerated(EnumType.STRING)
-    private BoardStatus boardStatus;
 }

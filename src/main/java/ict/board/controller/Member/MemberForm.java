@@ -4,7 +4,8 @@ import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter @Setter
+@Getter
+@Setter
 public class MemberForm {
 
     @NotEmpty(message = "회원 이메일(ID)는 필수 입니다.")
