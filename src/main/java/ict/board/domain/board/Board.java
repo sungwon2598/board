@@ -3,6 +3,7 @@ package ict.board.domain.board;
 import ict.board.domain.CreateTime;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -34,15 +35,20 @@ public class Board extends CreateTime {
     @ManyToOne
     @JoinColumn(name = "member_id")
     private Member member;
-    @OneToMany(mappedBy = "board")
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
     private List<Reply> replies = new ArrayList<>();
+
     private String title;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_modified_at")
     private LocalDateTime lastModifiedAt;
+
     @Lob
     @Column(columnDefinition = "TEXT")
     private String content;
+
     // 민원상태 추가
     @Enumerated(EnumType.STRING)
     private BoardStatus boardStatus;

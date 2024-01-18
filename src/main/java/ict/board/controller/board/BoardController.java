@@ -101,13 +101,7 @@ public class BoardController {
             return "redirect:/board/" + id;
         }
 
-        List<Reply> replies = board.getReplies();
-        List<Long> ids = new ArrayList<>();
-        for (Reply reply : replies) {
-            ids.add(reply.getId());
-        }
-
-        boardService.delete(ids, id);
+        boardService.delete(id);
         return "redirect:/";
     }
 

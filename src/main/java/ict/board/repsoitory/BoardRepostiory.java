@@ -21,9 +21,7 @@ public class BoardRepostiory {
     }
 
     public void deleteOne(Long id) {
-        em.createQuery("delete from Board b where id =:id")
-                .setParameter("id", id)
-                .executeUpdate();
+        em.remove(findOne(id));
     }
 
     public Board findOne(Long id) {
