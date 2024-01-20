@@ -113,14 +113,7 @@ public class BoardController {
             return "redirect:/board/" + id;
         }
 
-        BoardStatus boardStatus = BoardStatus.UNCHECKED;
-        if (status.equals("IN_PROGRESS")) {
-            boardStatus = BoardStatus.IN_PROGRESS;
-        } else if (status.equals("COMPLETED")) {
-            boardStatus = BoardStatus.COMPLETED;
-        }
-
-        boardService.updateStatus(id, boardStatus);
+        boardService.updateStatus(id, BoardStatus.valueOf(status));
         return "redirect:/board/" + id;
     }
 
