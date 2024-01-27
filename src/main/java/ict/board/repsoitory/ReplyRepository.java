@@ -2,18 +2,27 @@ package ict.board.repsoitory;
 
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
+import ict.board.service.AiClient;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.proxy.ProxyFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.aop.framework.AopProxy;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class ReplyRepository {
 
+
     private final EntityManager em;
+    private final Logger logger = LoggerFactory.getLogger(AiClient.class);
 
     public void save(Reply reply) {
+        logger.info(String.valueOf(em.getClass()));
+        logger.info(String.valueOf(System.identityHashCode(em)));
         em.persist(reply);
     }
 

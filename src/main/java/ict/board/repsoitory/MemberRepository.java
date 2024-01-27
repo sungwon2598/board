@@ -2,19 +2,25 @@ package ict.board.repsoitory;
 
 
 import ict.board.domain.member.Member;
+import ict.board.service.AiClient;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.NonUniqueResultException;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
 public class MemberRepository {
+    private final Logger logger = LoggerFactory.getLogger(AiClient.class);
 
     private final EntityManager em;
 
     public void save(Member member) {
+        logger.info(String.valueOf(em.getClass()));
+        logger.info(String.valueOf(System.identityHashCode(em)));
         em.persist(member);
     }
 
@@ -60,5 +66,17 @@ public class MemberRepository {
             throw new IllegalStateException("두개 이상의 이메일이 있습니다");
         }
 
+    }
+
+    public Member findWithRepliesById(Long id) {
+        try {
+            return em.createQuery("select m from Member m left join fetch m.replies where m.id = :id", Member.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            throw new IllegalStateException("ID에 해당하는 멤버가 둘 이상입니다.");
+        }
     }
 }

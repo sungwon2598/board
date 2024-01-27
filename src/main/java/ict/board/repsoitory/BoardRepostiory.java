@@ -4,10 +4,13 @@ package ict.board.repsoitory;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
+import ict.board.service.AiClient;
 import jakarta.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,8 +18,10 @@ import org.springframework.stereotype.Repository;
 public class BoardRepostiory {
 
     private final EntityManager em;
+    private final Logger logger = LoggerFactory.getLogger(AiClient.class);
 
     public void save(Board board) {
+        logger.info(String.valueOf(em.getClass()));
         em.persist(board);
     }
 

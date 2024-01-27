@@ -9,9 +9,12 @@ import ict.board.repsoitory.BoardRepostiory;
 import ict.board.repsoitory.MemberRepository;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 @RequiredArgsConstructor
@@ -22,25 +25,29 @@ public class BoardService {
     private final LoginService loginService;
     private final AiClient aiClient;
     private final ReplyService replyService;
+    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     @Transactional
     public Long save(Board board, String email, String password) throws IOException, InterruptedException {
-
         loginService.login(email, password);
         board.addMember(memberRepository.findMemberByEmail(email));
         board.setBoardStatus(BoardStatus.UNCHECKED);
         boardRepostiory.save(board);
 
-        Reply reply = new Reply();
-        reply.addBoard(board);
         String ask = board.getContent();
+        CompletableFuture<String> chatFuture = aiClient.getResponseFromGPTAsync(ask);
 
-        String chat = aiClient.getResponseFromGPT(ask); // ChatGPT 응답 받기
-        reply.setContent(chat);
+        chatFuture.thenAccept(chat -> {
+            Reply reply = new Reply();
+            reply.addBoard(board);
+            reply.setContent(chat);
 
-        Member member = memberRepository.findOne(903L);
-        reply.addMember(member);
-        replyService.save(reply);
+            // 변경된 부분: Member 객체를 조회할 때 replies 컬렉션을 즉시 로드
+            Member member = memberRepository.findWithRepliesById(903L);
+            //Member member = memberRepository.findOne(903L);
+            reply.addMember(member);
+            replyService.save(reply);
+        });
 
         return board.getId();
     }
