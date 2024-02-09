@@ -44,10 +44,11 @@ public class ReplyRepository {
     }
 
     public List<Reply> findBoardsReplies(Long boardId) {
-        return em.createQuery("select r from Reply r where board.id = :boardId", Reply.class)
+        return em.createQuery("select r from Reply r join fetch r.board b join fetch r.member where b.id = :boardId", Reply.class)
                 .setParameter("boardId", boardId)
                 .getResultList();
     }
+
 
     public void updateReply(Long replyId, String newContent) {
         em.createQuery("update Reply r set r.content = :newContent where r.id =:replyId")

@@ -30,7 +30,9 @@ public class BoardRepostiory {
     }
 
     public Board findOne(Long id) {
-        return em.find(Board.class, id);
+        return em.createQuery("select b from Board b join fetch b.member where b.id =:id", Board.class)
+                .setParameter("id",id)
+                .getSingleResult();
     }
 
     public List<Board> findAll() {
