@@ -18,31 +18,4 @@ public interface BoardRepostiory extends JpaRepository<Board, Long> {
 
     List<Board> findByMember(Member member);
 
-//    private final EntityManager em;
-//
-//    public void save(Board board) {
-//        em.persist(board);
-//    }
-//
-//    public void deleteOne(Long id) {
-//        em.remove(findOne(id));
-//    }
-//
-//    public Board findOne(Long id) {
-//        return em.createQuery("select b from Board b join fetch b.member where b.id =:id", Board.class)
-//                .setParameter("id", id)
-//                .getSingleResult();
-//    }
-//
-//    public List<Board> findAll() {
-//        return em.createQuery("select b from Board b join fetch b.member order by b.createdAt desc", Board.class)
-//                .getResultList();
-//    }
-//
-//    public List<Board> findBoardsByMember(Member member) {
-//        return em.createQuery("select b from Board b where b.member = :member", Board.class)
-//                .setParameter("member", member)
-//                .getResultList();
-//    }
-
 }

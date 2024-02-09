@@ -12,7 +12,7 @@ public class LoginService {
     private final MemberRepository memberRepository;
 
     public Member login(String email, String password) {
-        Member member = memberRepository.findPasswordByEmail(email);
+        Member member = memberRepository.findMemberByEmail(email).orElse(null);
         if (member == null) {
             throw new IllegalStateException("회원이 존재하지 않습니다.");
         }

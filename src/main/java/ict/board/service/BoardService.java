@@ -30,13 +30,13 @@ public class BoardService {
     @Transactional
     public Long save(Board board, String email, String password) throws IOException, InterruptedException {
         loginService.login(email, password);
-        board.addMember(memberRepository.findMemberByEmail(email));
+        board.addMember(memberRepository.findMemberByEmail(email).orElse(null));
         boardRepostiory.save(board);
 
         String ask = board.getContent();
         Reply simpleReply = new Reply();
         simpleReply.setContent("AI-ICT가 답변을 작성중입니다 조금만 기다려주세요");
-        Member member = memberRepository.findOne(903L);
+        Member member = (Member) memberRepository.findById(903L).orElse(null);
         simpleReply.addMember(member);
         simpleReply.setBoard(board);
         Long replyId = replyService.save(simpleReply);
