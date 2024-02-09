@@ -32,12 +32,7 @@ public class MemberController {
         }
 
         Address address = new Address(form.getTeam(), Building.valueOf(form.getBuilding()), form.getZipcode());
-
-        Member member = new Member();
-        member.setEmail(form.getEmail());
-        member.setName(form.getName());
-        member.setPassword(form.getPassword());
-        member.setAddress(address);
+        Member member = new Member(form.getEmail(), form.getName(), form.getPassword(), address);
 
         memberService.join(member);
         return "redirect:/";

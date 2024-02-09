@@ -12,12 +12,17 @@ import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class Member extends CreateTime {
+
+    public Member(String email, String name, String password, Address address) {
+        this.email = email;
+        this.name = name;
+        this.password = password;
+        this.address = address;
+    }
 
     @Id
     @GeneratedValue
@@ -41,4 +46,8 @@ public class Member extends CreateTime {
 
     @Embedded
     private Address address;
+
+    public Member() {
+
+    }
 }
