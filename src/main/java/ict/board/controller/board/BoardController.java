@@ -7,7 +7,6 @@ import ict.board.service.BoardService;
 import ict.board.service.ReplyService;
 import jakarta.validation.Valid;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -113,7 +112,7 @@ public class BoardController {
             return "redirect:/board/" + id;
         }
 
-        boardService.updateStatus(id, BoardStatus.valueOf(status));
+        boardService.changeBoardStatus(id, BoardStatus.valueOf(status));
         return "redirect:/board/" + id;
     }
 

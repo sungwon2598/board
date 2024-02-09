@@ -58,4 +58,14 @@ public class Board extends CreateTime {
         member.getBoards().add(this);
         this.setMember(member);
     }
+
+    public void changeStatus(BoardStatus boardStatus) {
+        if(boardStatus.equals(BoardStatus.UNCHECKED)) {
+            this.boardStatus = BoardStatus.UNCHECKED;
+        } else if (boardStatus.equals(BoardStatus.IN_PROGRESS)) {
+            this.boardStatus = BoardStatus.IN_PROGRESS;
+        } else if (boardStatus.equals(BoardStatus.COMPLETED)) {
+            this.boardStatus = BoardStatus.COMPLETED;
+        }
+    }
 }

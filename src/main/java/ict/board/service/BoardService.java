@@ -83,4 +83,9 @@ public class BoardService {
         return boardRepostiory.findBoardsMyMember(member);
     }
 
+    @Transactional
+    public void changeBoardStatus(Long id, BoardStatus boardStatus) {
+        Board board = boardRepostiory.findOne(id);
+        board.changeStatus(boardStatus);
+    }
 }
