@@ -51,36 +51,36 @@ public class BoardService {
 
     @Transactional
     public void delete(Long id) {
-        boardRepostiory.deleteOne(id);
+        boardRepostiory.deleteById(id);
     }
 
     public List<Board> findAllBoards() {
-        return boardRepostiory.findAll();
+        return boardRepostiory.findAllWithMember();
     }
 
     public Board findOneBoard(Long id) {
-        return boardRepostiory.findOne(id);
+        return boardRepostiory.findWithMemberById(id);
     }
 
     public boolean checkCredentials(Long id, String userId, String password) {
-        Board board = boardRepostiory.findOne(id);
+        Board board = boardRepostiory.findWithMemberById(id);
         Member member = board.getMember();
         return member.getEmail().equals(userId) && member.getPassword().equals(password);
     }
 
     public List<Board> findBoardsbyMember(Member member) {
-        return boardRepostiory.findBoardsMyMember(member);
+        return boardRepostiory.findByMember(member);
     }
 
     @Transactional
     public void changeBoardStatus(Long id, BoardStatus boardStatus) {
-        Board board = boardRepostiory.findOne(id);
+        Board board = boardRepostiory.findById(id).orElse(null);
         board.changeStatus(boardStatus);
     }
 
     @Transactional
     public void update(Long id, String newTitle, String newContent) {
-        Board board = boardRepostiory.findOne(id);
+        Board board = boardRepostiory.findById(id).orElse(null);
         board.changeTitle(newTitle);
         board.chageContent(newContent);
     }

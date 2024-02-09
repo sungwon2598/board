@@ -38,12 +38,12 @@ public class Reply extends CreateTime {
 
     public void addBoard(Board board) {
         board.getReplies().add(this);
-        this.setBoard(board);
+        this.board = board;
     }
 
     public void addMember(Member member) {
         member.getReplies().add(this);
-        this.setMember(member);
+        this.member = member;
     }
 
 }
