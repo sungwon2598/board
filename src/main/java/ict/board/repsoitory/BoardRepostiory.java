@@ -2,11 +2,9 @@ package ict.board.repsoitory;
 
 
 import ict.board.domain.board.Board;
-import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
 import ict.board.service.AiClient;
 import jakarta.persistence.EntityManager;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -31,25 +29,13 @@ public class BoardRepostiory {
 
     public Board findOne(Long id) {
         return em.createQuery("select b from Board b join fetch b.member where b.id =:id", Board.class)
-                .setParameter("id",id)
+                .setParameter("id", id)
                 .getSingleResult();
     }
 
     public List<Board> findAll() {
         return em.createQuery("select b from Board b join fetch b.member order by b.createdAt desc", Board.class)
                 .getResultList();
-    }
-
-    public void updateBoard(Long boardId, String newTitle, String newContent) {
-        LocalDateTime newlastModifiedTime = LocalDateTime.now();
-
-        em.createQuery(
-                        "UPDATE Board b SET b.title = :newTitle, b.content = :newContent, b.lastModifiedAt = :newlastModifiedTime WHERE b.id = :boardId")
-                .setParameter("newTitle", newTitle)
-                .setParameter("newContent", newContent)
-                .setParameter("newlastModifiedTime", newlastModifiedTime)
-                .setParameter("boardId", boardId)
-                .executeUpdate();
     }
 
     public List<Board> findBoardsMyMember(Member member) {

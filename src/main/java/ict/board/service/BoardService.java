@@ -11,10 +11,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -50,11 +50,6 @@ public class BoardService {
     }
 
     @Transactional
-    public void update(Long id, String newTitle, String newContent) {
-        boardRepostiory.updateBoard(id, newTitle, newContent);
-    }
-
-    @Transactional
     public void delete(Long id) {
         boardRepostiory.deleteOne(id);
     }
@@ -81,5 +76,12 @@ public class BoardService {
     public void changeBoardStatus(Long id, BoardStatus boardStatus) {
         Board board = boardRepostiory.findOne(id);
         board.changeStatus(boardStatus);
+    }
+
+    @Transactional
+    public void update(Long id, String newTitle, String newContent) {
+        Board board = boardRepostiory.findOne(id);
+        board.changeTitle(newTitle);
+        board.chageContent(newContent);
     }
 }
