@@ -7,7 +7,7 @@ spring:
 
 openai:
   api:
-    key:
+    key: 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
 
   jpa:
     hibernate:

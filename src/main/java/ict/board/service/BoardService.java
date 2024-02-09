@@ -35,18 +35,16 @@ public class BoardService {
         boardRepostiory.save(board);
 
         String ask = board.getContent();
+        Reply simpleReply = new Reply();
+        simpleReply.setContent("AI-ICT가 답변을 작성중입니다 조금만 기다려주세요");
+        Member member = memberRepository.findOne(903L);
+        simpleReply.addMember(member);
+        simpleReply.setBoard(board);
+        Long replyId = replyService.save(simpleReply);
         CompletableFuture<String> chatFuture = aiClient.getResponseFromGPTAsync(ask);
 
         chatFuture.thenAccept(chat -> {
-            Reply reply = new Reply();
-            reply.addBoard(board);
-            reply.setContent(chat);
-
-            // 변경된 부분: Member 객체를 조회할 때 replies 컬렉션을 즉시 로드
-            Member member = memberRepository.findWithRepliesById(903L);
-            //Member member = memberRepository.findOne(903L);
-            reply.addMember(member);
-            replyService.save(reply);
+            replyService.updateReply(replyId, chat);
         });
 
         return board.getId();

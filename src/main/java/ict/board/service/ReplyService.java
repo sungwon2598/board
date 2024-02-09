@@ -17,8 +17,13 @@ public class ReplyService {
     private final ReplyRepository replyRepository;
 
     @Transactional
-    public void save(Reply reply) {
-        replyRepository.save(reply);
+    public Long save(Reply reply) {
+       return replyRepository.save(reply);
+    }
+
+    @Transactional
+    public void updateReply(Long replyId, String newContent) {
+        replyRepository.updateReply(replyId, newContent);
     }
 
     @Transactional
