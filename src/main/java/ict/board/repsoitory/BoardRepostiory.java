@@ -34,7 +34,7 @@ public class BoardRepostiory {
     }
 
     public List<Board> findAll() {
-        return em.createQuery("select b from Board b order by b.createdAt desc", Board.class)
+        return em.createQuery("select b from Board b join fetch b.member order by b.createdAt desc", Board.class)
                 .getResultList();
     }
 

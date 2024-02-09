@@ -49,7 +49,7 @@ public class BoardController {
     public String listBoards(Model model) {
         List<Board> boards = boardService.findAllBoards();
         model.addAttribute("boards", boards);
-        return "index"; // Thymeleaf 템플릿의 이름
+        return "index";
     }
 
     @GetMapping("/board/{id}")
