@@ -37,9 +37,7 @@ public class BoardController {
             return "/board/new";
         }
 
-        Board board = new Board();
-        board.setTitle(form.getTitle());
-        board.setContent(form.getContent());
+        Board board = new Board(form.getTitle(), form.getContent());
         boardService.save(board, form.getEmail(), form.getPassword());
         return "redirect:/";
     }

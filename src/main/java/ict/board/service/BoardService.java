@@ -31,7 +31,6 @@ public class BoardService {
     public Long save(Board board, String email, String password) throws IOException, InterruptedException {
         loginService.login(email, password);
         board.addMember(memberRepository.findMemberByEmail(email));
-        board.setBoardStatus(BoardStatus.UNCHECKED);
         boardRepostiory.save(board);
 
         String ask = board.getContent();
@@ -58,11 +57,6 @@ public class BoardService {
     @Transactional
     public void delete(Long id) {
         boardRepostiory.deleteOne(id);
-    }
-
-    @Transactional
-    public void updateStatus(Long id, BoardStatus status) {
-        boardRepostiory.updateStatus(id, status);
     }
 
     public List<Board> findAllBoards() {

@@ -21,11 +21,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class Board extends CreateTime {
 
     @Id
@@ -50,17 +48,26 @@ public class Board extends CreateTime {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // 민원상태 추가
     @Enumerated(EnumType.STRING)
     private BoardStatus boardStatus;
 
+    public Board() {
+
+    }
+
+    public Board (String title, String content) {
+        this.title = title;
+        this.content = content;
+        this.boardStatus = BoardStatus.UNCHECKED;
+    }
+
     public void addMember(Member member) {
         member.getBoards().add(this);
-        this.setMember(member);
+        this.member = member;
     }
 
     public void changeStatus(BoardStatus boardStatus) {
-        if(boardStatus.equals(BoardStatus.UNCHECKED)) {
+        if (boardStatus.equals(BoardStatus.UNCHECKED)) {
             this.boardStatus = BoardStatus.UNCHECKED;
         } else if (boardStatus.equals(BoardStatus.IN_PROGRESS)) {
             this.boardStatus = BoardStatus.IN_PROGRESS;

@@ -26,23 +26,8 @@ public class BoardApplication {
             member1.setEmail("tjddnjs2598@naver.com");
             em.persist(member1);
 
-            Board board1 = new Board();
-            board1.addMember(member1);
-            board1.setTitle("첫 게시글 제목");
-            board1.setContent("안녕하세요 첫번재 게시글 내용입니다");
-            em.persist(board1);
 
-            Reply reply1 = new Reply();
-            reply1.addBoard(board1);
-            reply1.addMember(member1);
-            reply1.setContent("첫번째 댓글입니다");
-            em.persist(reply1);
 
-            Reply reply2 = new Reply();
-            reply2.addBoard(board1);
-            reply2.addMember(member1);
-            reply2.setContent("두번째 댓글입니다");
-            em.persist(reply2);
 
             tx.commit();
         } catch (Exception e) {

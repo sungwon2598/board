@@ -52,13 +52,6 @@ public class BoardRepostiory {
                 .executeUpdate();
     }
 
-    public void updateStatus(Long id, BoardStatus status) {
-        em.createQuery("update Board b set b.boardStatus = :status where b.id =: id")
-                .setParameter("status", status)
-                .setParameter("id", id)
-                .executeUpdate();
-    }
-
     public List<Board> findBoardsMyMember(Member member) {
         return em.createQuery("select b from Board b where b.member = :member", Board.class)
                 .setParameter("member", member)
