@@ -12,12 +12,20 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
 public class Reply extends CreateTime {
+
+    public Reply(String content, Board board, Member member) {
+        this.content = content;
+        this.board = board;
+        addMember(member);
+    }
+
+    public Reply() {
+
+    }
 
     @Id
     @GeneratedValue
@@ -36,14 +44,13 @@ public class Reply extends CreateTime {
     @Column(length = 10000)
     private String content;
 
-    public void addBoard(Board board) {
-        board.getReplies().add(this);
-        this.board = board;
-    }
-
-    public void addMember(Member member) {
+    private void addMember(Member member) {
         member.getReplies().add(this);
         this.member = member;
+    }
+
+    public void updateContent(String newContent) {
+        this.content = newContent;
     }
 
 }

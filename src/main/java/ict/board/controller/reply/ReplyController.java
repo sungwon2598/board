@@ -37,14 +37,12 @@ public class ReplyController {
             return "redirect:/board/" + boardId;
         }
 
-        Reply reply = new Reply();
+
         Member member = memberService.findMemberByEmail(replyForm.getUserId());
-        reply.addMember(member);
+        Reply reply = new Reply(replyForm.getReply(), board, member);
         if (reply.getMember() == null) {
             return "redirect:/board/" + boardId;
         }
-        reply.setContent(replyForm.getReply());
-        reply.addBoard(board);
 
         replyService.save(reply);
 

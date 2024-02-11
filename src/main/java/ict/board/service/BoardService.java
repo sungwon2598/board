@@ -28,25 +28,21 @@ public class BoardService {
     private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     @Transactional
-    public Long save(Board board, String email, String password) throws IOException, InterruptedException {
+    public void save(Board board, String email, String password) throws IOException, InterruptedException {
         loginService.login(email, password);
         board.addMember(memberRepository.findMemberByEmail(email).orElse(null));
         boardRepostiory.save(board);
 
         String ask = board.getContent();
-        Reply simpleReply = new Reply();
-        simpleReply.setContent("AI-ICT가 답변을 작성중입니다 조금만 기다려주세요");
+
         Member member = (Member) memberRepository.findById(903L).orElse(null);
-        simpleReply.addMember(member);
-        simpleReply.setBoard(board);
+        Reply simpleReply = new Reply("AI-ICT가 답변을 작성중입니다 조금만 기다려주세요", board, member);
         Long replyId = replyService.save(simpleReply);
         CompletableFuture<String> chatFuture = aiClient.getResponseFromGPTAsync(ask);
 
         chatFuture.thenAccept(chat -> {
             replyService.updateReply(replyId, chat);
         });
-
-        return board.getId();
     }
 
     @Transactional

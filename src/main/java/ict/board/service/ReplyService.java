@@ -18,26 +18,17 @@ public class ReplyService {
 
     @Transactional
     public Long save(Reply reply) {
-       return replyRepository.save(reply);
+        return replyRepository.save(reply).getId();
     }
 
     @Transactional
     public void updateReply(Long replyId, String newContent) {
-        replyRepository.updateReply(replyId, newContent);
-    }
-
-    @Transactional
-    public void deleteAll(List<Long> ids) {
-        replyRepository.deleteAll(ids);
-    }
-
-    @Transactional
-    public void deleteOne(Long id) {
-        replyRepository.deleteOne(id);
+        Reply reply = replyRepository.findById(replyId).orElse(null);
+        reply.updateContent(newContent);
     }
 
     public List<Reply> getCommentsByPostId(Long id) {
-        return replyRepository.findBoardsReplies(id);
+        return replyRepository.findRepliesByBoard(id);
     }
 
     public List<Reply> getCommentsByMember(Member member) {
