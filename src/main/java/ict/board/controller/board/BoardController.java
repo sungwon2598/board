@@ -9,6 +9,11 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -43,28 +48,25 @@ public class BoardController {
     }
 
     @GetMapping("/")
-    public String listBoards(Model model) {
-        List<Board> boards = boardService.findAllBoards();
+    public String listBoards(Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
+                             Pageable pageable) {
+        Page<Board> boards = boardService.findAllBoards(pageable);
         model.addAttribute("boards", boards);
         return "index";
     }
 
     @GetMapping("/board/{id}")
     public String postDetail(@PathVariable Long id, Model model) {
-        // 게시글 서비스로부터 게시글 데이터 가져오기
         Board board = boardService.findOneBoard(id);
         if (board == null) {
-            // 게시글이 없을 경우 처리
-            return "redirect:/"; // 혹은 적절한 에러 페이지로 리다이렉트
+            return "redirect:/";
         }
-        // Model에 게시글 데이터 추가
         model.addAttribute("board", board);
 
-        // 게시글에 대한 댓글 목록 가져오기
         List<Reply> comments = replyService.getCommentsByPostId(id);
         model.addAttribute("comments", comments);
 
-        return "board/postDetail"; // 게시글 상세 페이지의 Thymeleaf 템플릿 이름
+        return "board/postDetail";
     }
 
     @PostMapping("/board/{id}/editForm")
@@ -75,18 +77,17 @@ public class BoardController {
         }
 
         model.addAttribute("board", board);
-        return "board/editForm"; // 게시글 수정 폼의 Thymeleaf 템플릿 이름
+        return "board/editForm";
     }
 
     @PostMapping("/board/{id}/edit")
     public String editPost(@PathVariable Long id, String title, String content, Model model) {
         Board board = boardService.findOneBoard(id);
         if (board == null) {
-            // 게시글이 없을 경우 처리
-            return "redirect:/"; // 혹은 적절한 에러 페이지로 리다이렉트
+            return "redirect:/";
         }
         boardService.update(id, title, content);
-        return "redirect:/board/" + id; // 수정된 게시글의 상세 페이지로 리다이렉트
+        return "redirect:/board/" + id;
     }
 
     @PostMapping("/board/{id}/delete")
