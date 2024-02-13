@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,6 @@ public class BoardService {
     private final LoginService loginService;
     private final AiClient aiClient;
     private final ReplyService replyService;
-    private static final Logger logger = LoggerFactory.getLogger(BoardService.class);
 
     @Transactional
     public void save(Board board, String email, String password) throws IOException, InterruptedException {

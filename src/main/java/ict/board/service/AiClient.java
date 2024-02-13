@@ -19,7 +19,6 @@ public class AiClient {
 
     private final RestTemplate restTemplate;
     private final String apiKey;
-    private static final Logger logger = LoggerFactory.getLogger(AiClient.class);
 
     public AiClient(RestTemplate restTemplate, @Value("${openai.api.key}") String apiKey) {
         this.restTemplate = restTemplate;
@@ -28,7 +27,6 @@ public class AiClient {
 
     @Async
     public CompletableFuture<String> getResponseFromGPTAsync(String prompt) {
-        logger.info("getResponseFromGPTAsync called with prompt: {}", prompt);
         try {
             String url = "https://api.openai.com/v1/chat/completions";
 
@@ -41,16 +39,13 @@ public class AiClient {
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
 
-            logger.info("Sending request to GPT-3 API");
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
-            logger.info("Response received from GPT-3 API");
 
             JSONObject jsonResponse = new JSONObject(response.getBody());
             String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 
             return CompletableFuture.completedFuture(content);
         } catch (Exception e) {
-            logger.error("Error during GPT-3 API call", e);
             return CompletableFuture.failedFuture(e);
         }
     }
