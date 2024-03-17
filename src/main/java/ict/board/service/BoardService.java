@@ -34,7 +34,7 @@ public class BoardService {
 
         String ask = board.getContent();
 
-        Member member = (Member) memberRepository.findById(903L).orElse(null);
+        Member member = (Member) memberRepository.findById(2L).orElse(null);
         Reply simpleReply = new Reply("AI-ICT가 답변을 작성중입니다 조금만 기다려주세요", board, member);
         Long replyId = replyService.save(simpleReply);
         CompletableFuture<String> chatFuture = aiClient.getResponseFromGPTAsync(ask);

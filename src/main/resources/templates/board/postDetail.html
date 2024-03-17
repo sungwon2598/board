@@ -17,7 +17,7 @@
         <div class="card-footer">
             <small>
                 작성자: <span th:text="${board.member.getName()}"></span> |
-                소속 : <span th:text="${board.member.getAddress().getTeam()}"></span> |
+                소속 : <span th:text="${board.member.getTeam()}"></span> |
                 작성시간: <span th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
             </small>
             <!-- 게시글 수정 버튼 -->
@@ -144,7 +144,7 @@
                     <div class="card-footer">
                         <small>
                             작성자: <span th:text="${reply.getMember().getName()}"></span> |
-                            소속 : <span th:text="${reply.getMember().getAddress().getTeam()}"></span> |
+                            소속 : <span th:text="${reply.getMember().getTeam()}"></span> |
                             작성시간: <span
                                 th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
                         </small>

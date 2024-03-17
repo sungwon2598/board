@@ -30,7 +30,7 @@
         <div class="card-body">
             <p><strong>이름 : </strong> <span th:text="${member.name}">Name</span></p>
             <p><strong>아이디 : </strong> <span th:text="${member.email}">Email</span></p>
-            <p><strong>소속 : </strong> <span th:text="${member.address.getTeam()}">City</span></p>
+            <p><strong>소속 : </strong> <span th:text="${member.getTeam()}">City</span></p>
         </div>
     </div>
 

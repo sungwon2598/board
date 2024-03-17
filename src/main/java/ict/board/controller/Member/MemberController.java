@@ -1,6 +1,5 @@
 package ict.board.controller.Member;
 
-import ict.board.domain.member.Address;
 import ict.board.domain.member.Building;
 import ict.board.domain.member.Member;
 import ict.board.service.MemberService;
@@ -31,8 +30,8 @@ public class MemberController {
             return "members/createMemberForm";
         }
 
-        Address address = new Address(form.getTeam(), Building.valueOf(form.getBuilding()), form.getZipcode());
-        Member member = new Member(form.getEmail(), form.getName(), form.getPassword(), address);
+        Member member = new Member(form.getEmail(), form.getName(), form.getPassword(),
+                Building.valueOf(form.getBuilding()), form.getTeam(), form.getMemberNumber());
 
         memberService.join(member);
         return "redirect:/";

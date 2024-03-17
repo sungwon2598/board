@@ -14,6 +14,6 @@ public class MemberForm {
     private String name;
     private String team;
     private String building;
-    private String zipcode;
+    private String memberNumber;
     private String password;
 }
