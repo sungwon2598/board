@@ -89,6 +89,9 @@
         <a href="/">홈</a>
         <a href="/about">소개</a>
         <a href="/contact">연락처</a>
+        <div style="margin-left: auto; color: #FFFFFF;">
+            <span th:text="${loginMember != null} ? ${loginMember.name} + '님, 환영합니다!' : '게스트님, 환영합니다!'">게스트님, 환영합니다!</span>
+        </div>
     </div>
 </div>
 

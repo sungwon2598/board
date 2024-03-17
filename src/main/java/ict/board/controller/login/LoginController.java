@@ -1,11 +1,14 @@
 package ict.board.controller.login;
 
+import ict.board.SessionConst;
 import ict.board.domain.board.Board;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.service.BoardService;
 import ict.board.service.LoginService;
 import ict.board.service.ReplyService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,19 +34,34 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String myPage(@Valid LoginForm form, BindingResult result, Model model) {
+    public String myPage(@Valid LoginForm form, BindingResult result, Model model, HttpServletRequest request,
+                         @RequestParam(defaultValue = "/") String redirectURL) {
 
         if (result.hasErrors()) {
             return "/login";
         }
-        Member memeber = loginService.login(form.getEmail(), form.getPassword());
-        List<Board> boards = boardService.findBoardsbyMember(memeber);
 
-        List<Reply> replies = replyService.getCommentsByMember(memeber);
+        Member loginMemeber = loginService.login(form.getEmail(), form.getPassword());
+
+        HttpSession session = request.getSession();
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMemeber);
+
+        List<Board> boards = boardService.findBoardsbyMember(loginMemeber);
+
+        List<Reply> replies = replyService.getCommentsByMember(loginMemeber);
 
         model.addAttribute("boards", boards);
         model.addAttribute("replies", replies);
-        model.addAttribute("member", memeber);
-        return "/members/mypage";
+        model.addAttribute("member", loginMemeber);
+        return "redirect:" + redirectURL;
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+        return "redirect:/";
     }
 }
