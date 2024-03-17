@@ -53,10 +53,11 @@ public class LoginController {
         model.addAttribute("boards", boards);
         model.addAttribute("replies", replies);
         model.addAttribute("member", loginMemeber);
+
         return "redirect:" + redirectURL;
     }
 
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public String logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {

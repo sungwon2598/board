@@ -89,8 +89,12 @@
         <a href="/">홈</a>
         <a href="/about">소개</a>
         <a href="/contact">연락처</a>
-        <div style="margin-left: auto; color: #FFFFFF;">
-            <span th:text="${loginMember != null} ? ${loginMember.name} + '님, 환영합니다!' : '게스트님, 환영합니다!'">게스트님, 환영합니다!</span>
+        <div th:if="${loginMember != null}" style="margin-left: auto; color: #FFFFFF;">
+            <span th:text="${loginMember.name}">사용자 이름</span>님, 환영합니다!
+            <a href="@{/mypage/{id}(id=${loginMember.id})}" class="btn btn-secondary" style="margin-left: 10px;">마이 페이지</a>
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-danger" style="margin-left: 5px;">로그아웃</button>
+            </form>
         </div>
     </div>
 </div>
@@ -98,9 +102,9 @@
 <div class="container my-4">
     <!-- 버튼들 -->
     <div class="mb-3">
-        <a href="/board/new" class="btn btn-primary">새 민원 접수</a>
-        <a href="/login" class="btn btn-secondary">마이 페이지</a>
-        <a href="/members/new" class="btn btn-success">회원가입</a>
+        <a href="/board/new" class="btn btn-primary" th:if="${loginMember != null}">새 민원 접수</a>
+        <a href="/login" class="btn btn-secondary" th:if="${loginMember == null}">로그인</a>
+        <a href="/members/new" class="btn btn-success" th:if="${loginMember == null}">회원가입</a>
     </div>
 
     <!-- 게시판 리스트 -->

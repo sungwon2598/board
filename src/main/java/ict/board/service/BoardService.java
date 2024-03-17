@@ -27,8 +27,7 @@ public class BoardService {
     private final ReplyService replyService;
 
     @Transactional
-    public void save(Board board, String email, String password) throws IOException, InterruptedException {
-        loginService.login(email, password);
+    public void save(Board board, String email) throws IOException, InterruptedException {
         board.addMember(memberRepository.findMemberByEmail(email).orElse(null));
         boardRepostiory.save(board);
 

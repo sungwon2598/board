@@ -1,16 +1,20 @@
 package ict.board.controller.board;
 
 import ict.board.SessionConst;
+import ict.board.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.service.BoardService;
 import ict.board.service.ReplyService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -38,14 +42,14 @@ public class BoardController {
     }
 
     @PostMapping("/board/new")
-    public String create(@Valid BoardForm form, BindingResult result) throws IOException, InterruptedException {
+    public String create(@Valid BoardForm form, BindingResult result, @Login Member loginMember) throws IOException, InterruptedException {
 
         if (result.hasErrors()) {
             return "/board/new";
         }
 
         Board board = new Board(form.getTitle(), form.getContent());
-        boardService.save(board, form.getEmail(), form.getPassword());
+        boardService.save(board, loginMember.getEmail());
         return "redirect:/";
     }
 
