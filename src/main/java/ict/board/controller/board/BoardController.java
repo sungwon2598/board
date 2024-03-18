@@ -8,8 +8,6 @@ import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.service.BoardService;
 import ict.board.service.ReplyService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -22,6 +20,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +29,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
 
     private final BoardService boardService;
@@ -42,7 +42,8 @@ public class BoardController {
     }
 
     @PostMapping("/board/new")
-    public String create(@Valid BoardForm form, BindingResult result, @Login Member loginMember) throws IOException, InterruptedException {
+    public String create(@Valid BoardForm form, BindingResult result, @Login Member loginMember)
+            throws IOException, InterruptedException {
 
         if (result.hasErrors()) {
             return "/board/new";
@@ -64,11 +65,18 @@ public class BoardController {
     }
 
     @GetMapping("/board/{id}")
-    public String postDetail(@PathVariable Long id, Model model) {
+    public String postDetail(@PathVariable Long id, Model model, @Login Member loginMember) {
         Board board = boardService.findOneBoard(id);
         if (board == null) {
             return "redirect:/";
         }
+
+        boolean isLogin = board.getMember().getEmail().equals(loginMember.getEmail());
+        model.addAttribute("isLogin", isLogin);
+
+        boolean isManager = loginMember.getTeam().equals("ict지원실");
+        model.addAttribute("isManager", isManager);
+
         model.addAttribute("board", board);
 
         List<Reply> comments = replyService.getCommentsByPostId(id);
@@ -77,10 +85,12 @@ public class BoardController {
         return "board/postDetail";
     }
 
-    @PostMapping("/board/{id}/editForm")
-    public String editForm(@PathVariable Long id, String userId, String password, Model model) {
+    @GetMapping("/board/{id}/editForm")
+    public String editForm(@Login Member loginMember, @PathVariable Long id, Model model) {
+
         Board board = boardService.findOneBoard(id);
-        if (board == null || !boardService.checkCredentials(id, userId, password)) {
+
+        if (board == null || loginMember == null) {
             return "redirect:/board/" + id + "?error=auth";
         }
 
@@ -89,7 +99,7 @@ public class BoardController {
     }
 
     @PostMapping("/board/{id}/edit")
-    public String editPost(@PathVariable Long id, String title, String content, Model model) {
+    public String editPost(@PathVariable Long id, String title, String content) {
         Board board = boardService.findOneBoard(id);
         if (board == null) {
             return "redirect:/";
@@ -99,10 +109,11 @@ public class BoardController {
     }
 
     @PostMapping("/board/{id}/delete")
-    public String deletePost(@PathVariable Long id, String userId, String password,
-                             RedirectAttributes redirectAttributes) {
+    public String deletePost(@Login Member loginMember, @PathVariable Long id, RedirectAttributes redirectAttributes) {
+
         Board board = boardService.findOneBoard(id);
-        if (board == null || !boardService.checkCredentials(id, userId, password)) {
+
+        if (board == null || loginMember == null) {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
             return "redirect:/board/" + id;
         }
@@ -112,8 +123,9 @@ public class BoardController {
     }
 
     @PostMapping("board/{id}/changeStatus")
-    public String changeStatus(@PathVariable Long id, String adminPassword, String status,
-                               RedirectAttributes redirectAttributes) {
+    public String changeStatus(@PathVariable Long id, String adminPassword, String status, RedirectAttributes redirectAttributes) {
+
+
         if (!adminPassword.equals("024907345")) {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
             return "redirect:/board/" + id;

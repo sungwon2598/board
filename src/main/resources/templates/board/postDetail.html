@@ -20,15 +20,16 @@
                 소속 : <span th:text="${board.member.getTeam()}"></span> |
                 작성시간: <span th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
             </small>
-            <!-- 게시글 수정 버튼 -->
-            <button type="button" class="btn btn-secondary" onclick="showEditForm()">수정</button>
-            <!-- 게시글 삭제 버튼 -->
-            <button type="button" class="btn btn-secondary" onclick="showDeleteForm()">삭제</button>
+            <a th:if="${isLogin}" th:href="@{/board/{id}/editForm(id=${board.id})}" class="btn btn-secondary">수정</a>
+            <form th:if="${isLogin}" id="deletePostForm" th:action="@{/board/{id}/delete(id=${board.id})}" method="post">
+                <input type="hidden" name="_method" value="delete" />
+                <button type="button" onclick="submitDeleteForm()" class="btn btn-danger">삭제</button>
+            </form>
         </div>
     </div>
 
-    <!-- Status Change Button -->
-    <button type="button" class="btn btn-secondary" onclick="showStatusChangeForm()">상태 변경</button>
+    <!-- Status Change Button, visible if isManager is true -->
+    <button th:if="${isManager}" type="button" class="btn btn-secondary" onclick="showStatusChangeForm()">상태 변경</button>
 
     <!-- Status Change Form -->
     <div id="statusChangeForm" style="display:none;">
@@ -60,52 +61,11 @@
         function showStatusChangeForm() {
             document.getElementById('statusChangeForm').style.display = 'block';
         }
-    </script>
-
-    <br>
-
-    <!-- 게시글 수정 양식 -->
-    <div id="editForm" style="display:none;">
-        <form th:action="@{/board/{id}/editForm(id=${board.id})}" method="post">
-            <div class="row">
-                <!-- 아이디 입력 필드 -->
-                <div class="col">
-                    <input type="text" class="form-control" name="userId" placeholder="아이디" required>
-                </div>
-                <!-- 비밀번호 입력 필드 -->
-                <div class="col">
-                    <input type="password" class="form-control" name="password" placeholder="비밀번호" required>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">확인</button>
-        </form>
-    </div>
-
-    <!-- 게시글 삭제 양식 -->
-    <div id="deleteForm" style="display:none;">
-        <form th:action="@{/board/{id}/delete(id=${board.id})}" method="post">
-            <div class="row">
-                <!-- 아이디 입력 필드 -->
-                <div class="col">
-                    <input type="text" class="form-control" name="userId" placeholder="아이디" required>
-                </div>
-                <!-- 비밀번호 입력 필드 -->
-                <div class="col">
-                    <input type="password" class="form-control" name="password" placeholder="비밀번호" required>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">삭제 확인</button>
-        </form>
-    </div>
-
-    <!-- JavaScript 함수 -->
-    <script>
-        function showEditForm() {
-            document.getElementById('editForm').style.display = 'block';
-        }
-
-        function showDeleteForm() {
-            document.getElementById('deleteForm').style.display = 'block';
+        // JavaScript function to submit the delete form
+        function submitDeleteForm() {
+            if (confirm('정말 삭제하시겠습니까?')) {
+                document.getElementById('deletePostForm').submit();
+            }
         }
     </script>
 
@@ -118,8 +78,7 @@
             <div class="row">
                 <!-- 아이디 입력 필드 -->
                 <div class="col">
-                    <input type="text" class
-                           `class="form-control" name="userId" placeholder="아이디">
+                    <input type="text" class="form-control" name="userId" placeholder="아이디">
                 </div>
                 <!-- 비밀번호 입력 필드 -->
                 <div class="col">
@@ -145,8 +104,7 @@
                         <small>
                             작성자: <span th:text="${reply.getMember().getName()}"></span> |
                             소속 : <span th:text="${reply.getMember().getTeam()}"></span> |
-                            작성시간: <span
-                                th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
+                            작성시간: <span th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
                         </small>
                     </div>
                 </div>
