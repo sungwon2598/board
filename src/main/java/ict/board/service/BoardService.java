@@ -22,7 +22,6 @@ public class BoardService {
 
     private final BoardRepostiory boardRepostiory;
     private final MemberRepository memberRepository;
-    private final LoginService loginService;
     private final AiClient aiClient;
     private final ReplyService replyService;
 

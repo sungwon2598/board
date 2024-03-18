@@ -30,7 +30,6 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
 
         Object member = session.getAttribute(SessionConst.LOGIN_MEMBER);
 
-
         return member;
     }
 }

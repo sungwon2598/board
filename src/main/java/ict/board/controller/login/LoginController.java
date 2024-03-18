@@ -1,6 +1,7 @@
 package ict.board.controller.login;
 
 import ict.board.SessionConst;
+import ict.board.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
@@ -46,14 +47,6 @@ public class LoginController {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMemeber);
 
-        List<Board> boards = boardService.findBoardsbyMember(loginMemeber);
-
-        List<Reply> replies = replyService.getCommentsByMember(loginMemeber);
-
-        model.addAttribute("boards", boards);
-        model.addAttribute("replies", replies);
-        model.addAttribute("member", loginMemeber);
-
         return "redirect:" + redirectURL;
     }
 
@@ -64,5 +57,19 @@ public class LoginController {
             session.invalidate();
         }
         return "redirect:/";
+    }
+
+    @GetMapping("/mypage")
+    public String myPage(@Login Member loginMember, Model model) {
+
+        List<Board> boards = boardService.findBoardsbyMember(loginMember);
+
+        List<Reply> replies = replyService.getCommentsByMember(loginMember);
+
+        model.addAttribute("boards", boards);
+        model.addAttribute("replies", replies);
+        model.addAttribute("member", loginMember);
+
+        return "/members/mypage";
     }
 }

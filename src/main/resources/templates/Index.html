@@ -91,7 +91,7 @@
         <a href="/contact">연락처</a>
         <div th:if="${loginMember != null}" style="margin-left: auto; color: #FFFFFF;">
             <span th:text="${loginMember.name}">사용자 이름</span>님, 환영합니다!
-            <a href="@{/mypage/{id}(id=${loginMember.id})}" class="btn btn-secondary" style="margin-left: 10px;">마이 페이지</a>
+            <a href="/mypage" class="btn btn-secondary" style="margin-left: 10px;">마이 페이지</a>
             <form th:action="@{/logout}" method="post" style="display: inline;">
                 <button type="submit" class="btn btn-danger" style="margin-left: 5px;">로그아웃</button>
             </form>
