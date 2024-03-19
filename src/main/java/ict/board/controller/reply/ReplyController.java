@@ -10,8 +10,6 @@ import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,10 +23,11 @@ public class ReplyController {
     private final MemberService memberService;
 
     @PostMapping("/board/{boardId}/reply")
-    public String addReply(@PathVariable Long boardId, @ModelAttribute ReplyForm replyForm, @Login Member loginMember) {
+    public String addReply(@PathVariable Long boardId, @ModelAttribute ReplyForm replyForm,
+                           @Login String loginMemberEmail) {
 
         Board board = boardService.findOneBoard(boardId);
-        Member member = memberService.findMemberByEmail(loginMember.getEmail());
+        Member member = memberService.findMemberByEmail(loginMemberEmail);
 
         Reply reply = new Reply(replyForm.getReply(), board, member);
         replyService.save(reply);
@@ -36,8 +35,7 @@ public class ReplyController {
     }
 
     @PostMapping("/board/{boardId}/reply/delete/{replyId}")
-    public String deleteReply(@PathVariable Long replyId, @PathVariable Long boardId, @Login Member loginMember,
-                              Model model) {
+    public String deleteReply(@PathVariable Long replyId, @PathVariable Long boardId) {
 
         replyService.deleteReply(replyId);
 

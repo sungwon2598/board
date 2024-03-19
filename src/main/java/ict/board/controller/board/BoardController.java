@@ -7,6 +7,7 @@ import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.service.BoardService;
+import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import jakarta.validation.Valid;
 import java.io.IOException;
@@ -33,6 +34,7 @@ public class BoardController {
 
     private final BoardService boardService;
     private final ReplyService replyService;
+    private final MemberService memberService;
 
     @GetMapping("/board/new")
     public String createBoardForm(Model model) {
@@ -41,7 +43,7 @@ public class BoardController {
     }
 
     @PostMapping("/board/new")
-    public String create(@Valid BoardForm form, BindingResult result, @Login Member loginMember)
+    public String create(@Valid BoardForm form, BindingResult result, @Login String loginMemberEmail)
             throws IOException, InterruptedException {
 
         if (result.hasErrors()) {
@@ -49,30 +51,38 @@ public class BoardController {
         }
 
         Board board = new Board(form.getTitle(), form.getContent());
-        boardService.save(board, loginMember);
+        boardService.save(board, loginMemberEmail);
         return "redirect:/";
     }
 
     @GetMapping("/")
-    public String listBoards(@SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) Member loginMember,
-                             Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
-                             Pageable pageable) {
+    public String listBoards(
+            @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) String loginMemberEmail,
+            Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
+            Pageable pageable) {
         Page<Board> boards = boardService.findAllBoards(pageable);
+
+        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("boards", boards);
-        return "index";
+        return "Index";
     }
 
     @GetMapping("/board/{id}")
-    public String postDetail(@PathVariable Long id, Model model, @Login Member loginMember) {
+    public String postDetail(@PathVariable Long id, Model model, @Login String loginMemberEmail) {
         Board board = boardService.findOneBoard(id);
         if (board == null) {
             return "redirect:/";
         }
 
-        String loginMemberEmail = loginMember.getEmail();
-        boolean isLogin = board.getMember().getEmail().equals(loginMember.getEmail());
+        //String loginMemberEmail = loginMember.getEmail();
+        boolean isLogin = board.getMember().getEmail().equals(loginMemberEmail);
         model.addAttribute("isLogin", isLogin);
+
+        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
+
+        log.info("loginMemberEmail = {}" + loginMemberEmail);
+        log.info("loginMember.class = {}" + loginMember.getClass());
 
         boolean isManager = loginMember.getTeam().equals("ict지원실");
         model.addAttribute("isManager", isManager);
@@ -87,11 +97,11 @@ public class BoardController {
     }
 
     @GetMapping("/board/{id}/editForm")
-    public String editForm(@Login Member loginMember, @PathVariable Long id, Model model) {
+    public String editForm(@Login String loginMemberEmail, @PathVariable Long id, Model model) {
 
         Board board = boardService.findOneBoard(id);
 
-        if (board == null || loginMember == null) {
+        if (board == null || loginMemberEmail == null) {
             return "redirect:/board/" + id + "?error=auth";
         }
 
@@ -110,11 +120,12 @@ public class BoardController {
     }
 
     @PostMapping("/board/{id}/delete")
-    public String deletePost(@Login Member loginMember, @PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String deletePost(@Login String loginMemberEmail, @PathVariable Long id,
+                             RedirectAttributes redirectAttributes) {
 
         Board board = boardService.findOneBoard(id);
 
-        if (board == null || loginMember == null) {
+        if (board == null || loginMemberEmail == null) {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
             return "redirect:/board/" + id;
         }

@@ -7,6 +7,7 @@ import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.service.BoardService;
 import ict.board.service.LoginService;
+import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +29,7 @@ public class LoginController {
     private final LoginService loginService;
     private final ReplyService replyService;
     private final BoardService boardService;
+    private final MemberService memberService;
 
     @GetMapping("/login")
     public String login(Model model) {
@@ -43,10 +45,13 @@ public class LoginController {
             return "/login";
         }
 
-        Member loginMemeber = loginService.login(form.getEmail(), form.getPassword());
+        //Member loginMemeber = loginService.login(form.getEmail(), form.getPassword());
+        String loginMemberEmail = loginService.login(form.getEmail(), form.getPassword()).getEmail();
 
         HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMemeber);
+
+        //session.setAttribute(SessionConst.LOGIN_MEMBER, loginMemeber);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMemberEmail);
 
         return "redirect:" + redirectURL;
     }
@@ -61,10 +66,11 @@ public class LoginController {
     }
 
     @GetMapping("/mypage")
-    public String myPage(@Login Member loginMember, Model model) {
+    public String myPage(@Login String loginMemberEmail, Model model) {
+
+        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
 
         List<Board> boards = boardService.findBoardsbyMember(loginMember);
-
         List<Reply> replies = replyService.getCommentsByMember(loginMember);
 
         model.addAttribute("boards", boards);
