@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BoardService {
 
     private final BoardRepostiory boardRepostiory;
@@ -26,13 +28,14 @@ public class BoardService {
     private final ReplyService replyService;
 
     @Transactional
-    public void save(Board board, String email) throws IOException, InterruptedException {
-        board.addMember(memberRepository.findMemberByEmail(email).orElse(null));
+    public void save(Board board, Member loginMember) throws IOException, InterruptedException {
+
+        board.addMember(loginMember);
         boardRepostiory.save(board);
 
         String ask = board.getContent();
 
-        Member member = (Member) memberRepository.findById(2L).orElse(null);
+        Member member = memberRepository.findById(2L).orElse(null);
         Reply simpleReply = new Reply("AI-ICT가 답변을 작성중입니다 조금만 기다려주세요", board, member);
         Long replyId = replyService.save(simpleReply);
         CompletableFuture<String> chatFuture = aiClient.getResponseFromGPTAsync(ask);

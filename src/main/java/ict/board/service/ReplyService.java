@@ -27,6 +27,11 @@ public class ReplyService {
         reply.updateContent(newContent);
     }
 
+    @Transactional
+    public void deleteReply(Long replyId) {
+        replyRepository.deleteById(replyId);
+    }
+
     public List<Reply> getCommentsByPostId(Long id) {
         return replyRepository.findRepliesByBoard(id);
     }

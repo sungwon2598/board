@@ -7,7 +7,7 @@ spring:
 
 openai:
   api:
-    key:
+    key: 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
 
   jpa:
     hibernate:
@@ -23,3 +23,9 @@ logging:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
     org.springframework.transaction: debug
+
+server:
+  servlet:
+    session:
+      tracking-modes: cookie
+      timeout: 60

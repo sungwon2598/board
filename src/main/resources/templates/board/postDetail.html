@@ -75,16 +75,6 @@
     <div class="mt-4">
         <h4>댓글</h4>
         <form th:action="@{/board/{id}/reply(id=${board.id})}" method="post">
-            <div class="row">
-                <!-- 아이디 입력 필드 -->
-                <div class="col">
-                    <input type="text" class="form-control" name="userId" placeholder="아이디">
-                </div>
-                <!-- 비밀번호 입력 필드 -->
-                <div class="col">
-                    <input type="password" class="form-control" name="password" placeholder="비밀번호">
-                </div>
-            </div>
             <!-- 댓글 입력 필드 -->
             <div class="form-group mt-2">
                 <textarea class="form-control" name="reply" placeholder="댓글을 입력하세요"></textarea>
@@ -106,6 +96,11 @@
                             소속 : <span th:text="${reply.getMember().getTeam()}"></span> |
                             작성시간: <span th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
                         </small>
+                        <!-- 조건부 삭제 버튼 표시 -->
+                        <form th:if="${reply.getMember().getEmail() == loginMemberEmail}" th:action="@{/board/{boardId}/reply/delete/{replyId}(boardId=${board.id}, replyId=${reply.id})}" method="post">
+                            <input type="hidden" name="_method" value="delete" />
+                            <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                        </form>
                     </div>
                 </div>
             </li>
