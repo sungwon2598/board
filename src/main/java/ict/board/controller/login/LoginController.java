@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -31,26 +30,24 @@ public class LoginController {
     private final BoardService boardService;
     private final MemberService memberService;
 
-    @GetMapping("/login")
+    @GetMapping("login")
     public String login(Model model) {
         model.addAttribute("LoginForm", new LoginForm());
-        return "/login";
+        return "login";
     }
 
-    @PostMapping("/login")
+    @PostMapping("login")
     public String myPage(@Valid LoginForm form, BindingResult result, HttpServletRequest request,
                          @RequestParam(defaultValue = "/") String redirectURL) {
 
         if (result.hasErrors()) {
-            return "/login";
+            return "login";
         }
 
-        //Member loginMemeber = loginService.login(form.getEmail(), form.getPassword());
         String loginMemberEmail = loginService.login(form.getEmail(), form.getPassword()).getEmail();
 
         HttpSession session = request.getSession();
 
-        //session.setAttribute(SessionConst.LOGIN_MEMBER, loginMemeber);
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMemberEmail);
 
         return "redirect:" + redirectURL;
@@ -77,6 +74,6 @@ public class LoginController {
         model.addAttribute("replies", replies);
         model.addAttribute("member", loginMember);
 
-        return "/members/mypage";
+        return "members/mypage";
     }
 }

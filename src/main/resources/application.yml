@@ -29,3 +29,7 @@ server:
     session:
       tracking-modes: cookie
       timeout: 60
+
+webhook:
+  slack:
+    url: https://hooks.slack.com/services/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

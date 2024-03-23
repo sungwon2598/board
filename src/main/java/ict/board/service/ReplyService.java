@@ -32,6 +32,7 @@ public class ReplyService {
         replyRepository.deleteById(replyId);
     }
 
+
     public List<Reply> getCommentsByPostId(Long id) {
         return replyRepository.findRepliesByBoard(id);
     }

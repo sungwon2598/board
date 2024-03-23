@@ -8,6 +8,7 @@ import ict.board.domain.reply.Reply;
 import ict.board.repsoitory.BoardRepostiory;
 import ict.board.repsoitory.MemberRepository;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final AiClient aiClient;
     private final ReplyService replyService;
+    private final SlackService slackService;
 
     @Transactional
     public void save(Board board, String loginMemberEmail) throws IOException, InterruptedException {
@@ -35,6 +37,12 @@ public class BoardService {
 
         String ask = board.getContent();
 
+        slackMessaging(board);
+
+        answerGpt(board, ask);
+    }
+
+    private void answerGpt(Board board, String ask) {
         Member member = memberRepository.findById(2L).orElse(null);
         Reply simpleReply = new Reply("AI-ICT가 답변을 작성중입니다 조금만 기다려주세요", board, member);
         Long replyId = replyService.save(simpleReply);
@@ -45,10 +53,19 @@ public class BoardService {
         });
     }
 
+    private void slackMessaging(Board board) {
+        String title = "작성자 : " + board.getMember().getName() + "  소속 : " + board.getMember().getTeam();
+        HashMap<String, String> data = new HashMap<>();
+        data.put(board.getTitle(), board.getContent());
+
+        slackService.sendMessage(title, data);
+    }
+
     @Transactional
     public void delete(Long id) {
         boardRepostiory.deleteById(id);
     }
+
 
     public Page<Board> findAllBoards(Pageable pageable) {
         return boardRepostiory.findAllWithMember(pageable);

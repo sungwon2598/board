@@ -36,18 +36,18 @@ public class BoardController {
     private final ReplyService replyService;
     private final MemberService memberService;
 
-    @GetMapping("/board/new")
+    @GetMapping("board/new")
     public String createBoardForm(Model model) {
         model.addAttribute("BoardForm", new BoardForm());
-        return "/board/boardform";
+        return "board/boardform";
     }
 
-    @PostMapping("/board/new")
+    @PostMapping("board/new")
     public String create(@Valid BoardForm form, BindingResult result, @Login String loginMemberEmail)
             throws IOException, InterruptedException {
 
         if (result.hasErrors()) {
-            return "/board/new";
+            return "board/new";
         }
 
         Board board = new Board(form.getTitle(), form.getContent());
@@ -71,18 +71,15 @@ public class BoardController {
     @GetMapping("/board/{id}")
     public String postDetail(@PathVariable Long id, Model model, @Login String loginMemberEmail) {
         Board board = boardService.findOneBoard(id);
+
         if (board == null) {
             return "redirect:/";
         }
 
-        //String loginMemberEmail = loginMember.getEmail();
         boolean isLogin = board.getMember().getEmail().equals(loginMemberEmail);
         model.addAttribute("isLogin", isLogin);
 
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
-
-        log.info("loginMemberEmail = {}" + loginMemberEmail);
-        log.info("loginMember.class = {}" + loginMember.getClass());
 
         boolean isManager = loginMember.getTeam().equals("ict지원실");
         model.addAttribute("isManager", isManager);
@@ -112,6 +109,7 @@ public class BoardController {
     @PostMapping("/board/{id}/edit")
     public String editPost(@PathVariable Long id, String title, String content) {
         Board board = boardService.findOneBoard(id);
+
         if (board == null) {
             return "redirect:/";
         }
@@ -134,7 +132,7 @@ public class BoardController {
         return "redirect:/";
     }
 
-    @PostMapping("board/{id}/changeStatus")
+    @PostMapping("/board/{id}/changeStatus")
     public String changeStatus(@PathVariable Long id, String adminPassword, String status,
                                RedirectAttributes redirectAttributes) {
 
