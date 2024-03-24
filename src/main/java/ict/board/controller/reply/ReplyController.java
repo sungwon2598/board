@@ -1,7 +1,7 @@
 package ict.board.controller.reply;
 
 
-import ict.board.argumentresolver.Login;
+import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;

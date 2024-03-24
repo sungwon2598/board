@@ -1,7 +1,7 @@
 package ict.board.controller.board;
 
-import ict.board.SessionConst;
-import ict.board.argumentresolver.Login;
+import ict.board.consts.SessionConst;
+import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;

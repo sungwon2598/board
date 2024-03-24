@@ -1,4 +1,4 @@
-package ict.board;
+package ict.board.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

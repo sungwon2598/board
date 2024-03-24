@@ -16,6 +16,7 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
+src/main/resources/application.yml
 
 ### IntelliJ IDEA ###
 .idea
@@ -35,6 +36,3 @@ out/
 
 ### VS Code ###
 .vscode/
-
-
-/src/main/resources/application.yml

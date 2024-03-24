@@ -1,6 +1,6 @@
 package ict.board.config;
 
-import ict.board.argumentresolver.LoginMemberArgumentResolver;
+import ict.board.config.argumentresolver.LoginMemberArgumentResolver;
 import ict.board.interceptor.LoginCheckInterceptor;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;

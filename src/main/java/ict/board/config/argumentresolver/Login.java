@@ -1,4 +1,4 @@
-package ict.board.argumentresolver;
+package ict.board.config.argumentresolver;
 
 
 import java.lang.annotation.ElementType;

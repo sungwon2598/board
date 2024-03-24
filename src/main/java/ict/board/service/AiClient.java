@@ -1,5 +1,6 @@
 package ict.board.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
+@Slf4j
 public class AiClient {
 
     private final RestTemplate restTemplate;
@@ -44,6 +46,7 @@ public class AiClient {
             JSONObject jsonResponse = new JSONObject(response.getBody());
             String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
 
+            log.info("content = {}",content);
             return CompletableFuture.completedFuture(content);
         } catch (Exception e) {
             return CompletableFuture.failedFuture(e);
