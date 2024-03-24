@@ -37,7 +37,7 @@ public class BoardService {
 
         String ask = board.getContent();
 
-        slackMessaging(board);
+        //slackMessaging(board);
 
         answerGpt(board, ask);
     }
