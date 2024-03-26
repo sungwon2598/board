@@ -1,8 +1,12 @@
 package ict.board.service;
 
 
+import ict.board.domain.board.Board;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
+import ict.board.dto.ReplyForm;
+import ict.board.repsoitory.BoardRepository;
+import ict.board.repsoitory.MemberRepository;
 import ict.board.repsoitory.ReplyRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +19,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReplyService {
 
     private final ReplyRepository replyRepository;
+    private final BoardRepository boardRepository;
+    private final MemberRepository memberRepository;
 
     @Transactional
     public Long save(Reply reply) {
+        replyRepository.save(reply);
+        return reply.getId();
+    }
+
+    @Transactional
+    public Long saveByReplyForm(ReplyForm replyForm, Long boardId, String loginMemberEmail) {
+
+        Board board = boardRepository.findById(boardId).orElse(null);
+        Member member = memberRepository.findMemberByEmail(loginMemberEmail).orElse(null);
+
+        Reply reply = new Reply(replyForm.getReply(), board, member);
         return replyRepository.save(reply).getId();
     }
 

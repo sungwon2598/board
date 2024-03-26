@@ -2,12 +2,7 @@ package ict.board.controller;
 
 
 import ict.board.config.argumentresolver.Login;
-import ict.board.domain.board.Board;
-import ict.board.domain.member.Member;
-import ict.board.domain.reply.Reply;
 import ict.board.dto.ReplyForm;
-import ict.board.service.BoardService;
-import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -21,19 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequiredArgsConstructor
 public class ReplyController {
 
-    private final BoardService boardService;
     private final ReplyService replyService;
-    private final MemberService memberService;
 
     @PostMapping("/board/{boardId}/reply")
     public String addReply(@PathVariable Long boardId, @ModelAttribute ReplyForm replyForm,
                            @Login String loginMemberEmail) {
-
-        Board board = boardService.findOneBoard(boardId);
-        Member member = memberService.findMemberByEmail(loginMemberEmail);
-
-        Reply reply = new Reply(replyForm.getReply(), board, member);
-        replyService.save(reply);
+        replyService.saveByReplyForm(replyForm, boardId, loginMemberEmail);
         return "redirect:/board/" + boardId;
     }
 

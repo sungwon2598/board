@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class MemberController {
 
     private final MemberService memberService;
-    private final BoardService boardService;
-    private final ReplyService replyService;
 
     @GetMapping("/members/new")
     public String createForm(Model model) {

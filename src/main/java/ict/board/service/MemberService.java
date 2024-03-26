@@ -4,7 +4,9 @@ import ict.board.domain.board.Board;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.MemberInfo;
+import ict.board.repsoitory.BoardRepository;
 import ict.board.repsoitory.MemberRepository;
+import ict.board.repsoitory.ReplyRepository;
 import ict.board.service.ai.OpenAIApiConnector;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final BoardService boardService;
-    private final ReplyService replyService;
+    private final BoardRepository boardRepository;
+    private final ReplyRepository replyRepository;
 
     private final Logger logger = LoggerFactory.getLogger(OpenAIApiConnector.class);
 
@@ -35,8 +37,8 @@ public class MemberService {
     public MemberInfo getMemberInfo(String email) {
         Member loginMember = findMemberByEmail(email);
 
-        List<Board> boards = boardService.findBoardsbyMember(loginMember);
-        List<Reply> replies = replyService.getCommentsByMember(loginMember);
+        List<Board> boards = boardRepository.findByMember(loginMember);
+        List<Reply> replies = replyRepository.findRepliesByMember(loginMember);
 
         String memberName = loginMember.getName();
         String memberTeam = loginMember.getTeam();
