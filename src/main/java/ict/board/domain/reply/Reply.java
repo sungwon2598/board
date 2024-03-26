@@ -46,7 +46,7 @@ public class Reply extends CreateTime {
     private String content;
 
     private void addMember(Member member) {
-        member.getReplies().add(this);
+        //member.getReplies().add(this);
         this.member = member;
     }
 

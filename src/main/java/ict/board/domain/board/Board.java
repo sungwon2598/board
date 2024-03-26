@@ -36,8 +36,8 @@ public class Board extends CreateTime {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<Reply> replies = new ArrayList<>();
+//    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
+//    private List<Reply> replies = new ArrayList<>();
 
     private String title;
 
@@ -63,7 +63,7 @@ public class Board extends CreateTime {
     }
 
     public void addMember(Member member) {
-        member.getBoards().add(this);
+        //member.getBoards().add(this);
         this.member = member;
     }
 
