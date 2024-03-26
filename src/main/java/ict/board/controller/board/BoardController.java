@@ -134,12 +134,15 @@ public class BoardController {
     public String changeStatus(@PathVariable Long id, String adminPassword, String status,
                                RedirectAttributes redirectAttributes) {
 
-        if (!adminPassword.equals("024907345")) {
+        BoardStatus boardStatus = BoardStatus.valueOf(status);
+
+        boolean success = boardService.changeBoardStatus(id, boardStatus, adminPassword);
+
+        if (!success) {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
             return "redirect:/board/" + id;
         }
 
-        boardService.changeBoardStatus(id, BoardStatus.valueOf(status));
         return "redirect:/board/" + id;
     }
 

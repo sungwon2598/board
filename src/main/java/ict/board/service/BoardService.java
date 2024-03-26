@@ -4,9 +4,10 @@ package ict.board.service;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
-import ict.board.repsoitory.BoardRepostiory;
+import ict.board.repsoitory.BoardRepository;
 import ict.board.repsoitory.MemberRepository;
 import ict.board.service.ai.AIResponseHandler;
+import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class BoardService {
 
-    private final BoardRepostiory boardRepostiory;
+    private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final AIResponseHandler AIResponseHandler;
     private final SlackService slackService;
@@ -30,7 +31,7 @@ public class BoardService {
     public void save(Board board, String loginMemberEmail) throws IOException, InterruptedException {
 
         board.addMember(memberRepository.findMemberByEmail(loginMemberEmail).orElse(null));
-        boardRepostiory.save(board);
+        boardRepository.save(board);
 
         String ask = board.getContent();
 
@@ -40,32 +41,41 @@ public class BoardService {
 
     @Transactional
     public void delete(Long id) {
-        boardRepostiory.deleteById(id);
+        boardRepository.deleteById(id);
     }
 
     @Transactional
-    public void changeBoardStatus(Long id, BoardStatus boardStatus) {
-        Board board = boardRepostiory.findById(id).orElse(null);
+    public boolean changeBoardStatus(Long id, BoardStatus boardStatus, String adminPassword) {
+        if (!isAdminPasswordValid(adminPassword)) {
+            return false;
+        }
+
+        Board board = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Board not found"));
         board.changeStatus(boardStatus);
+        return true;
+    }
+
+    private boolean isAdminPasswordValid(String adminPassword) {
+        return "024907345".equals(adminPassword);
     }
 
     @Transactional
     public void update(Long id, String newTitle, String newContent) {
-        Board board = boardRepostiory.findById(id).orElse(null);
+        Board board = boardRepository.findById(id).orElse(null);
         board.changeTitle(newTitle);
         board.chageContent(newContent);
     }
 
     public Page<Board> findAllBoards(Pageable pageable) {
-        return boardRepostiory.findAllWithMember(pageable);
+        return boardRepository.findAllWithMember(pageable);
     }
 
     public Board findOneBoard(Long id) {
-        return boardRepostiory.findWithMemberById(id);
+        return boardRepository.findWithMemberById(id);
     }
 
     public List<Board> findBoardsbyMember(Member member) {
-        return boardRepostiory.findByMember(member);
+        return boardRepository.findByMember(member);
     }
 
 }
