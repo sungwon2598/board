@@ -1,6 +1,5 @@
 package ict.board.controller.board;
 
-import ict.board.consts.SessionConst;
 import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
@@ -24,7 +23,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -57,7 +55,7 @@ public class BoardController {
 
     @GetMapping("/")
     public String listBoards(
-            @SessionAttribute(name = SessionConst.LOGIN_MEMBER, required = false) String loginMemberEmail,
+            @Login String loginMemberEmail,
             Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
             Pageable pageable) {
         Page<Board> boards = boardService.findAllBoards(pageable);

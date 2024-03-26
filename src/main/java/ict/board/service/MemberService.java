@@ -2,6 +2,7 @@ package ict.board.service;
 
 import ict.board.domain.member.Member;
 import ict.board.repsoitory.MemberRepository;
+import ict.board.service.ai.OpenAIApiConnector;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
-    private final Logger logger = LoggerFactory.getLogger(AiClient.class);
+    private final Logger logger = LoggerFactory.getLogger(OpenAIApiConnector.class);
 
     @Transactional
     public Long join(Member member) {

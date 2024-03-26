@@ -3,6 +3,7 @@ package ict.board.service;
 import com.slack.api.Slack;
 import com.slack.api.model.Attachment;
 import com.slack.api.model.Field;
+import ict.board.domain.board.Board;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.slack.api.webhook.WebhookPayloads.payload;
 
@@ -21,10 +23,15 @@ public class SlackService {
 
     private final Slack slackClient = Slack.getInstance();
 
-    /**
-     * 슬랙 메시지 전송
-     **/
-    public void sendMessage(String title, HashMap<String, String> data) {
+    @Transactional
+    public void sendFromBoard(Board board) {
+        String title = "작성자 : " + board.getMember().getName() + "  소속 : " + board.getMember().getTeam();
+        HashMap<String, String> data = new HashMap<>();
+        data.put(board.getTitle(), board.getContent());
+
+        sendMessage(title, data);
+    }
+    private void sendMessage(String title, HashMap<String, String> data) {
         try {
             slackClient.send(SLACK_WEBHOOK_URL, payload(p -> p
                     .text(title) // 메시지 제목

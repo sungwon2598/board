@@ -1,28 +1,24 @@
-package ict.board.service;
+package ict.board.service.ai;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+import java.util.Collections;
+import java.util.concurrent.CompletableFuture;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.beans.factory.annotation.Value;
-import java.util.Collections;
-import org.json.JSONObject;
-import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
-@Slf4j
-public class AiClient {
+public class OpenAIApiConnector {
 
     private final RestTemplate restTemplate;
     private final String apiKey;
 
-    public AiClient(RestTemplate restTemplate, @Value("${openai.api.key}") String apiKey) {
+    public OpenAIApiConnector(RestTemplate restTemplate, @Value("${openai.api.key}") String apiKey) {
         this.restTemplate = restTemplate;
         this.apiKey = apiKey;
     }
@@ -37,21 +33,21 @@ public class AiClient {
             headers.setBearerAuth(apiKey);
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-            String requestBody = "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": \"This system is used for responding to questions about computer hardware and software issues.\"}, {\"role\": \"user\", \"content\": \"" + prompt + "\"}]}";
+            String requestBody =
+                    "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": "
+                            + "\"This system is used for responding to questions about computer hardware and software issues.\"}"
+                            + ", {\"role\": \"user\", \"content\": \""
+                            + prompt + "\"}]}";
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-
 
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
 
             JSONObject jsonResponse = new JSONObject(response.getBody());
-            String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message").getString("content");
-
-            log.info("content = {}",content);
+            String content = jsonResponse.getJSONArray("choices").getJSONObject(0).getJSONObject("message")
+                    .getString("content");
             return CompletableFuture.completedFuture(content);
         } catch (Exception e) {
             return CompletableFuture.failedFuture(e);
         }
     }
 }
-
-
