@@ -1,4 +1,4 @@
-package ict.board.controller.board;
+package ict.board.dto;
 
 
 import jakarta.validation.constraints.NotEmpty;

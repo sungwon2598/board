@@ -1,4 +1,4 @@
-package ict.board.controller.reply;
+package ict.board.dto;
 
 import lombok.Getter;
 import lombok.Setter;

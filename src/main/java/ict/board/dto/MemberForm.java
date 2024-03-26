@@ -1,4 +1,4 @@
-package ict.board.controller.Member;
+package ict.board.dto;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package ict.board.controller.login;
+package ict.board.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

@@ -1,10 +1,11 @@
-package ict.board.controller.reply;
+package ict.board.controller;
 
 
 import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
+import ict.board.dto.ReplyForm;
 import ict.board.service.BoardService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
@@ -38,9 +39,7 @@ public class ReplyController {
 
     @PostMapping("/board/{boardId}/reply/delete/{replyId}")
     public String deleteReply(@PathVariable Long replyId, @PathVariable Long boardId) {
-
         replyService.deleteReply(replyId);
-
         return "redirect:/board/" + boardId;
     }
 

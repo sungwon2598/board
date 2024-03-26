@@ -28,9 +28,9 @@
     <div class="card mb-4">
         <div class="card-header">회원 정보</div>
         <div class="card-body">
-            <p><strong>이름 : </strong> <span th:text="${member.name}">Name</span></p>
-            <p><strong>아이디 : </strong> <span th:text="${member.email}">Email</span></p>
-            <p><strong>소속 : </strong> <span th:text="${member.getTeam()}">City</span></p>
+            <p><strong>이름 : </strong> <span th:text="${memberInfo.getMemberName()}">Name</span></p>
+            <p><strong>아이디 : </strong> <span th:text="${memberInfo.getMemberEmail()}">Email</span></p>
+            <p><strong>소속 : </strong> <span th:text="${memberInfo.getMemberTeam()}">City</span></p>
         </div>
     </div>
 
@@ -38,7 +38,7 @@
     <div class="mb-4">
         <h2 class="mb-3">접수한 민원</h2>
         <div class="list-group">
-            <th:block th:each="board : ${boards}">
+            <th:block th:each="board : ${memberInfo.getBoards()}">
                 <a th:href="@{/board/{id}(id=${board.id})}" class="list-group-item list-group-item-action"
                    th:text="${board.title}">게시판 제목</a>
             </th:block>
@@ -48,7 +48,7 @@
     <div>
         <h2 class="mb-3">내가 쓴 댓글</h2>
         <ul class="list-group">
-            <th:block th:each="reply : ${replies}">
+            <th:block th:each="reply : ${memberInfo.getReplies()}">
                 <li class="list-group-item" th:text="${reply.content}">댓글 내용</li>
             </th:block>
         </ul>

@@ -1,10 +1,11 @@
-package ict.board.controller.board;
+package ict.board.controller;
 
 import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
+import ict.board.dto.BoardForm;
 import ict.board.service.BoardService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;

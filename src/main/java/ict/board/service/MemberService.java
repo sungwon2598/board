@@ -1,8 +1,12 @@
 package ict.board.service;
 
+import ict.board.domain.board.Board;
 import ict.board.domain.member.Member;
+import ict.board.domain.reply.Reply;
+import ict.board.dto.MemberInfo;
 import ict.board.repsoitory.MemberRepository;
 import ict.board.service.ai.OpenAIApiConnector;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +19,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final BoardService boardService;
+    private final ReplyService replyService;
+
     private final Logger logger = LoggerFactory.getLogger(OpenAIApiConnector.class);
 
     @Transactional
@@ -23,6 +30,18 @@ public class MemberService {
         validateDuplicate(member);
         memberRepository.save(member);
         return member.getId();
+    }
+
+    public MemberInfo getMemberInfo(String email) {
+        Member loginMember = findMemberByEmail(email);
+
+        List<Board> boards = boardService.findBoardsbyMember(loginMember);
+        List<Reply> replies = replyService.getCommentsByMember(loginMember);
+
+        String memberName = loginMember.getName();
+        String memberTeam = loginMember.getTeam();
+
+        return new MemberInfo(boards, replies, memberName, email, memberTeam);
     }
 
     private void validateDuplicate(Member member) {
