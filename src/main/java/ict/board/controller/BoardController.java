@@ -6,6 +6,7 @@ import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
+import ict.board.dto.PostDetail;
 import ict.board.service.BoardService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
@@ -59,9 +60,10 @@ public class BoardController {
             @Login String loginMemberEmail,
             Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
             Pageable pageable) {
-        Page<Board> boards = boardService.findAllBoards(pageable);
 
+        Page<Board> boards = boardService.findAllBoards(pageable);
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
+
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("boards", boards);
         return "Index";
@@ -76,18 +78,12 @@ public class BoardController {
         }
 
         boolean isLogin = board.getMember().getEmail().equals(loginMemberEmail);
-        model.addAttribute("isLogin", isLogin);
-
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
-
         boolean isManager = loginMember.getTeam().equals("ict지원실");
-        model.addAttribute("isManager", isManager);
-
-        model.addAttribute("board", board);
-        model.addAttribute("loginMemberEmail", loginMemberEmail);
-
         List<Reply> comments = replyService.getCommentsByPostId(id);
-        model.addAttribute("comments", comments);
+
+        PostDetail postDetail = new PostDetail(isLogin, isManager, loginMemberEmail, board, comments);
+        model.addAttribute("postDetail", postDetail);
 
         return "board/postDetail";
     }
