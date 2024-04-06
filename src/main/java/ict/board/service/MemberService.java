@@ -10,6 +10,7 @@ import ict.board.repsoitory.ReplyRepository;
 import ict.board.service.ai.OpenAIApiConnector;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -28,10 +29,16 @@ public class MemberService {
 
     @Transactional
     public Long join(Member member) {
-        logger.info(String.valueOf(memberRepository.getClass()));
         validateDuplicate(member);
         memberRepository.save(member);
         return member.getId();
+    }
+
+    private void validateDuplicate(Member member) {
+        Member member1 = memberRepository.findMemberByEmail(member.getEmail()).orElse(null);
+        if ( member1 != null) {
+            throw new IllegalStateException("이미 존재하는 회원입니다.");
+        }
     }
 
     public MemberInfo getMemberInfo(String email) {
@@ -44,13 +51,6 @@ public class MemberService {
         String memberTeam = loginMember.getTeam();
 
         return new MemberInfo(boards, replies, memberName, email, memberTeam);
-    }
-
-    private void validateDuplicate(Member member) {
-        Member member1 = memberRepository.findMemberByEmail(member.getEmail()).orElse(null);
-        if ( member1 != null) {
-            throw new IllegalStateException("이미 존재하는 회원입니다.");
-        }
     }
 
     public Member findMemberByEmail(String email) {

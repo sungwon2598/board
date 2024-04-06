@@ -13,6 +13,7 @@ import ict.board.service.ReplyService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,13 +33,15 @@ public class MemberController {
     }
 
     @PostMapping("/members/new")
-    public String create(@Valid MemberForm form, BindingResult result) {
+    public String create(@Valid MemberForm form, BindingResult result, Model model) {
 
         if (result.hasErrors()) {
+            model.addAttribute("memberForm", form); // 사용자가 입력한 데이터를 모델에 추가
             return "members/createMemberForm";
         }
 
-        Member member = new Member(form.getEmail(), form.getName(), form.getPassword(),
+        String hashedPassword = BCrypt.hashpw(form.getPassword(), BCrypt.gensalt());
+        Member member = new Member(form.getEmail(), form.getName(), hashedPassword,
                 Building.valueOf(form.getBuilding()), form.getTeam(), form.getMemberNumber());
 
         memberService.join(member);
