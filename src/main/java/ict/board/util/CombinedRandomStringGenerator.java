@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
+import org.springframework.stereotype.Component;
 
+@Component
 public class CombinedRandomStringGenerator {
 
     private static final String UPPER_CASE_LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -14,7 +16,7 @@ public class CombinedRandomStringGenerator {
     private static final String SPECIAL_CHARACTERS = "!@#$%^&*()_+-=[]{}|;':,.<>/?";
     private static final int LENGTH = 12;
 
-    public static String generateRandomString() {
+    public String generateRandomString() {
         SecureRandom random = new SecureRandom();
         List<Character> chars = new ArrayList<>();
 
