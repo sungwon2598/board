@@ -1,5 +1,6 @@
 package ict.board.controller;
 
+import com.sun.tools.javac.Main;
 import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.member.Building;
@@ -8,6 +9,7 @@ import ict.board.domain.reply.Reply;
 import ict.board.dto.MemberForm;
 import ict.board.dto.MemberInfo;
 import ict.board.service.BoardService;
+import ict.board.service.MailService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import jakarta.validation.Valid;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class MemberController {
 
     private final MemberService memberService;
+    private final MailService mailService;
 
     @GetMapping("/members/new")
     public String createForm(Model model) {
@@ -33,13 +36,14 @@ public class MemberController {
     }
 
     @PostMapping("/members/new")
-    public String create(@Valid MemberForm form, BindingResult result, Model model) {
+    public String create(@Valid MemberForm form, BindingResult result, Model model) throws Exception {
 
         if (result.hasErrors()) {
             model.addAttribute("memberForm", form); // 사용자가 입력한 데이터를 모델에 추가
             return "members/createMemberForm";
         }
 
+        mailService.run(null);
         String hashedPassword = BCrypt.hashpw(form.getPassword(), BCrypt.gensalt());
         Member member = new Member(form.getEmail(), form.getName(), hashedPassword,
                 Building.valueOf(form.getBuilding()), form.getTeam(), form.getMemberNumber());
