@@ -25,4 +25,7 @@ public class MemberForm {
             message = "비밀번호는 최소 8자 이상이며, 최소 하나의 문자, 하나의 숫자 및 하나의 특수 문자를 포함해야 합니다.")
 
     private String password;
+
+    @NotEmpty(message = "인증 번호는 필수 입력 값입니다.")
+    private String verificationCode;
 }

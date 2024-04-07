@@ -6,27 +6,40 @@
 <div th:replace="fragments/bodyHeader :: bodyHeader"></div>
 
 <div class="container">
-    <h1>회원 가입 - 기본 정보 입력</h1>
-    <form action="/members/register-step1" method="post" th:object="${memberForm}">
+    <h1>회원 가입</h1>
+    <!-- 회원 정보 입력 폼 -->
+    <form action="/members/new" method="post" th:object="${memberForm}">
+
         <div class="form-group">
             <label th:for="name">이름</label>
             <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
-            <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></p>
         </div>
         <div class="form-group">
             <label th:for="password">비밀번호</label>
             <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
-            <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></p>
         </div>
         <div class="form-group">
             <label th:for="team">소속</label>
             <input type="text" th:field="*{team}" class="form-control" placeholder="소속을 입력하세요">
         </div>
         <div class="form-group">
+            <label>소속건물</label>
+            <div>
+                <th:block th:each="building, iterStat : ${T(ict.board.domain.member.Building).values()}">
+                    <input type="radio" th:id="${'building'+iterStat.index}" th:field="*{building}" th:value="${building.name()}" />
+                    <label th:for="${'building'+iterStat.index}" th:text="${building.getKoreanName()}">Building Name</label>
+                </th:block>
+            </div>
+        </div>
+        <div class="form-group">
             <label th:for="memberNumber">학번 / 사번</label>
             <input type="text" th:field="*{memberNumber}" class="form-control" placeholder="학번/사번을 입력하세요">
         </div>
-        <button type="submit" class="btn btn-primary">다음</button>
+        <div class="form-group">
+            <label th:for="verificationCode">인증 코드</label>
+            <input type="text" th:field="*{verificationCode}" class="form-control" placeholder="이메일로 받은 인증 코드를 입력하세요">
+        </div>
+        <button type="submit" class="btn btn-primary">가입 완료</button>
     </form>
 </div>
 
