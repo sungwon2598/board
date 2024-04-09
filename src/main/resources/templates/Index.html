@@ -77,6 +77,13 @@
             font-size: 16px;
         }
     </style>
+    <script type="text/javascript">
+        // 수정된 JavaScript 함수
+        function javascriptFunction(element) {
+            var dateString = element.getAttribute('data-date');
+            window.location.href = '/' + dateString;
+        }
+    </script>
 </head>
 <body>
 
@@ -100,6 +107,26 @@
 </div>
 
 <div class="container my-4">
+    <h2>나의 일정 관리 달력</h2>
+    <table class="table">
+        <tr>
+            <th>일요일</th>
+            <th>월요일</th>
+            <th>화요일</th>
+            <th>수요일</th>
+            <th>목요일</th>
+            <th>금요일</th>
+            <th>토요일</th>
+        </tr>
+        <tr th:each="week : ${weeks}">
+            <td th:each="day : ${week}">
+                <!-- 수정된 버튼 코드 -->
+                <button type="button" onclick="javascriptFunction(this)" th:data-date="${day.toString()}" class="btn btn-outline-primary">
+                    [[${day.dayOfMonth}]]
+                </button>
+            </td>
+        </tr>
+    </table>
     <!-- 버튼들 -->
     <div class="mb-3">
         <a href="/board/new" class="btn btn-primary" th:if="${loginMember != null}">새 민원 접수</a>

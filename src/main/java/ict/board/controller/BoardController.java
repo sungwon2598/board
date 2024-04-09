@@ -12,6 +12,9 @@ import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import jakarta.validation.Valid;
 import java.io.IOException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +64,68 @@ public class BoardController {
             Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
             Pageable pageable) {
 
-        Page<Board> boards = boardService.findAllBoards(pageable);
+        LocalDate today = LocalDate.now();
+        LocalDate start = today.withDayOfMonth(1);
+        LocalDate end = today.withDayOfMonth(today.lengthOfMonth());
+
+        // 첫 번째 날이 속한 주의 일요일로 시작 날짜 조정
+        start = start.minusDays(start.getDayOfWeek().getValue() % 7);
+
+        List<List<LocalDate>> weeks = new ArrayList<>();
+        List<LocalDate> currentWeek = new ArrayList<>();
+        weeks.add(currentWeek);
+
+        for (LocalDate date = start; date.isBefore(end.plusDays(1));
+             date = date.plusDays(1)) {
+            if (date.getDayOfWeek() == DayOfWeek.SUNDAY && !currentWeek.isEmpty()) {
+                currentWeek = new ArrayList<>();
+                weeks.add(currentWeek);
+            }
+            currentWeek.add(date);
+        }
+
+        model.addAttribute("weeks", weeks);
+
+        Page<Board> boards = boardService.findAllBoardsByDate(pageable, LocalDate.now());
+        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
+
+        model.addAttribute("loginMember", loginMember);
+        model.addAttribute("boards", boards);
+        return "Index";
+    }
+
+    @GetMapping("/{date}")
+    public String listBoardsByDate(
+            @Login String loginMemberEmail, @PathVariable String date,
+            Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
+            Pageable pageable) {
+
+        LocalDate selectedDate = LocalDate.parse(date);
+
+        //LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.of(2024, 2, 17);
+        LocalDate start = today.withDayOfMonth(1);
+        LocalDate end = today.withDayOfMonth(today.lengthOfMonth());
+
+        // 첫 번째 날이 속한 주의 일요일로 시작 날짜 조정
+        start = start.minusDays(start.getDayOfWeek().getValue() % 7);
+
+        List<List<LocalDate>> weeks = new ArrayList<>();
+        List<LocalDate> currentWeek = new ArrayList<>();
+        weeks.add(currentWeek);
+
+        for (LocalDate datee = start; datee.isBefore(end.plusDays(1));
+             datee = datee.plusDays(1)) {
+            if (datee.getDayOfWeek() == DayOfWeek.SUNDAY && !currentWeek.isEmpty()) {
+                currentWeek = new ArrayList<>();
+                weeks.add(currentWeek);
+            }
+            currentWeek.add(datee);
+        }
+
+        model.addAttribute("weeks", weeks);
+
+        Page<Board> boards = boardService.findAllBoardsByDate(pageable, selectedDate);
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
 
         model.addAttribute("loginMember", loginMember);

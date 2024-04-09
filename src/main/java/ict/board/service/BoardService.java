@@ -9,6 +9,8 @@ import ict.board.repsoitory.MemberRepository;
 import ict.board.service.ai.AIResponseHandler;
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +67,13 @@ public class BoardService {
         board.changeTitle(newTitle);
         board.chageContent(newContent);
     }
+
+    public Page<Board> findAllBoardsByDate(Pageable pageable, LocalDate date) {
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        return boardRepository.findAllByCreatedAtBetween(startOfDay, endOfDay, pageable);
+    }
+
 
     public Page<Board> findAllBoards(Pageable pageable) {
         return boardRepository.findAllWithMember(pageable);

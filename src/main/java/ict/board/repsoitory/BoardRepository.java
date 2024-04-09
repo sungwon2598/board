@@ -3,6 +3,7 @@ package ict.board.repsoitory;
 
 import ict.board.domain.board.Board;
 import ict.board.domain.member.Member;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,5 +20,9 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findAllWithMember(Pageable pageable);
 
     List<Board> findByMember(Member member);
+
+    Page<Board> findAllByCreatedAtBetween(LocalDateTime startCreatedAt, LocalDateTime endCreatedAt, Pageable pageable);
+
+
 
 }
