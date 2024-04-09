@@ -11,7 +11,8 @@ public enum Building {
     JD("지덕관"),
     BY("배양관"),
     NR("누리관"),
-    SE("서일관");
+    SE("서일관"),
+    DS("도서관");
 
     private final String koreanName;
 
