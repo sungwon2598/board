@@ -16,10 +16,16 @@
         </div>
         <div class="card-footer">
             <small>
-                작성자: <span th:text="${postDetail.getBoard.member.getName()}"></span> |
-                소속 : <span th:text="${postDetail.getBoard.member.getTeam()}"></span> |
-                작성시간: <span th:text="${#temporals.format(postDetail.getBoard.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
+                작성자: <span th:text="${postDetail.getBoard().member.getName()}"></span> |
+                소속 : <span th:text="${postDetail.getBoard().member.getTeam()}"></span> |
+                작성시간: <span th:text="${#temporals.format(postDetail.getBoard().createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
             </small>
+            <div>
+                <small>요청자: <span th:text="${postDetail.getBoard().getRequester()}">요청자 이름</span></small>
+            </div>
+            <div>
+                <small>위치: <span th:text="${postDetail.getBoard().getRequesterLocation()}">요청자 위치</span></small>
+            </div>
             <a th:if="${postDetail.isLogin}" th:href="@{/board/{id}/editForm(id=${postDetail.getBoard.getId()})}" class="btn btn-secondary">수정</a>
             <form th:if="${postDetail.isLogin}" id="deletePostForm" th:action="@{/board/{id}/delete(id=${postDetail.getBoard.getId()})}" method="post">
                 <input type="hidden" name="_method" value="delete" />

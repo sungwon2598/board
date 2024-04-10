@@ -138,17 +138,17 @@
     <table class="table table-bordered board-list">
         <thead class="thead-light">
         <tr>
-            <th>작성자</th>
-            <th>제목</th>
+            <th>요청자</th>
+            <th>위치</th>
             <th>내용</th>
             <th>민원상태</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="board : ${boards}">
-            <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.member.name}">작성자 이름</a></td>
-            <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 제목</a></td>
-            <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.content}">게시글 내용</a></td>
+            <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requester}">요청자</a></td>
+            <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requesterLocation}">위치</a></td>
+            <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.getTitle()}">게시글 내용</a></td>
             <td th:text="${board.boardStatus.koreanName}">민원상태</td>
         </tr>
         </tbody>
