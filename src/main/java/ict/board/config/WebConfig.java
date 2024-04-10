@@ -12,16 +12,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginCheckInterceptor())
-                .order(1)
-                .addPathPatterns()
-                .excludePathPatterns(
-                        "/", "/login", "/css/**", "/*.ico", "/members/new", "/logout"
-                        ,"/members/email-verification","/members/register"
-                );
-    }
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry.addInterceptor(new LoginCheckInterceptor())
+//                .order(1)
+//                .addPathPatterns()
+//                .excludePathPatterns(
+//                        "/", "/login", "/css/**", "/*.ico", "/members/new", "/logout"
+//                        ,"/members/email-verification","/members/register"
+//                );
+//    }
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {

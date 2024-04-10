@@ -18,6 +18,7 @@ public class MemberForm {
     private String name;
     private String team;
     private String building;
+    private String roomNumber;
     private String memberNumber;
 
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")

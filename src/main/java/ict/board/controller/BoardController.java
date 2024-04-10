@@ -53,7 +53,7 @@ public class BoardController {
             return "board/new";
         }
 
-        Board board = new Board(form.getTitle(), form.getContent());
+        Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(), form.getRequesterLocation());
         boardService.save(board, loginMemberEmail);
         return "redirect:/";
     }
@@ -100,14 +100,14 @@ public class BoardController {
         LocalDate start = date.withDayOfMonth(1);
         LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
 
-        // Adjust start date to the Sunday of the week containing the first day of the month
         start = start.minusDays(start.getDayOfWeek().getValue() % 7);
 
         List<List<LocalDate>> weeks = new ArrayList<>();
         List<LocalDate> currentWeek = new ArrayList<>();
         weeks.add(currentWeek);
 
-        for (LocalDate currentDate = start; currentDate.isBefore(end.plusDays(1)); currentDate = currentDate.plusDays(1)) {
+        for (LocalDate currentDate = start; currentDate.isBefore(end.plusDays(1));
+             currentDate = currentDate.plusDays(1)) {
             if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY && !currentWeek.isEmpty()) {
                 currentWeek = new ArrayList<>();
                 weeks.add(currentWeek);

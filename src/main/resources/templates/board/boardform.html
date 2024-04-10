@@ -14,6 +14,16 @@
             <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger">제목을 입력해주세요.</p>
         </div>
         <div class="form-group">
+            <label th:for="requester">요청자</label>
+            <input type="text" th:field="*{requester}" class="form-control" placeholder="요청자를 입력하세요">
+            <p th:if="${#fields.hasErrors('requester')}" th:errors="*{requester}" class="text-danger">요청자를 입력해주세요.</p>
+        </div>
+        <div class="form-group">
+            <label th:for="requesterLocation">요청자 위치</label>
+            <input type="text" th:field="*{requesterLocation}" class="form-control" placeholder="요청자 위치를 입력하세요">
+            <p th:if="${#fields.hasErrors('requesterLocation')}" th:errors="*{requesterLocation}" class="text-danger">요청자 위치를 입력해주세요.</p>
+        </div>
+        <div class="form-group">
             <label th:for="content">내용</label>
             <textarea th:field="*{content}" class="form-control" placeholder="내용을 입력하세요" rows="10"></textarea>
             <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger">내용을 입력해주세요.</p>

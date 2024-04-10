@@ -2,8 +2,6 @@ package ict.board.domain.board;
 
 import ict.board.domain.CreateTime;
 import ict.board.domain.member.Member;
-import ict.board.domain.reply.Reply;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,12 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 
 @Entity
@@ -52,13 +47,21 @@ public class Board extends CreateTime {
     @Enumerated(EnumType.STRING)
     private BoardStatus boardStatus;
 
+    @Column(name = "requester")
+    private String requester;
+
+    @Column(name = "requester_location")
+    private String requesterLocation;
+
     public Board() {
 
     }
 
-    public Board (String title, String content) {
+    public Board (String title, String content, String requester, String requesterLocation) {
         this.title = title;
         this.content = content;
+        this.requester = requester;
+        this.requesterLocation = requesterLocation;
         this.boardStatus = BoardStatus.UNCHECKED;
     }
 
@@ -74,6 +77,8 @@ public class Board extends CreateTime {
             this.boardStatus = BoardStatus.IN_PROGRESS;
         } else if (boardStatus.equals(BoardStatus.COMPLETED)) {
             this.boardStatus = BoardStatus.COMPLETED;
+        } else if (boardStatus.equals(BoardStatus.NIGHT_SHIFT)) {
+            this.boardStatus = BoardStatus.NIGHT_SHIFT;
         }
     }
 
