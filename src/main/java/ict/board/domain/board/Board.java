@@ -89,4 +89,13 @@ public class Board extends CreateTime {
     public void chageContent(String content) {
         this.content = content;
     }
+
+    public void changeRequester(String requester) {
+        this.requester = requester;
+    }
+
+    public void changeRequesterLocation(String requesterLocation) {
+        this.requesterLocation = requesterLocation;
+    }
+
 }

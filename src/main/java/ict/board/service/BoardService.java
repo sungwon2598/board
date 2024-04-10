@@ -62,10 +62,12 @@ public class BoardService {
     }
 
     @Transactional
-    public void update(Long id, String newTitle, String newContent) {
+    public void update(Long id, String newTitle, String newContent, String requester, String requesterLocation) {
         Board board = boardRepository.findById(id).orElse(null);
         board.changeTitle(newTitle);
         board.chageContent(newContent);
+        board.changeRequester(requester);
+        board.changeRequesterLocation(requesterLocation);
     }
 
     public Page<Board> findAllBoardsByDate(Pageable pageable, LocalDate date) {

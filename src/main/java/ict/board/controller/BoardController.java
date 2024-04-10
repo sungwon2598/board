@@ -151,13 +151,13 @@ public class BoardController {
     }
 
     @PostMapping("/board/{id}/edit")
-    public String editPost(@PathVariable Long id, String title, String content) {
+    public String editPost(@PathVariable Long id, String title, String content, String requester, String requesterLocation) {
         Board board = boardService.findOneBoard(id);
 
         if (board == null) {
             return "redirect:/";
         }
-        boardService.update(id, title, content);
+        boardService.update(id, title, content, requester, requesterLocation);
         return "redirect:/board/" + id;
     }
 
