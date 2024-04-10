@@ -97,7 +97,7 @@ public class BoardController {
         return "Index";
     }
 
-    @GetMapping("/{date}")
+    @GetMapping("/date/{date}")
     public String listBoardsByDate(
             @Login String loginMemberEmail, @PathVariable String date,
             Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
