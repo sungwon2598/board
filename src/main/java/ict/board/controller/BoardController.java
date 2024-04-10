@@ -65,28 +65,11 @@ public class BoardController {
             Pageable pageable) {
 
         LocalDate today = LocalDate.now();
-        LocalDate start = today.withDayOfMonth(1);
-        LocalDate end = today.withDayOfMonth(today.lengthOfMonth());
-
-        // 첫 번째 날이 속한 주의 일요일로 시작 날짜 조정
-        start = start.minusDays(start.getDayOfWeek().getValue() % 7);
-
-        List<List<LocalDate>> weeks = new ArrayList<>();
-        List<LocalDate> currentWeek = new ArrayList<>();
-        weeks.add(currentWeek);
-
-        for (LocalDate date = start; date.isBefore(end.plusDays(1));
-             date = date.plusDays(1)) {
-            if (date.getDayOfWeek() == DayOfWeek.SUNDAY && !currentWeek.isEmpty()) {
-                currentWeek = new ArrayList<>();
-                weeks.add(currentWeek);
-            }
-            currentWeek.add(date);
-        }
+        List<List<LocalDate>> weeks = calculateWeeks(today);
 
         model.addAttribute("weeks", weeks);
 
-        Page<Board> boards = boardService.findAllBoardsByDate(pageable, LocalDate.now());
+        Page<Board> boards = boardService.findAllBoardsByDate(pageable, today);
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
 
         model.addAttribute("loginMember", loginMember);
@@ -101,27 +84,7 @@ public class BoardController {
             Pageable pageable) {
 
         LocalDate selectedDate = LocalDate.parse(date);
-
-        //LocalDate today = LocalDate.now();
-        LocalDate today = LocalDate.of(2024, 2, 17);
-        LocalDate start = today.withDayOfMonth(1);
-        LocalDate end = today.withDayOfMonth(today.lengthOfMonth());
-
-        // 첫 번째 날이 속한 주의 일요일로 시작 날짜 조정
-        start = start.minusDays(start.getDayOfWeek().getValue() % 7);
-
-        List<List<LocalDate>> weeks = new ArrayList<>();
-        List<LocalDate> currentWeek = new ArrayList<>();
-        weeks.add(currentWeek);
-
-        for (LocalDate datee = start; datee.isBefore(end.plusDays(1));
-             datee = datee.plusDays(1)) {
-            if (datee.getDayOfWeek() == DayOfWeek.SUNDAY && !currentWeek.isEmpty()) {
-                currentWeek = new ArrayList<>();
-                weeks.add(currentWeek);
-            }
-            currentWeek.add(datee);
-        }
+        List<List<LocalDate>> weeks = calculateWeeks(selectedDate);
 
         model.addAttribute("weeks", weeks);
 
@@ -131,6 +94,28 @@ public class BoardController {
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("boards", boards);
         return "Index";
+    }
+
+    private List<List<LocalDate>> calculateWeeks(LocalDate date) {
+        LocalDate start = date.withDayOfMonth(1);
+        LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
+
+        // Adjust start date to the Sunday of the week containing the first day of the month
+        start = start.minusDays(start.getDayOfWeek().getValue() % 7);
+
+        List<List<LocalDate>> weeks = new ArrayList<>();
+        List<LocalDate> currentWeek = new ArrayList<>();
+        weeks.add(currentWeek);
+
+        for (LocalDate currentDate = start; currentDate.isBefore(end.plusDays(1)); currentDate = currentDate.plusDays(1)) {
+            if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY && !currentWeek.isEmpty()) {
+                currentWeek = new ArrayList<>();
+                weeks.add(currentWeek);
+            }
+            currentWeek.add(currentDate);
+        }
+
+        return weeks;
     }
 
     @GetMapping("/board/{id}")
