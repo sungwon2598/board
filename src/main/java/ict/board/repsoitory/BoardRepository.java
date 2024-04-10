@@ -23,6 +23,4 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Page<Board> findAllByCreatedAtBetween(LocalDateTime startCreatedAt, LocalDateTime endCreatedAt, Pageable pageable);
 
-
-
 }

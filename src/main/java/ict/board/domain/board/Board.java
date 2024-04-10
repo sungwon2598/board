@@ -36,7 +36,6 @@ public class Board extends CreateTime {
 
     private String title;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_modified_at")
     private LocalDateTime lastModifiedAt;
 

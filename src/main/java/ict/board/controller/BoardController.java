@@ -3,10 +3,12 @@ package ict.board.controller;
 import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
+import ict.board.domain.board.ReservationBoard;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
 import ict.board.dto.PostDetail;
+import ict.board.dto.ReservationValidationGroup;
 import ict.board.service.BoardService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
@@ -14,6 +16,7 @@ import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,16 +49,32 @@ public class BoardController {
         return "board/boardform";
     }
 
-    @PostMapping("board/new")
-    public String create(@Valid BoardForm form, BindingResult result, @Login String loginMemberEmail)
-            throws IOException, InterruptedException {
-
+    @PostMapping("/board/new")
+    public String create(@Validated(ReservationValidationGroup.class) BoardForm form, BindingResult result, @Login String loginMemberEmail) throws IOException, InterruptedException {
         if (result.hasErrors()) {
             return "board/new";
         }
 
-        Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(), form.getRequesterLocation());
-        boardService.save(board, loginMemberEmail);
+        if (form.isReservation()) {
+            // 예약 민원 처리
+            if (form.getReservationDate() == null || form.getReservationTime() == null) {
+                result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
+                return "board/new";
+            }
+            ReservationBoard reservationBoard = new ReservationBoard(
+                    form.getTitle(),
+                    form.getContent(),
+                    form.getRequester(),
+                    form.getRequesterLocation(),
+                    LocalDateTime.of(form.getReservationDate(), form.getReservationTime())
+            );
+            boardService.save(reservationBoard, loginMemberEmail);
+        } else {
+            // 기존 민원 처리
+            Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(), form.getRequesterLocation());
+            boardService.save(board, loginMemberEmail);
+        }
+
         return "redirect:/";
     }
 
@@ -172,6 +192,10 @@ public class BoardController {
             return "redirect:/board/" + id;
         }
 
+        List<Reply> commentsByPostId = replyService.getCommentsByPostId(id);
+        for (Reply reply : commentsByPostId) {
+            replyService.deleteReply(reply.getId());
+        } //동적 쿼리 한방으로 하게 못하나?
         boardService.delete(id);
         return "redirect:/";
     }
