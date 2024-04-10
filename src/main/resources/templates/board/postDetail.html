@@ -20,17 +20,24 @@
                 소속 : <span th:text="${postDetail.getBoard().member.getTeam()}"></span> |
                 작성시간: <span th:text="${#temporals.format(postDetail.getBoard().createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
             </small>
-            <div>
-                <small>요청자: <span th:text="${postDetail.getBoard().getRequester()}">요청자 이름</span></small>
+            <div class="mt-2">
+                <small>
+                    요청자: <span th:text="${postDetail.getBoard().getRequester()}">요청자 이름</span> |
+                    위치: <span th:text="${postDetail.getBoard().getRequesterLocation()}">요청자 위치</span>
+                </small>
             </div>
-            <div>
-                <small>위치: <span th:text="${postDetail.getBoard().getRequesterLocation()}">요청자 위치</span></small>
+            <div class="mt-2">
+                <small>
+                    민원상태: <span th:text="${postDetail.getBoard().getBoardStatus().getKoreanName()}">민원상태</span>
+                </small>
             </div>
-            <a th:if="${postDetail.isLogin}" th:href="@{/board/{id}/editForm(id=${postDetail.getBoard.getId()})}" class="btn btn-secondary">수정</a>
-            <form th:if="${postDetail.isLogin}" id="deletePostForm" th:action="@{/board/{id}/delete(id=${postDetail.getBoard.getId()})}" method="post">
-                <input type="hidden" name="_method" value="delete" />
-                <button type="button" onclick="submitDeleteForm()" class="btn btn-danger">삭제</button>
-            </form>
+            <div class="mt-2">
+                <a th:if="${postDetail.isLogin}" th:href="@{/board/{id}/editForm(id=${postDetail.getBoard.getId()})}" class="btn btn-secondary d-inline-block me-2">수정</a>
+                <form th:if="${postDetail.isLogin}" id="deletePostForm" th:action="@{/board/{id}/delete(id=${postDetail.getBoard.getId()})}" method="post" class="d-inline-block">
+                    <input type="hidden" name="_method" value="delete" />
+                    <button type="button" onclick="submitDeleteForm()" class="btn btn-danger">삭제</button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -106,7 +113,6 @@
                             소속 : <span th:text="${reply.getMember().getTeam()}"></span> |
                             작성시간: <span th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
                         </small>
-                        <!-- 조건부 삭제 버튼 표시 -->
                         <form th:if="${reply.getMember().getEmail() == loginMemberEmail}" th:action="@{/board/{boardId}/reply/delete/{replyId}(boardId=${postDetail.getBoard.getId()}, replyId=${reply.id})}" method="post">
                             <input type="hidden" name="_method" value="delete" />
                             <button type="submit" class="btn btn-danger btn-sm">삭제</button>
