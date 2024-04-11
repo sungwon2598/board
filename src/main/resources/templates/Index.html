@@ -76,14 +76,53 @@
             width: 100%;
             font-size: 16px;
         }
+        .btn-selected-date {
+            background-color: #007bff; /* Bootstrap의 기본 파란색 */
+            color: white;
+            border-color: #007bff;
+        }
     </style>
     <script type="text/javascript">
-        // 수정된 JavaScript 함수
+        // 페이지 로드 시 실행되는 함수
+        document.addEventListener("DOMContentLoaded", function() {
+            // 현재 URL에서 연도, 월, 일 추출
+            const currentPath = window.location.pathname;
+            const dateRegex = /\/date\/(\d{4})-(\d{2})-(\d{2})/;
+            const matches = currentPath.match(dateRegex);
+
+            if(matches) {
+                const year = matches[1];
+                const month = matches[2];
+                const day = matches[3];
+
+                // 연도와 월 선택창을 현재 URL에 맞게 설정
+                document.getElementById('yearSelect').value = year;
+                document.getElementById('monthSelect').value = month;
+
+                // 일치하는 날짜의 버튼에 스타일 적용
+                const selectedDate = `${year}-${month}-${day}`;
+                const buttons = document.querySelectorAll('button[onclick="javascriptFunction(this)"]');
+
+                buttons.forEach(button => {
+                    if(button.getAttribute('data-date') === selectedDate) {
+                        button.classList.add('btn-selected-date');
+                    }
+                });
+            }
+        });
+
         function javascriptFunction(element) {
             var dateString = element.getAttribute('data-date');
             window.location.href = '/date/' + dateString;
         }
+
+        function updateCalendarURL() {
+            var year = document.getElementById('yearSelect').value;
+            var month = document.getElementById('monthSelect').value;
+            window.location.href = '/date/' + year + '-' + month + '-01';
+        }
     </script>
+
 </head>
 <body>
 
@@ -107,7 +146,28 @@
 </div>
 
 <div class="container my-4">
-    <h2>민원 달력</h2>
+    <h2>민원 달력
+        <select id="yearSelect" onchange="updateCalendarURL()">
+            <option value="2023">2023</option>
+            <option value="2024" selected>2024</option>
+            <option value="2025">2025</option>
+            <option value="2026">2026</option>
+        </select>
+        <select id="monthSelect" onchange="updateCalendarURL()">
+            <option value="01">1월</option>
+            <option value="02">2월</option>
+            <option value="03">3월</option>
+            <option value="04">4월</option>
+            <option value="05">5월</option>
+            <option value="06">6월</option>
+            <option value="07">7월</option>
+            <option value="08">8월</option>
+            <option value="09">9월</option>
+            <option value="10">10월</option>
+            <option value="11">11월</option>
+            <option value="12">12월</option>
+        </select>
+    </h2>
     <table class="table">
         <tr>
             <th>일요일</th>
