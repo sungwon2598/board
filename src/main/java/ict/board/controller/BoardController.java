@@ -12,7 +12,6 @@ import ict.board.dto.ReservationValidationGroup;
 import ict.board.service.BoardService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
-import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -29,7 +28,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -50,13 +52,22 @@ public class BoardController {
     }
 
     @PostMapping("/board/new")
-    public String create(@Validated(ReservationValidationGroup.class) BoardForm form, BindingResult result, @Login String loginMemberEmail) throws IOException, InterruptedException {
+    public String create(BoardForm form, BindingResult result,
+                         @Login String loginMemberEmail) throws IOException, InterruptedException {
+        if (form.isReservation()) {
+            // 예약민원인 경우 날짜와 시간이 입력되지 않았다면 에러 추가
+            if (form.getReservationDate() == null) {
+                result.rejectValue("reservationDate", "NotNull", "예약 날짜를 입력해주세요");
+            }
+            if (form.getReservationTime() == null) {
+                result.rejectValue("reservationTime", "NotNull", "예약 시간을 입력해주세요");
+            }
+        }
         if (result.hasErrors()) {
             return "board/new";
         }
 
         if (form.isReservation()) {
-            // 예약 민원 처리
             if (form.getReservationDate() == null || form.getReservationTime() == null) {
                 result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
                 return "board/new";
@@ -70,8 +81,8 @@ public class BoardController {
             );
             boardService.save(reservationBoard, loginMemberEmail);
         } else {
-            // 기존 민원 처리
-            Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(), form.getRequesterLocation());
+            Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(),
+                    form.getRequesterLocation());
             boardService.save(board, loginMemberEmail);
         }
 
@@ -171,7 +182,8 @@ public class BoardController {
     }
 
     @PostMapping("/board/{id}/edit")
-    public String editPost(@PathVariable Long id, String title, String content, String requester, String requesterLocation) {
+    public String editPost(@PathVariable Long id, String title, String content, String requester,
+                           String requesterLocation) {
         Board board = boardService.findOneBoard(id);
 
         if (board == null) {
