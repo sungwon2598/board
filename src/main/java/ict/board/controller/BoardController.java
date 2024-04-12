@@ -8,10 +8,10 @@ import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
 import ict.board.dto.PostDetail;
-import ict.board.dto.ReservationValidationGroup;
 import ict.board.service.BoardService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
+import ict.board.service.ReservationBoardService;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -27,11 +27,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.validation.beanvalidation.SpringValidatorAdapter;
-import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -44,6 +40,7 @@ public class BoardController {
     private final BoardService boardService;
     private final ReplyService replyService;
     private final MemberService memberService;
+    private final ReservationBoardService reservationBoardService;
 
     @GetMapping("board/new")
     public String createBoardForm(Model model) {
@@ -101,7 +98,10 @@ public class BoardController {
         model.addAttribute("weeks", weeks);
 
         Page<Board> boards = boardService.findAllBoardsByDate(pageable, today);
+        Page<ReservationBoard> reservationBoards = reservationBoardService.findAllBoardsByDate(pageable, today);
+
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
+        model.addAttribute("reservationBoards", reservationBoards);
 
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("boards", boards);
@@ -120,9 +120,11 @@ public class BoardController {
         model.addAttribute("weeks", weeks);
 
         Page<Board> boards = boardService.findAllBoardsByDate(pageable, selectedDate);
+        Page<ReservationBoard> reservationBoards = reservationBoardService.findAllBoardsByDate(pageable, selectedDate);
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
 
         model.addAttribute("loginMember", loginMember);
+        model.addAttribute("reservationBoards", reservationBoards);
         model.addAttribute("boards", boards);
         return "Index";
     }

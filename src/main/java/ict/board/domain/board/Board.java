@@ -13,8 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import java.time.LocalDateTime;
 import lombok.Getter;
 
@@ -56,7 +54,7 @@ public class Board extends CreateTime {
 
     }
 
-    public Board (String title, String content, String requester, String requesterLocation) {
+    public Board(String title, String content, String requester, String requesterLocation) {
         this.title = title;
         this.content = content;
         this.requester = requester;
