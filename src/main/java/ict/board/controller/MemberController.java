@@ -14,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,11 +26,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 @Slf4j
 public class MemberController {
 
-    @Autowired
     private final MemberService memberService;
-    @Autowired
     private final MailService mailService;
-    @Autowired
     private final VerificationCodeCache verificationCodeCache;
 
     private final CombinedRandomStringGenerator generator = new CombinedRandomStringGenerator();

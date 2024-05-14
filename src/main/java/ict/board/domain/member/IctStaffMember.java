@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Entity
@@ -56,12 +57,4 @@ public class IctStaffMember extends Member {
         this.networkConstructionHours = 0;
     }
 
-}
-
-enum Role {
-    ADMIN, MANAGER, STAFF
-}
-
-enum ShiftType {
-    DAY, NIGHT
 }
