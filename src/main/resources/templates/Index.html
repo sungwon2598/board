@@ -90,30 +90,43 @@
     <script type="text/javascript">
         // 페이지 로드 시 실행되는 함수
         document.addEventListener("DOMContentLoaded", function() {
+            // 기본 날짜 설정 (오늘 날짜)
+            const today = new Date();
+            const defaultYear = today.getFullYear();
+            const defaultMonth = String(today.getMonth() + 1).padStart(2, '0');
+            const defaultDay = String(today.getDate()).padStart(2, '0');
+
             // 현재 URL에서 연도, 월, 일 추출
             const currentPath = window.location.pathname;
             const dateRegex = /\/date\/(\d{4})-(\d{2})-(\d{2})/;
             const matches = currentPath.match(dateRegex);
 
+            let year, month, day;
+
             if(matches) {
-                const year = matches[1];
-                const month = matches[2];
-                const day = matches[3];
-
-                // 연도와 월 선택창을 현재 URL에 맞게 설정
-                document.getElementById('yearSelect').value = year;
-                document.getElementById('monthSelect').value = month;
-
-                // 일치하는 날짜의 버튼에 스타일 적용
-                const selectedDate = `${year}-${month}-${day}`;
-                const buttons = document.querySelectorAll('button[onclick="javascriptFunction(this)"]');
-
-                buttons.forEach(button => {
-                    if(button.getAttribute('data-date') === selectedDate) {
-                        button.classList.add('btn-selected-date');
-                    }
-                });
+                year = matches[1];
+                month = matches[2];
+                day = matches[3];
+            } else {
+                // URL이 /인 경우 기본 날짜를 사용
+                year = defaultYear;
+                month = defaultMonth;
+                day = defaultDay;
             }
+
+            // 연도와 월 선택창을 현재 URL에 맞게 설정
+            document.getElementById('yearSelect').value = year;
+            document.getElementById('monthSelect').value = month;
+
+            // 일치하는 날짜의 버튼에 스타일 적용
+            const selectedDate = `${year}-${month}-${day}`;
+            const buttons = document.querySelectorAll('button[onclick="javascriptFunction(this)"]');
+
+            buttons.forEach(button => {
+                if(button.getAttribute('data-date') === selectedDate) {
+                    button.classList.add('btn-selected-date');
+                }
+            });
         });
 
         function javascriptFunction(element) {
