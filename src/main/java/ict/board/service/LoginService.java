@@ -1,7 +1,7 @@
 package ict.board.service;
 
 import ict.board.domain.member.Member;
-import ict.board.repsoitory.MemberRepository;
+import ict.board.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.stereotype.Service;

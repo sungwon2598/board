@@ -1,4 +1,4 @@
-package ict.board.repsoitory;
+package ict.board.repository;
 
 import ict.board.domain.board.ReservationBoard;
 import java.time.LocalDateTime;

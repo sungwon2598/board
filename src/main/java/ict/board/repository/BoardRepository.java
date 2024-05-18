@@ -1,7 +1,8 @@
-package ict.board.repsoitory;
+package ict.board.repository;
 
 
 import ict.board.domain.board.Board;
+import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,5 +23,7 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
     List<Board> findByMember(Member member);
 
     Page<Board> findAllByCreatedAtBetween(LocalDateTime startCreatedAt, LocalDateTime endCreatedAt, Pageable pageable);
+
+    List<Board> findByBoardStatus(BoardStatus boardStatus);
 
 }

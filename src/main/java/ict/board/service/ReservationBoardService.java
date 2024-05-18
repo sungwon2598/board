@@ -1,12 +1,10 @@
 package ict.board.service;
 
-import ict.board.domain.board.Board;
 import ict.board.domain.board.ReservationBoard;
-import ict.board.repsoitory.ReservationBoardRepository;
+import ict.board.repository.ReservationBoardRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

@@ -4,9 +4,10 @@ package ict.board.service;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Member;
-import ict.board.repsoitory.BoardRepository;
-import ict.board.repsoitory.MemberRepository;
+import ict.board.repository.BoardRepository;
+import ict.board.repository.MemberRepository;
 import ict.board.service.ai.AIResponseHandler;
+import ict.board.service.slack.NewBoardSender;
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -27,7 +28,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final AIResponseHandler AIResponseHandler;
-    private final SlackService slackService;
+    private final NewBoardSender newBoardSender;
 
     @Transactional
     public void save(Board board, String loginMemberEmail) throws IOException, InterruptedException {
@@ -37,7 +38,7 @@ public class BoardService {
 
         String ask = board.getContent();
 
-        slackService.sendFromBoard(board);
+        newBoardSender.sendFromBoard(board);
         AIResponseHandler.answerGpt(board, ask);
     }
 
