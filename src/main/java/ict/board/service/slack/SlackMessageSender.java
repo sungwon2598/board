@@ -3,6 +3,7 @@ package ict.board.service.slack;
 import com.slack.api.Slack;
 import com.slack.api.model.Attachment;
 import com.slack.api.model.Field;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import static com.slack.api.webhook.WebhookPayloads.payload;
 
 @Component
+@Getter
 public class SlackMessageSender {
 
     private final Slack slackClient = Slack.getInstance();
@@ -23,6 +25,9 @@ public class SlackMessageSender {
 
     @Value("${webhook.slack.url-board}")
     private String slackWebhookUrlBoard;
+
+    @Value("${webhook.slack.url-reservation}")
+    private String slackWebhookUrlReservation;
 
     public void sendMessage(String webhookUrl, String title, HashMap<String, String> data) {
         try {
@@ -48,12 +53,5 @@ public class SlackMessageSender {
                 .build();
     }
 
-    public String getSlackWebhookUrlNon() {
-        return slackWebhookUrlNon;
-    }
-
-    public String getSlackWebhookUrlBoard() {
-        return slackWebhookUrlBoard;
-    }
 }
 
