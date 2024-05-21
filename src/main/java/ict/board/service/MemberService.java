@@ -7,7 +7,7 @@ import ict.board.dto.MemberInfo;
 import ict.board.repository.BoardRepository;
 import ict.board.repository.MemberRepository;
 import ict.board.repository.ReplyRepository;
-import ict.board.service.ai.OpenAIApiConnector;
+import ict.board.service.ai.OpenAIApiBoardConnector;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ public class MemberService {
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(OpenAIApiConnector.class);
+    private final Logger logger = LoggerFactory.getLogger(OpenAIApiBoardConnector.class);
 
     @Transactional
     public Long join(Member member) {

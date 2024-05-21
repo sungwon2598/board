@@ -2,7 +2,6 @@ package ict.board.service.ai;
 
 import java.util.Collections;
 import java.util.concurrent.CompletableFuture;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -14,12 +13,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class OpenAIApiConnector {
+public class OpenAIApiBoardConnector {
 
     private final RestTemplate restTemplate;
     private final String apiKey;
 
-    public OpenAIApiConnector(RestTemplate restTemplate, @Value("${openai.api.key}") String apiKey) {
+    public OpenAIApiBoardConnector(RestTemplate restTemplate, @Value("${openai.api.key}") String apiKey) {
         this.restTemplate = restTemplate;
         this.apiKey = apiKey;
     }
@@ -34,17 +33,11 @@ public class OpenAIApiConnector {
             headers.setBearerAuth(apiKey);
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
-            String requestBody = new JSONObject()
-                    .put("model", "gpt-4")
-                    .put("messages", new JSONArray()
-                            .put(new JSONObject()
-                                    .put("role", "system")
-                                    .put("content", "This system is used for summarizing weekly complaint reports."))
-                            .put(new JSONObject()
-                                    .put("role", "user")
-                                    .put("content", prompt)))
-                    .toString();
-
+            String requestBody =
+                    "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": "
+                            + "\"This system is used for responding to questions about computer hardware and software issues.\"}"
+                            + ", {\"role\": \"user\", \"content\": \""
+                            + prompt + "\"}]}";
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
             ResponseEntity<String> response = restTemplate.postForEntity(url, entity, String.class);
@@ -58,4 +51,3 @@ public class OpenAIApiConnector {
         }
     }
 }
-

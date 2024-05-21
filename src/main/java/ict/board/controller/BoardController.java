@@ -12,12 +12,14 @@ import ict.board.service.BoardService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import ict.board.service.ReservationBoardService;
+import ict.board.service.ai.WeeklyReportService;
 import java.io.IOException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -41,6 +43,7 @@ public class BoardController {
     private final ReplyService replyService;
     private final MemberService memberService;
     private final ReservationBoardService reservationBoardService;
+    private final WeeklyReportService weeklyReportService;
 
     @GetMapping("board/new")
     public String createBoardForm(Model model) {
@@ -228,6 +231,11 @@ public class BoardController {
         }
 
         return "redirect:/board/" + id;
+    }
+
+    @GetMapping("/weekly")
+    public CompletableFuture<String> getWeeklyReport() {
+        return weeklyReportService.getWeeklyReport();
     }
 
 }

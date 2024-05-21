@@ -15,7 +15,7 @@ public class AIResponseHandler {
 
     private final MemberRepository memberRepository;
     private final ReplyService replyService;
-    private final OpenAIApiConnector aiCliente;
+    private final OpenAIApiBoardConnector aiCliente;
 
     public void answerGpt(Board board, String ask) {
 
