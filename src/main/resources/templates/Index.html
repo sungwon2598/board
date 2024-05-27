@@ -18,8 +18,8 @@
         }
         /* 추가된 헤더 스타일 */
         .header {
-            background-color: #343a40; /* 어두운 배경색 */
-            color: white; /* 텍스트 색상 */
+            background-color: #343a40;
+            color: white;
             padding: 10px 0;
             text-align: center;
         }
@@ -62,7 +62,7 @@
             background-color: #f8f9fa;
             border-radius: 10px;
             box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
-            max-width: 800px;
+            max-width: 1000px;
             margin: auto;
         }
         .thead-light th {
@@ -79,10 +79,10 @@
             font-size: 16px;
         }
         .highlighted {
-            background-color: #ffcccc; /* 예약된 민원을 강조하기 위한 색상 */
+            background-color: #ffcccc;
         }
         .btn-selected-date {
-            background-color: #007bff; /* Bootstrap의 기본 파란색 */
+            background-color: #007bff;
             color: white;
             border-color: #007bff;
         }
@@ -108,17 +108,31 @@
             background-color: #1c1c1c;
             color: #e0e0e0;
         }
+
+        /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .header .navbar {
+                flex-direction: column;
+                align-items: center;
+            }
+            .header .navbar a {
+                margin: 5px 0;
+            }
+            .board-list th, .board-list td {
+                padding: 8px;
+            }
+            .container {
+                padding: 10px;
+            }
+        }
     </style>
     <script type="text/javascript">
-        // 페이지 로드 시 실행되는 함수
         document.addEventListener("DOMContentLoaded", function() {
-            // 기본 날짜 설정 (오늘 날짜)
             const today = new Date();
             const defaultYear = today.getFullYear();
             const defaultMonth = String(today.getMonth() + 1).padStart(2, '0');
             const defaultDay = String(today.getDate()).padStart(2, '0');
 
-            // 현재 URL에서 연도, 월, 일 추출
             const currentPath = window.location.pathname;
             const dateRegex = /\/date\/(\d{4})-(\d{2})-(\d{2})/;
             const matches = currentPath.match(dateRegex);
@@ -130,17 +144,14 @@
                 month = matches[2];
                 day = matches[3];
             } else {
-                // URL이 /인 경우 기본 날짜를 사용
                 year = defaultYear;
                 month = defaultMonth;
                 day = defaultDay;
             }
 
-            // 연도와 월 선택창을 현재 URL에 맞게 설정
             document.getElementById('yearSelect').value = year;
             document.getElementById('monthSelect').value = month;
 
-            // 일치하는 날짜의 버튼에 스타일 적용
             const selectedDate = `${year}-${month}-${day}`;
             const buttons = document.querySelectorAll('button[onclick="javascriptFunction(this)"]');
 
@@ -150,7 +161,6 @@
                 }
             });
 
-            // 다크모드 설정 적용
             const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
             if(darkModeEnabled) {
                 document.body.classList.add('dark-mode');
@@ -160,7 +170,6 @@
                 document.querySelectorAll('.footer').forEach(el => el.classList.add('dark-mode'));
             }
 
-            // 다크모드 토글 버튼 이벤트
             document.getElementById('darkModeToggle').addEventListener('click', function() {
                 document.body.classList.toggle('dark-mode');
                 document.querySelectorAll('.container').forEach(el => el.classList.toggle('dark-mode'));
@@ -168,7 +177,6 @@
                 document.querySelectorAll('.header').forEach(el => el.classList.toggle('dark-mode'));
                 document.querySelectorAll('.footer').forEach(el => el.classList.toggle('dark-mode'));
 
-                // 다크모드 상태 저장
                 if (document.body.classList.contains('dark-mode')) {
                     localStorage.setItem('darkMode', 'enabled');
                 } else {
@@ -198,9 +206,9 @@
         ICT 지원실 민원처리
     </div>
     <div class="navbar">
-        <a href="/">홈</a>
-        <a href="/about">소개</a>
-        <a href="/contact">연락처</a>
+<!--        <a href="/">홈</a>-->
+<!--        <a href="/about">소개</a>-->
+<!--        <a href="/contact">연락처</a>-->
         <div th:if="${loginMember != null}" style="margin-left: auto; color: #FFFFFF;">
             <span th:text="${loginMember.name}">사용자 이름</span>님, 환영합니다!
             <a href="/mypage" class="btn btn-secondary" style="margin-left: 10px;">마이 페이지</a>
@@ -213,7 +221,9 @@
 
 <!-- 다크모드 토글 버튼 -->
 <div style="text-align: right; padding: 10px;">
-    <button id="darkModeToggle" class="btn btn-dark">다크모드 전환</button>
+    <button id="darkModeToggle" class="btn btn-dark">다크모드</button>
+    <button id="notionButton" class="btn btn-info" onclick="window.location.href='https://www.notion.so/1fb67b7abd184956af1ae2b2ac6d768a?pvs=4'">Notion</button>
+    <button id="calendarButton" class="btn btn-info" onclick="window.location.href='/calendar'">달력</button>
 </div>
 
 <div class="container my-4">
@@ -239,77 +249,79 @@
             <option value="12">12월</option>
         </select>
     </h2>
-    <table class="table">
-        <tr>
-            <th>일요일</th>
-            <th>월요일</th>
-            <th>화요일</th>
-            <th>수요일</th>
-            <th>목요일</th>
-            <th>금요일</th>
-            <th>토요일</th>
-        </tr>
-        <tr th:each="week : ${weeks}">
-            <td th:each="day : ${week}">
-                <!-- 수정된 버튼 코드 -->
-                <button type="button" onclick="javascriptFunction(this)" th:data-date="${day.toString()}" class="btn btn-outline-primary">
-                    [[${day.dayOfMonth}]]
-                </button>
-            </td>
-        </tr>
-    </table>
-    <!-- 버튼들 -->
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>일요일</th>
+                <th>월요일</th>
+                <th>화요일</th>
+                <th>수요일</th>
+                <th>목요일</th>
+                <th>금요일</th>
+                <th>토요일</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="week : ${weeks}">
+                <td th:each="day : ${week}">
+                    <button type="button" onclick="javascriptFunction(this)" th:data-date="${day.toString()}" class="btn btn-outline-primary">
+                        [[${day.dayOfMonth}]]
+                    </button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
     <div class="mb-3">
         <a href="/board/new" class="btn btn-primary" th:if="${loginMember != null}">새 민원 접수</a>
         <a href="/login" class="btn btn-secondary" th:if="${loginMember == null}">로그인</a>
         <a href="/members/new" class="btn btn-success" th:if="${loginMember == null}">회원가입</a>
     </div>
 
-    <!-- 게시판 리스트 -->
-    <table class="table table-bordered board-list">
-        <thead class="thead-light">
-        <tr>
-            <th>요청자</th>
-            <th>위치</th>
-            <th>내용</th>
-            <th>상태</th>
-            <th>예약</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- 예약된 민원들 먼저 표시 -->
-        <tr th:each="reservationBoard : ${reservationBoards.content}" class="highlighted">
-            <td>
-                <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.requester}">요청자</a>
-            </td>
-            <td>
-                <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.requesterLocation}">위치</a>
-            </td>
-            <td>
-                <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.title}">게시글 내용</a>
-            </td>
-            <td th:text="${reservationBoard.boardStatus.koreanName}">민원상태</td>
-            <td th:text="${#temporals.format(reservationBoard.reservationDate, 'HH:mm')}">예약 시간</td>
-        </tr>
-        <!-- 일반 민원들 표시 -->
-        <tr th:each="board : ${boards}" th:if="${!#lists.contains(reservationBoards.content, board)}">
-            <td>
-                <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requester}">요청자</a>
-            </td>
-            <td>
-                <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requesterLocation}">위치</a>
-            </td>
-            <td>
-                <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 내용</a>
-            </td>
-            <td th:text="${board.boardStatus.koreanName}">민원상태</td>
-            <td th:text="${board instanceof T(ict.board.domain.board.ReservationBoard) ? #temporals.format(board.reservationDate, 'MM-dd HH:mm') : '-'}">-</td>
-        </tr>
-        </tbody>
+    <div class="table-responsive">
+        <table class="table table-bordered board-list">
+            <thead class="thead-light">
+            <tr>
+                <th>요청자</th>
+                <th>위치</th>
+                <th>내용</th>
+                <th>상태</th>
+                <th>예약</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="reservationBoard : ${reservationBoards.content}" class="highlighted">
+                <td>
+                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.requester}">요청자</a>
+                </td>
+                <td>
+                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.requesterLocation}">위치</a>
+                </td>
+                <td>
+                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.title}">게시글 내용</a>
+                </td>
+                <td th:text="${reservationBoard.boardStatus.koreanName}">민원상태</td>
+                <td th:text="${#temporals.format(reservationBoard.reservationDate, 'HH:mm')}">예약 시간</td>
+            </tr>
+            <tr th:each="board : ${boards}" th:if="${!#lists.contains(reservationBoards.content, board)}">
+                <td>
+                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requester}">요청자</a>
+                </td>
+                <td>
+                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requesterLocation}">위치</a>
+                </td>
+                <td>
+                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 내용</a>
+                </td>
+                <td th:text="${board.boardStatus.koreanName}">민원상태</td>
+                <td th:text="${board instanceof T(ict.board.domain.board.ReservationBoard) ? #temporals.format(board.reservationDate, 'MM-dd HH:mm') : '-'}">-</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 
-    </table>
-
-    <!-- 페이징 네비게이션 -->
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${boards.number == 0} ? 'disabled'">
@@ -331,9 +343,8 @@
 
 </div>
 
-<!-- 푸터 -->
 <div class="footer">
-    <p>&copy; 2024 민원 게시판   SeoilUniv - ICT   02)490-7345.</p>
+    <p>&copy; 2024 민원 게시판 SeoilUniv - ICT 02)490-7345.</p>
 </div>
 
 </body>
