@@ -4,6 +4,7 @@ import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.board.ReservationBoard;
+import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
@@ -164,7 +165,10 @@ public class BoardController {
 
         boolean isLogin = board.getMember().getEmail().equals(loginMemberEmail);
         Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
-        boolean isManager = loginMember.getTeam().equals("ict지원실");
+        boolean isManager = false;
+        if (loginMember instanceof IctStaffMember) {
+            isManager = true;
+        }
         List<Reply> comments = replyService.getCommentsByPostId(id);
 
         PostDetail postDetail = new PostDetail(isLogin, isManager, loginMemberEmail, board, comments);
