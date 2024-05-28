@@ -90,4 +90,8 @@ public class BoardService {
         return boardRepository.findByMember(member);
     }
 
+    public Page<Board> findAllBoardsByStatus(Pageable pageable, String status) {
+        BoardStatus boardStatus = BoardStatus.valueOf(status); // 문자열을 BoardStatus 열거형으로 변환
+        return boardRepository.findAllByBoardStatus(pageable, boardStatus);
+    }
 }

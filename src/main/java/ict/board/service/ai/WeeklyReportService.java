@@ -45,7 +45,7 @@ public class WeeklyReportService {
                     .append("  상태: ").append(board.getBoardStatus().getKoreanName()).append("\n\n");
         }
 
-        promptBuilder.append("위의 민원 목록을 요약해 주세요.");
+        promptBuilder.append("위의 민원을 요약해주세요.");
 
         return promptBuilder.toString();
     }

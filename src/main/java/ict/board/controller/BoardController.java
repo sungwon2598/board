@@ -109,7 +109,7 @@ public class BoardController {
 
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("boards", boards);
-        return "Index";
+        return "redirect:/date/" + today;
     }
 
     @GetMapping("/date/{date}")

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <title>검색 페이지</title>
+
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            max-width: 1000px;
+            margin: auto;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function handleStatusChange() {
+            var status = document.getElementById('statusSelect').value;
+            window.location.href = '/search?status=' + status;
+        }
+    </script>
+</head>
+<body>
+
+<div class="container my-4">
+    <h2>검색 페이지</h2>
+
+    <div class="mb-3">
+        <select id="statusSelect" class="btn btn-outline-secondary" onchange="handleStatusChange()" th:value="${selectedStatus}">
+            <option value="UNCHECKED" th:selected="${selectedStatus == 'UNCHECKED'}">미조치</option>
+            <option value="COMPLETED" th:selected="${selectedStatus == 'COMPLETED'}">완료</option>
+            <option value="IN_PROGRESS" th:selected="${selectedStatus == 'IN_PROGRESS'}">보류</option>
+            <option value="NIGHT_SHIFT" th:selected="${selectedStatus == 'NIGHT_SHIFT'}">야간</option>
+        </select>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered board-list">
+            <thead class="thead-light">
+            <tr>
+                <th>요청자</th>
+                <th>위치</th>
+                <th>내용</th>
+                <th>상태</th>
+                <th>예약</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="board : ${boards}">
+                <td>
+                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requester}">요청자</a>
+                </td>
+                <td>
+                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requesterLocation}">위치</a>
+                </td>
+                <td>
+                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 내용</a>
+                </td>
+                <td th:text="${board.boardStatus.koreanName}">민원상태</td>
+                <td th:text="${board instanceof T(ict.board.domain.board.ReservationBoard) ? #temporals.format(board.reservationDate, 'MM-dd HH:mm') : '-'}">-</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${boards.number == 0} ? 'disabled'">
+                <a class="page-link" th:href="@{'/search?status=' + ${selectedStatus} + '&page=' + (${boards.number - 1}) + '&size=' + ${boards.size}}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item" th:each="page : ${#numbers.sequence(0, boards.totalPages - 1)}"
+                th:classappend="${page == boards.number} ? 'active'">
+                <a class="page-link" th:href="@{'/search?status=' + ${selectedStatus} + '&page=' + ${page} + '&size=' + ${boards.size}}" th:text="${page + 1}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${boards.number == boards.totalPages - 1} ? 'disabled'">
+                <a class="page-link" th:href="@{'/search?status=' + ${selectedStatus} + '&page=' + (${boards.number + 1}) + '&size=' + ${boards.size}}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+</div>
+
+</body>
+</html>

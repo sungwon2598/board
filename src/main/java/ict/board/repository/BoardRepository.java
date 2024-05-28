@@ -31,4 +31,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findByCreatedAtAfter(LocalDateTime dateTime);
 
+    Page<Board> findAllByBoardStatus(Pageable pageable, BoardStatus boardStatus);
+
 }

@@ -142,6 +142,16 @@
         .board-list tr {
             height: 50px; /* 민원 높이를 100px로 설정 */
         }
+
+        /* 일요일을 연한 빨간색으로, 토요일을 연한 파란색으로 */
+        .table td.sunday button {
+            background-color: #ffcccc;
+            color: white;
+        }
+        .table td.saturday button {
+            background-color: #cce5ff;
+            color: white;
+        }
     </style>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
@@ -205,6 +215,17 @@
                     darkModeToggleButton.textContent = '다크 모드';
                 }
             });
+
+            const table = document.querySelector('.table tbody');
+            for (let row of table.rows) {
+                for (let i = 0; i < row.cells.length; i++) {
+                    if (i === 0) { // Sunday
+                        row.cells[i].classList.add('sunday');
+                    } else if (i === 6) { // Saturday
+                        row.cells[i].classList.add('saturday');
+                    }
+                }
+            }
         });
 
         function javascriptFunction(element) {
@@ -217,6 +238,11 @@
             var month = document.getElementById('monthSelect').value;
             window.location.href = '/date/' + year + '-' + month + '-01';
         }
+
+        function handleStatusChange() {
+            var status = document.getElementById('statusSelect').value;
+            window.location.href = '/status/' + status;
+        }
     </script>
 
 </head>
@@ -228,9 +254,9 @@
         ICT 지원실 민원처리
     </div>
     <div class="navbar">
-<!--        <a href="/">홈</a>-->
-<!--        <a href="/about">소개</a>-->
-<!--        <a href="/contact">연락처</a>-->
+        <!--        <a href="/">홈</a>-->
+        <!--        <a href="/about">소개</a>-->
+        <!--        <a href="/contact">연락처</a>-->
         <div th:if="${loginMember != null}" style="margin-left: auto; color: #FFFFFF;">
             <span th:text="${loginMember.name}">사용자 이름</span>님, 환영합니다!
             <a href="/mypage" class="btn btn-secondary" style="margin-left: 10px;">마이 페이지</a>
@@ -300,6 +326,7 @@
         <a href="/board/new" class="btn btn-primary" th:if="${loginMember != null}">새 민원 접수</a>
         <a href="/login" class="btn btn-secondary" th:if="${loginMember == null}">로그인</a>
         <a href="/members/new" class="btn btn-success" th:if="${loginMember == null}">회원가입</a>
+        <button id="searchButton" class="btn btn-info" onclick="window.location.href='/search'">검색</button>
     </div>
 
     <div class="table-responsive">
