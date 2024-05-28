@@ -125,6 +125,18 @@
                 padding: 10px;
             }
         }
+
+        /* 날짜 버튼 스타일 수정 */
+        .table td {
+            padding: 0 !important;
+        }
+        .table button {
+            width: 85%;
+            height: 50px;
+            margin: 0;
+            font-size: 25px;
+            padding: 0;
+        }
     </style>
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function() {
@@ -162,12 +174,15 @@
             });
 
             const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
+            const darkModeToggleButton = document.getElementById('darkModeToggle');
+
             if(darkModeEnabled) {
                 document.body.classList.add('dark-mode');
                 document.querySelectorAll('.container').forEach(el => el.classList.add('dark-mode'));
                 document.querySelectorAll('.table').forEach(el => el.classList.add('dark-mode'));
                 document.querySelectorAll('.header').forEach(el => el.classList.add('dark-mode'));
                 document.querySelectorAll('.footer').forEach(el => el.classList.add('dark-mode'));
+                darkModeToggleButton.textContent = '라이트 모드';
             }
 
             document.getElementById('darkModeToggle').addEventListener('click', function() {
@@ -179,8 +194,10 @@
 
                 if (document.body.classList.contains('dark-mode')) {
                     localStorage.setItem('darkMode', 'enabled');
+                    darkModeToggleButton.textContent = '라이트 모드';
                 } else {
                     localStorage.setItem('darkMode', 'disabled');
+                    darkModeToggleButton.textContent = '다크 모드';
                 }
             });
         });
@@ -253,13 +270,13 @@
         <table class="table">
             <thead>
             <tr>
-                <th>일요일</th>
-                <th>월요일</th>
-                <th>화요일</th>
-                <th>수요일</th>
-                <th>목요일</th>
-                <th>금요일</th>
-                <th>토요일</th>
+                <th>SUN</th>
+                <th>MON</th>
+                <th>TUE</th>
+                <th>WED</th>
+                <th>THU</th>
+                <th>FRI</th>
+                <th>SAT</th>
             </tr>
             </thead>
             <tbody>
