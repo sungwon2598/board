@@ -46,6 +46,12 @@ public class MemberController {
             return "members/emailVerificationForm";
         }
 
+        if (memberService.findMemberByEmail(form.getEmail()) != null) {
+            result.rejectValue("email", "duplicate", "이미 존재하는 이메일입니다.");
+            model.addAttribute("memberForm", form);
+            return "members/emailVerificationForm";
+        }
+        
         String verificationCode = generator.generateRandomString();
         log.info("form.getEmail={}", form.getEmail());
         log.info("verificationCode={}", verificationCode);

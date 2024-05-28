@@ -12,6 +12,7 @@
         <div class="form-group">
             <label th:for="email">이메일</label>
             <input type="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요">
+            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
         </div>
         <button type="submit" class="btn btn-info">인증 코드 발송</button>
     </form>
