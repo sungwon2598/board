@@ -1,5 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"></head>
+<body>
+
+<div th:replace="fragments/bodyHeader :: bodyHeader"></div>
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -107,4 +113,4 @@
 </div>
 
 </body>
-</html>
+<div th:replace="fragments/footer :: footer"></div>
