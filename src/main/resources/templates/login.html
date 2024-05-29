@@ -21,6 +21,7 @@
             <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger">올바른 비밀번호를 입력해주세요.</p>
         </div>
         <button type="submit" class="btn btn-primary">로그인</button>
+        <a href="/members/new" class="btn btn-success" th:if="${loginMember == null}">회원가입</a>
     </form>
 </div>
 
