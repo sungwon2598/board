@@ -130,6 +130,7 @@ public class BoardController {
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("reservationBoards", reservationBoards);
         model.addAttribute("boards", boards);
+        model.addAttribute("selectedDate", selectedDate);  // Add this line
         return "Index";
     }
 
