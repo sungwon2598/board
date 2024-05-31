@@ -11,6 +11,8 @@ import ict.board.service.MemberService;
 import ict.board.util.CombinedRandomStringGenerator;
 import ict.board.util.cache.VerificationCodeCache;
 import jakarta.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.mindrot.jbcrypt.BCrypt;
@@ -19,6 +21,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequiredArgsConstructor
@@ -47,40 +51,15 @@ public class MemberController {
             return "members/registrationForm";
         }
 
-        if (form.getEmail() != null && form.getVerificationCode() == null) {
-            // 이메일 인증 코드 발송
-            if (memberService.findMemberByEmail(form.getEmail()) != null) {
-                result.rejectValue("email", "duplicate", "이미 존재하는 이메일입니다.");
-                model.addAttribute("memberForm", form);
-                return "members/registrationForm";
-            }
-
-            String verificationCode = generator.generateRandomString();
-            log.info("form.getEmail={}", form.getEmail());
-            log.info("verificationCode={}", verificationCode);
-
-            verificationCodeCache.storeCode(form.getEmail(), verificationCode);
-            mailService.sendEmail(form.getEmail(), "Verification Code", verificationCode);
-
-            session.setAttribute("userEmail", form.getEmail());
-            session.setAttribute("emailSent", true);
-
-            model.addAttribute("emailSent", true);
-            model.addAttribute("memberForm", form);
-            return "members/registrationForm";
-        } else {
-            // 회원가입 처리
-            String sessionEmail = (String) session.getAttribute("userEmail");
+        String sessionEmail = (String) session.getAttribute("userEmail");
+        if (form.getVerificationCode() != null) {
             boolean validCode = verificationCodeCache.isValidCode(sessionEmail, form.getVerificationCode());
             if (!validCode) {
-                log.info("!valid!!!!!!");
                 model.addAttribute("memberForm", form);
                 model.addAttribute("codeError", "Verification code is invalid or expired.");
                 model.addAttribute("emailSent", true);
                 return "members/registrationForm";
             }
-
-            log.info("sessionEmail={}", sessionEmail);
 
             String hashedPassword = BCrypt.hashpw(form.getPassword(), BCrypt.gensalt());
             Location location = new Location(Building.valueOf(form.getBuilding()), form.getRoomNumber());
@@ -90,6 +69,33 @@ public class MemberController {
 
             return "redirect:/";
         }
+
+        return "redirect:/";
+    }
+
+
+    @PostMapping("/members/sendVerificationCode")
+    @ResponseBody
+    public Map<String, Object> sendVerificationCode(@RequestParam String email, HttpSession session) {
+        Map<String, Object> response = new HashMap<>();
+        if (memberService.findMemberByEmail(email) != null) {
+            response.put("success", false);
+            response.put("message", "이미 존재하는 이메일입니다.");
+            return response;
+        }
+
+        String verificationCode = generator.generateRandomString();
+        log.info("email={}", email);
+        log.info("verificationCode={}", verificationCode);
+
+        verificationCodeCache.storeCode(email, verificationCode);
+        mailService.sendEmail(email, "Verification Code", verificationCode);
+
+        session.setAttribute("userEmail", email);
+        session.setAttribute("emailSent", true);
+
+        response.put("success", true);
+        return response;
     }
 
     @GetMapping("/mypage")

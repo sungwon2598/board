@@ -21,7 +21,8 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(1)
                 .addPathPatterns("/**")
-                .excludePathPatterns("/", "/login", "/css/**", "/*.ico", "/members/new", "/logout", "/members/email-verification", "/members/register","/newMan");
+                .excludePathPatterns("/", "/login", "/css/**", "/*.ico", "/members/new", "/logout",
+                        "/members/email-verification", "/members/register","/newMan","/members/sendVerificationCode");
 
         // Adding the role check interceptor
         registry.addInterceptor(roleCheckInterceptor)
