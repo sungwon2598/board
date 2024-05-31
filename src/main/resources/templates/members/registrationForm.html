@@ -11,6 +11,21 @@
     <form action="/members/new" method="post" th:object="${memberForm}">
 
         <div class="form-group">
+            <label th:for="email">이메일</label>
+            <input type="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력하세요">
+            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
+        </div>
+        <div th:if="${emailSent}">
+            <p class="text-success">인증 코드가 이메일로 발송되었습니다. 코드를 확인하고 입력하세요.</p>
+            <div class="form-group">
+                <label th:for="verificationCode">인증 코드</label>
+                <input type="text" th:field="*{verificationCode}" class="form-control" placeholder="이메일로 받은 인증 코드를 입력하세요">
+                <div th:if="${#fields.hasErrors('verificationCode')}" th:errors="*{verificationCode}" class="text-danger"></div>
+                <div th:if="${codeError}" class="text-danger" th:text="${codeError}"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
             <label th:for="name">이름</label>
             <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
         </div>
@@ -41,11 +56,13 @@
             <label th:for="memberNumber">학번 / 사번</label>
             <input type="text" th:field="*{memberNumber}" class="form-control" placeholder="학번/사번을 입력하세요">
         </div>
-        <div class="form-group">
-            <label th:for="verificationCode">인증 코드</label>
-            <input type="text" th:field="*{verificationCode}" class="form-control" placeholder="이메일로 받은 인증 코드를 입력하세요">
+
+        <div th:if="${!emailSent}">
+            <button type="submit" class="btn btn-info">인증 코드 발송</button>
         </div>
-        <button type="submit" class="btn btn-primary">가입 완료</button>
+        <div th:if="${emailSent}">
+            <button type="submit" class="btn btn-primary">가입 완료</button>
+        </div>
     </form>
 </div>
 

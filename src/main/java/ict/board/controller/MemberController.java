@@ -18,7 +18,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
@@ -34,61 +33,64 @@ public class MemberController {
 
     @GetMapping("/members/new")
     public String createForm(Model model) {
-        model.addAttribute("memberForm", new MemberForm());
-        return "members/emailVerificationForm";
-    }
-
-    @PostMapping("/members/email-verification")
-    public String sendVerificationEmail(@ModelAttribute MemberForm form, BindingResult result, Model model,
-                                        HttpSession session) {
-        if (result.hasErrors()) {
-            model.addAttribute("memberForm", form);
-            return "members/emailVerificationForm";
-        }
-
-        if (memberService.findMemberByEmail(form.getEmail()) != null) {
-            result.rejectValue("email", "duplicate", "이미 존재하는 이메일입니다.");
-            model.addAttribute("memberForm", form);
-            return "members/emailVerificationForm";
-        }
-        
-        String verificationCode = generator.generateRandomString();
-        log.info("form.getEmail={}", form.getEmail());
-        log.info("verificationCode={}", verificationCode);
-
-        verificationCodeCache.storeCode(form.getEmail(), verificationCode);
-        mailService.sendEmail(form.getEmail(), "Verification Code", verificationCode);
-
-        session.setAttribute("userEmail", form.getEmail());
-
-        model.addAttribute("emailSent", true);
-        model.addAttribute("memberForm", form);
-        return "members/memberRegistrationForm";
+        MemberForm memberForm = new MemberForm();
+        model.addAttribute("memberForm", memberForm);
+        model.addAttribute("emailSent", false);
+        return "members/registrationForm";
     }
 
     @PostMapping("/members/new")
-    public String create(MemberForm form, BindingResult result, Model model, HttpSession session) {
-        String sessionEmail = (String) session.getAttribute("userEmail");
-        boolean validCode = verificationCodeCache.isValidCode(sessionEmail, form.getVerificationCode());
-        if (!validCode) {
-            log.info("!valid!!!!!!");
+    public String createOrVerify(MemberForm form, BindingResult result, Model model, HttpSession session) {
+        if (result.hasErrors()) {
             model.addAttribute("memberForm", form);
-            model.addAttribute("codeError", "Verification code is invalid or expired.");
-            return "members/memberRegistrationForm";
+            model.addAttribute("emailSent", session.getAttribute("emailSent") != null && (Boolean) session.getAttribute("emailSent"));
+            return "members/registrationForm";
         }
 
-        log.info("sessionEmail={}", sessionEmail);
+        if (form.getEmail() != null && form.getVerificationCode() == null) {
+            // 이메일 인증 코드 발송
+            if (memberService.findMemberByEmail(form.getEmail()) != null) {
+                result.rejectValue("email", "duplicate", "이미 존재하는 이메일입니다.");
+                model.addAttribute("memberForm", form);
+                return "members/registrationForm";
+            }
 
-        String hashedPassword = BCrypt.hashpw(form.getPassword(), BCrypt.gensalt());
-        Location location = new Location(Building.valueOf(form.getBuilding()), form.getRoomNumber());
-        Member member = new Member(sessionEmail, form.getName(), hashedPassword, location, form.getTeam(),
-                form.getMemberNumber());
+            String verificationCode = generator.generateRandomString();
+            log.info("form.getEmail={}", form.getEmail());
+            log.info("verificationCode={}", verificationCode);
 
-        memberService.join(member);
+            verificationCodeCache.storeCode(form.getEmail(), verificationCode);
+            mailService.sendEmail(form.getEmail(), "Verification Code", verificationCode);
 
-        return "redirect:/";
+            session.setAttribute("userEmail", form.getEmail());
+            session.setAttribute("emailSent", true);
+
+            model.addAttribute("emailSent", true);
+            model.addAttribute("memberForm", form);
+            return "members/registrationForm";
+        } else {
+            // 회원가입 처리
+            String sessionEmail = (String) session.getAttribute("userEmail");
+            boolean validCode = verificationCodeCache.isValidCode(sessionEmail, form.getVerificationCode());
+            if (!validCode) {
+                log.info("!valid!!!!!!");
+                model.addAttribute("memberForm", form);
+                model.addAttribute("codeError", "Verification code is invalid or expired.");
+                model.addAttribute("emailSent", true);
+                return "members/registrationForm";
+            }
+
+            log.info("sessionEmail={}", sessionEmail);
+
+            String hashedPassword = BCrypt.hashpw(form.getPassword(), BCrypt.gensalt());
+            Location location = new Location(Building.valueOf(form.getBuilding()), form.getRoomNumber());
+            Member member = new Member(sessionEmail, form.getName(), hashedPassword, location, form.getTeam(), form.getMemberNumber());
+
+            memberService.join(member);
+
+            return "redirect:/";
+        }
     }
-
 
     @GetMapping("/mypage")
     public String myPage(@Login String loginMemberEmail, Model model) {

@@ -15,10 +15,15 @@ public class MemberForm {
     @NotEmpty(message = "회원 이메일(ID)는 필수 입니다.")
     private String email;
 
+    @NotEmpty(message = "이름은 필수 입니다.")
     private String name;
+
+    @NotEmpty(message = "소속(학과 혹은 부서)은 필수 입니다.")
     private String team;
     private String building;
     private String roomNumber;
+
+    @NotEmpty(message = "사번/학번은 필수 입니다.")
     private String memberNumber;
 
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
