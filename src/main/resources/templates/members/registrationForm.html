@@ -9,7 +9,6 @@
     <h1>회원 가입</h1>
     <!-- 회원 정보 입력 폼 -->
     <form id="memberForm" action="/members/new" method="post" th:object="${memberForm}">
-
         <div class="form-group">
             <label th:for="email">이메일</label>
             <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="이메일을 입력하세요">
@@ -29,14 +28,17 @@
         <div class="form-group">
             <label th:for="name">이름</label>
             <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
         </div>
         <div class="form-group">
             <label th:for="password">비밀번호</label>
             <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
         </div>
         <div class="form-group">
             <label th:for="team">소속</label>
             <input type="text" th:field="*{team}" class="form-control" placeholder="소속을 입력하세요">
+            <div th:if="${#fields.hasErrors('team')}" th:errors="*{team}" class="text-danger"></div>
         </div>
         <div class="form-group">
             <label>소속건물</label>
@@ -56,6 +58,7 @@
         <div class="form-group">
             <label th:for="memberNumber">학번 / 사번</label>
             <input type="text" th:field="*{memberNumber}" class="form-control" placeholder="학번/사번을 입력하세요">
+            <div th:if="${#fields.hasErrors('memberNumber')}" th:errors="*{memberNumber}" class="text-danger"></div>
         </div>
 
         <button type="submit" class="btn btn-primary">가입 완료</button>
@@ -69,6 +72,10 @@
     $(document).ready(function() {
         $('#sendVerificationCodeBtn').click(function() {
             var email = $('#email').val();
+            if (!validateEmail(email)) {
+                alert("유효한 이메일 주소를 입력하세요.");
+                return;
+            }
             $.ajax({
                 url: '/members/sendVerificationCode',
                 type: 'POST',
@@ -89,6 +96,11 @@
             });
         });
     });
+
+    function validateEmail(email) {
+        var re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return re.test(email);
+    }
 </script>
 </body>
 </html>

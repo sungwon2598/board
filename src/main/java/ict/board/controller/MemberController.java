@@ -11,6 +11,7 @@ import ict.board.service.MemberService;
 import ict.board.util.CombinedRandomStringGenerator;
 import ict.board.util.cache.VerificationCodeCache;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -44,10 +46,12 @@ public class MemberController {
     }
 
     @PostMapping("/members/new")
-    public String createOrVerify(MemberForm form, BindingResult result, Model model, HttpSession session) {
+    public String createOrVerify(@Valid @ModelAttribute("memberForm") MemberForm form, BindingResult result,
+                                 Model model, HttpSession session) {
         if (result.hasErrors()) {
             model.addAttribute("memberForm", form);
-            model.addAttribute("emailSent", session.getAttribute("emailSent") != null && (Boolean) session.getAttribute("emailSent"));
+            model.addAttribute("emailSent",
+                    session.getAttribute("emailSent") != null && (Boolean) session.getAttribute("emailSent"));
             return "members/registrationForm";
         }
 
@@ -63,7 +67,8 @@ public class MemberController {
 
             String hashedPassword = BCrypt.hashpw(form.getPassword(), BCrypt.gensalt());
             Location location = new Location(Building.valueOf(form.getBuilding()), form.getRoomNumber());
-            Member member = new Member(sessionEmail, form.getName(), hashedPassword, location, form.getTeam(), form.getMemberNumber());
+            Member member = new Member(sessionEmail, form.getName(), hashedPassword, location, form.getTeam(),
+                    form.getMemberNumber());
 
             memberService.join(member);
 
