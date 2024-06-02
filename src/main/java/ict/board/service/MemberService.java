@@ -1,6 +1,7 @@
 package ict.board.service;
 
 import ict.board.domain.board.Board;
+import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.MemberInfo;
@@ -49,6 +50,10 @@ public class MemberService {
         String memberName = loginMember.getName();
         String memberTeam = loginMember.getTeam();
 
+        if(loginMember instanceof IctStaffMember) {
+            IctStaffMember loginIctStaffMember = (IctStaffMember)loginMember;
+            return new MemberInfo(boards, replies, memberName, email, memberTeam, loginIctStaffMember.getRole());
+        }
         return new MemberInfo(boards, replies, memberName, email, memberTeam);
     }
 
