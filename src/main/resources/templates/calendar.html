@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: header"></head>
+<body>
+
+<div th:replace="fragments/bodyHeader :: bodyHeader"></div>
 <html lang='en'>
 <head>
     <meta charset='utf-8' />
@@ -34,4 +39,5 @@
 <body>
 <div id='calendar'></div>
 </body>
+<div th:replace="fragments/footer :: footer"></div>
 </html>

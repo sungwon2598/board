@@ -18,6 +18,16 @@
         body {
             font-family: 'TmoneyRoundWind', sans-serif; /* 모든 폰트를 TmoneyRoundWind로 변경 */
         }
+        .no-background {
+            background-color: transparent;
+            border: none;
+            color: inherit;
+            font-size: inherit;
+            padding: 0;
+            margin: 0;
+            box-shadow: none;
+        }
+
         /* 추가된 헤더 스타일 */
         .header {
             background-color: #343a40;
@@ -112,9 +122,17 @@
             background-color: #2c2c2c;
             color: #e0e0e0;
         }
+        .table.dark-mode button {
+            color: #e0e0e0; /* 다크모드 버튼 글자색 */
+        }
         .footer.dark-mode {
             background-color: #1c1c1c;
             color: #e0e0e0;
+        }
+
+        /* 라이트모드 버튼 글자색 */
+        .table button {
+            color: #000000;
         }
 
         /* 반응형 스타일 */
@@ -161,16 +179,16 @@
             background-color: #cce5ff;
             color: white;
         }
-        /* '민원달력' 글씨와 셀렉트 박스 크기를 3분의 1로 줄이기 */
-        h2 select {
-            font-size: 1.2em;
+
+        /* 연월과 버튼을 가운데 정렬 */
+        .calendar-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
         }
-        h2 {
-            font-size: 1.2em;
-        }
-        select {
-            font-size: 0.67em; /* 셀렉트 박스 안의 글씨 크기 줄이기 */
-            border-color: #ffffff; /* 셀렉트 박스 테두리 색을 흰색으로 변경 */
+        .calendar-header button {
+            margin: 0 10px;
         }
     </style>
     <script type="text/javascript">
@@ -196,8 +214,7 @@
                 day = defaultDay;
             }
 
-            document.getElementById('yearSelect').value = year;
-            document.getElementById('monthSelect').value = month;
+            updateCalendarHeader(year, month);
 
             const selectedDate = `${year}-${month}-${day}`;
             const buttons = document.querySelectorAll('button[onclick="javascriptFunction(this)"]');
@@ -253,15 +270,44 @@
             window.location.href = '/date/' + dateString;
         }
 
-        function updateCalendarURL() {
-            var year = document.getElementById('yearSelect').value;
-            var month = document.getElementById('monthSelect').value;
+        function updateCalendarURL(year, month) {
             window.location.href = '/date/' + year + '-' + month + '-01';
         }
 
         function handleStatusChange() {
             var status = document.getElementById('statusSelect').value;
             window.location.href = '/status/' + status;
+        }
+
+        function updateCalendarHeader(year, month) {
+            const header = document.getElementById('calendarHeader');
+            header.innerHTML = `
+                <button onclick="changeMonth(-1)" class="btn btn-secondary no-background">&laquo;</button>
+                <span>${year}년 ${month}월</span>
+                <button onclick="changeMonth(1)" class="btn btn-secondary no-background">&raquo;</button>
+            `;
+        }
+
+        function changeMonth(change) {
+            const currentPath = window.location.pathname;
+            const dateRegex = /\/date\/(\d{4})-(\d{2})-(\d{2})/;
+            const matches = currentPath.match(dateRegex);
+
+            let year = parseInt(matches[1]);
+            let month = parseInt(matches[2]);
+
+            month += change;
+
+            if (month < 1) {
+                month = 12;
+                year -= 1;
+            } else if (month > 12) {
+                month = 1;
+                year += 1;
+            }
+
+            const formattedMonth = String(month).padStart(2, '0');
+            updateCalendarURL(year, formattedMonth);
         }
     </script>
 
@@ -290,33 +336,16 @@
 <!-- 다크모드 토글 버튼 -->
 <div style="text-align: right; padding: 10px;">
     <button id="darkModeToggle" class="btn btn-dark">다크모드</button>
-    <button id="notionButton" class="btn btn-info" onclick="window.location.href='https://www.notion.so/1fb67b7abd184956af1ae2b2ac6d768a?pvs=4'">Notion</button>
-    <button id="calendarButton" class="btn btn-info" onclick="window.location.href='/calendar'">달력</button>
+    <button id="notionButton" class="btn" onclick="window.location.href='https://www.notion.so/1fb67b7abd184956af1ae2b2ac6d768a?pvs=4'" style="background: none; border: none; padding: 0;">
+        <img src="/notion.ico" alt="Notion Icon" style="width: 32px; height: 32px;">
+    </button>
+    <button id="calendarButton" class="btn btn-info" onclick="window.location.href='/calendar'" style="background: none; border: none; padding: 0;">
+        <img src="/claendar.ico" alt="Notion Icon" style="width: 32px; height: 32px;">
+    </button>
 </div>
 
 <div class="container my-4">
-    <h2>민원 달력
-        <select id="yearSelect" onchange="updateCalendarURL()">
-            <option value="2023">2023</option>
-            <option value="2024" selected>2024</option>
-            <option value="2025">2025</option>
-            <option value="2026">2026</option>
-        </select>
-        <select id="monthSelect" onchange="updateCalendarURL()">
-            <option value="01">1월</option>
-            <option value="02">2월</option>
-            <option value="03">3월</option>
-            <option value="04">4월</option>
-            <option value="05">5월</option>
-            <option value="06">6월</option>
-            <option value="07">7월</option>
-            <option value="08">8월</option>
-            <option value="09">9월</option>
-            <option value="10">10월</option>
-            <option value="11">11월</option>
-            <option value="12">12월</option>
-        </select>
-    </h2>
+    <div id="calendarHeader" class="calendar-header"></div>
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -344,8 +373,8 @@
 
     <div class="mb-3">
         <a href="/board/new" class="btn btn-primary" th:if="${loginMember != null}">새 민원 접수</a>
-<!--        <a href="/login" class="btn btn-secondary" th:if="${loginMember == null}">로그인</a>-->
-<!--        <a href="/members/new" class="btn btn-success" th:if="${loginMember == null}">회원가입</a>-->
+        <!--        <a href="/login" class="btn btn-secondary" th:if="${loginMember == null}">로그인</a>-->
+        <!--        <a href="/members/new" class="btn btn-success" th:if="${loginMember == null}">회원가입</a>-->
         <button id="searchButton" class="btn btn-info" onclick="window.location.href='/search'">검색</button>
     </div>
 
@@ -415,6 +444,5 @@
 <div class="footer">
     <p>&copy; 2024 민원 게시판 SeoilUniv - ICT 02)490-7345.</p>
 </div>
-
 </body>
 </html>
