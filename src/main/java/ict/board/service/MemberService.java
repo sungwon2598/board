@@ -6,6 +6,7 @@ import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.MemberInfo;
 import ict.board.repository.BoardRepository;
+import ict.board.repository.IctStaffMemberRepository;
 import ict.board.repository.MemberRepository;
 import ict.board.repository.ReplyRepository;
 import ict.board.service.ai.OpenAIApiBoardConnector;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final IctStaffMemberRepository ictStaffMemberRepository;
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
 
@@ -59,6 +61,14 @@ public class MemberService {
 
     public Member findMemberByEmail(String email) {
         return memberRepository.findMemberByEmail(email).orElse(null);
+    }
+
+    public List<Member> getAllIctStaffMembers() {
+        return ictStaffMemberRepository.findAllByRoleIsNotNull();
+    }
+
+    public List<Member> getAllMembers() {
+        return memberRepository.findAll();
     }
 
 }

@@ -4,6 +4,7 @@ import ict.board.config.argumentresolver.Login;
 import ict.board.domain.member.Building;
 import ict.board.domain.member.Location;
 import ict.board.domain.member.Member;
+import ict.board.domain.member.Role;
 import ict.board.dto.MemberForm;
 import ict.board.dto.MemberInfo;
 import ict.board.service.MailService;
@@ -13,6 +14,7 @@ import ict.board.util.cache.VerificationCodeCache;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -106,6 +108,14 @@ public class MemberController {
     @GetMapping("/mypage")
     public String myPage(@Login String loginMemberEmail, Model model) {
         MemberInfo memberInfo = memberService.getMemberInfo(loginMemberEmail);
+        if(memberInfo.getRole() == Role.ADMIN ) {
+            log.info("========Admin============");
+            List<Member> members = memberService.getAllMembers();
+            model.addAttribute("members", members);
+            model.addAttribute("role", "ADMIN");
+            log.info("==============================================="+String.valueOf(members.size()));
+            log.info("==============================================="+members.get(0).getEmail());
+        }
         model.addAttribute("memberInfo", memberInfo);
         return "members/mypage";
     }
