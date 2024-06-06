@@ -30,6 +30,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,26 +54,20 @@ public class BoardController {
     }
 
     @PostMapping("/board/new")
-    public String create(BoardForm form, BindingResult result,
+    public String create(@Validated BoardForm form, BindingResult result,
                          @Login String loginMemberEmail) throws IOException, InterruptedException {
-        if (form.isReservation()) {
-            // 예약민원인 경우 날짜와 시간이 입력되지 않았다면 에러 추가
-            if (form.getReservationDate() == null) {
-                result.rejectValue("reservationDate", "NotNull", "예약 날짜를 입력해주세요");
-            }
-            if (form.getReservationTime() == null) {
-                result.rejectValue("reservationTime", "NotNull", "예약 시간을 입력해주세요");
-            }
-        }
-        if (result.hasErrors()) {
-            return "board/new";
-        }
-
+        // Validate only if it is a reservation
         if (form.isReservation()) {
             if (form.getReservationDate() == null || form.getReservationTime() == null) {
                 result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
-                return "board/new";
             }
+        }
+
+        if (result.hasErrors()) {
+            return "board/boardform";
+        }
+
+        if (form.isReservation()) {
             ReservationBoard reservationBoard = new ReservationBoard(
                     form.getTitle(),
                     form.getContent(),

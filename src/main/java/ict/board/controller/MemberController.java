@@ -7,6 +7,7 @@ import ict.board.domain.member.Member;
 import ict.board.domain.member.Role;
 import ict.board.dto.MemberForm;
 import ict.board.dto.MemberInfo;
+import ict.board.repository.IctStaffMemberRepository;
 import ict.board.service.MailService;
 import ict.board.service.MemberService;
 import ict.board.util.CombinedRandomStringGenerator;
@@ -36,6 +37,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MailService mailService;
     private final VerificationCodeCache verificationCodeCache;
+    private final IctStaffMemberRepository ictStaffMemberRepository;
 
     private final CombinedRandomStringGenerator generator = new CombinedRandomStringGenerator();
 
@@ -109,12 +111,10 @@ public class MemberController {
     public String myPage(@Login String loginMemberEmail, Model model) {
         MemberInfo memberInfo = memberService.getMemberInfo(loginMemberEmail);
         if(memberInfo.getRole() == Role.ADMIN ) {
-            log.info("========Admin============");
-            List<Member> members = memberService.getAllMembers();
+            //List<Member> members = memberService.getAllMembers();
+            List<Member> members = ictStaffMemberRepository.findAllByRoleIsNotNull();
             model.addAttribute("members", members);
             model.addAttribute("role", "ADMIN");
-            log.info("==============================================="+String.valueOf(members.size()));
-            log.info("==============================================="+members.get(0).getEmail());
         }
         model.addAttribute("memberInfo", memberInfo);
         return "members/mypage";
