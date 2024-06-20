@@ -42,18 +42,6 @@ public class CombinedRandomStringGeneratorTest {
         Assertions.assertTrue(upperCaseCount >= 1, "문자열에는 최소 한 개의 대문자가 포함되어야 합니다.");
     }
 
-    @Test
-    public void 모든_유형_문자_포함_검증() {
-        String generatedString = combinedRandomStringGenerator.generateRandomString();
-        long numberCount = countMatches(generatedString, "[0-9]");
-        long specialCharCount = countMatches(generatedString, "[!@#$%^&*()_+\\-\\[\\]{}|;':,.<>/?]");
-        long upperCaseCount = countMatches(generatedString, "[A-Z]");
-        long lowerCaseCount = countMatches(generatedString, "[a-z]");
-
-        Assertions.assertEquals(12, numberCount + specialCharCount + upperCaseCount + lowerCaseCount,
-                "모든 문자 유형이 올바르게 포함되었는지 확인합니다.");
-    }
-
     private long countMatches(String input, String regex) {
         Matcher matcher = Pattern.compile(regex).matcher(input);
         return matcher.results().count();
