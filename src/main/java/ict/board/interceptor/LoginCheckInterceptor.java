@@ -1,6 +1,6 @@
 package ict.board.interceptor;
 
-import ict.board.consts.SessionConst;
+import ict.board.constant.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

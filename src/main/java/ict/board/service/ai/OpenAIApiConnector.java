@@ -25,7 +25,7 @@ public class OpenAIApiConnector {
     }
 
     @Async
-    public CompletableFuture<String> getResponseFromGPTAsync(String prompt) {
+    public CompletableFuture<String> getResponseFromGptAsync(String prompt) {
         try {
             String url = "https://api.openai.com/v1/chat/completions";
 

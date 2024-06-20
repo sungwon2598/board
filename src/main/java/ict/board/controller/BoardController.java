@@ -4,12 +4,12 @@ import ict.board.config.argumentresolver.Login;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.board.ReservationBoard;
-import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
 import ict.board.dto.PostDetail;
 import ict.board.service.BoardService;
+import ict.board.service.IctStaffMemberService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import ict.board.service.ReservationBoardService;
@@ -44,6 +44,7 @@ public class BoardController {
     private final BoardService boardService;
     private final ReplyService replyService;
     private final MemberService memberService;
+    private final IctStaffMemberService ictStaffMemberService;
     private final ReservationBoardService reservationBoardService;
     private final WeeklyReportService weeklyReportService;
 
@@ -153,18 +154,19 @@ public class BoardController {
 
     @GetMapping("/board/{id}")
     public String postDetail(@PathVariable Long id, Model model, @Login String loginMemberEmail) {
-        Board board = boardService.findOneBoard(id);
+        Board board = boardService.findOneBoardWithMember(id);
 
         if (board == null) {
             return "redirect:/";
         }
 
         boolean isLogin = board.getMember().getEmail().equals(loginMemberEmail);
-        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
         boolean isManager = false;
-        if (loginMember instanceof IctStaffMember) {
+
+        if (ictStaffMemberService.findIctmemberById(loginMemberEmail)) {
             isManager = true;
         }
+
         List<Reply> comments = replyService.getCommentsByPostId(id);
 
         PostDetail postDetail = new PostDetail(isLogin, isManager, loginMemberEmail, board, comments);
@@ -176,7 +178,7 @@ public class BoardController {
     @GetMapping("/board/{id}/editForm")
     public String editForm(@Login String loginMemberEmail, @PathVariable Long id, Model model) {
 
-        Board board = boardService.findOneBoard(id);
+        Board board = boardService.findOneBoardWithMember(id);
 
         if (board == null || loginMemberEmail == null) {
             return "redirect:/board/" + id + "?error=auth";
@@ -189,7 +191,7 @@ public class BoardController {
     @PostMapping("/board/{id}/edit")
     public String editPost(@PathVariable Long id, String title, String content, String requester,
                            String requesterLocation) {
-        Board board = boardService.findOneBoard(id);
+        Board board = boardService.findOneBoardWithMember(id);
 
         if (board == null) {
             return "redirect:/";
@@ -202,7 +204,7 @@ public class BoardController {
     public String deletePost(@Login String loginMemberEmail, @PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
 
-        Board board = boardService.findOneBoard(id);
+        Board board = boardService.findOneBoardWithMember(id);
 
         if (board == null || loginMemberEmail == null) {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
@@ -218,12 +220,12 @@ public class BoardController {
     }
 
     @PostMapping("/board/{id}/changeStatus")
-    public String changeStatus(@PathVariable Long id, String adminPassword, String status,
+    public String changeStatus(@PathVariable Long id, String status,
                                RedirectAttributes redirectAttributes) {
 
         BoardStatus boardStatus = BoardStatus.valueOf(status);
 
-        boolean success = boardService.changeBoardStatus(id, boardStatus, adminPassword);
+        boolean success = boardService.changeBoardStatus(id, boardStatus);
 
         if (!success) {
             redirectAttributes.addFlashAttribute("error", "인증 실패");

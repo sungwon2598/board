@@ -1,6 +1,6 @@
 package ict.board.interceptor;
 
-import ict.board.consts.SessionConst;
+import ict.board.constant.SessionConst;
 import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
 import ict.board.domain.member.Role;

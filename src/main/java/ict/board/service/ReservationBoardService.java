@@ -20,5 +20,4 @@ public class ReservationBoardService {
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
         return reservationBoardRepository.findAllByReservationDateBetween(startOfDay, endOfDay, pageable);
     }
-
 }

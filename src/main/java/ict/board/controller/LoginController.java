@@ -1,19 +1,11 @@
 package ict.board.controller;
 
-import ict.board.consts.SessionConst;
-import ict.board.config.argumentresolver.Login;
-import ict.board.domain.board.Board;
-import ict.board.domain.member.Member;
-import ict.board.domain.reply.Reply;
+import ict.board.constant.SessionConst;
 import ict.board.dto.LoginForm;
-import ict.board.service.BoardService;
 import ict.board.service.LoginService;
-import ict.board.service.MemberService;
-import ict.board.service.ReplyService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

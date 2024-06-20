@@ -49,9 +49,6 @@
         <form th:action="@{/board/{id}/changeStatus(id=${postDetail.getBoard.getId()})}" method="post">
             <div class="row">
                 <div class="col">
-                    <input type="password" class="form-control" name="adminPassword" placeholder="관리자 비밀번호" required>
-                </div>
-                <div class="col">
                     <div class="form-check">
                         <input class="form-check-input" type="radio" name="status" id="UNCHECKED" value="UNCHECKED" checked>
                         <label class="form-check-label" for="UNCHECKED">미조치</label>

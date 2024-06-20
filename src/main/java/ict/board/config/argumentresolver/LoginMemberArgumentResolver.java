@@ -1,6 +1,6 @@
 package ict.board.config.argumentresolver;
 
-import ict.board.consts.SessionConst;
+import ict.board.constant.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;

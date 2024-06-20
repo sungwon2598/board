@@ -25,12 +25,9 @@ public class WeeklyReportService {
     @Async
     public CompletableFuture<String> getWeeklyReport() {
         LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
-
         List<Board> weeklyBoards = boardRepository.findByCreatedAtAfter(oneWeekAgo);
-
         String prompt = formatPrompt(weeklyBoards);
-
-        return openAIApiConnector.getResponseFromGPTAsync(prompt);
+        return openAIApiConnector.getResponseFromGptAsync(prompt);
     }
 
     private String formatPrompt(List<Board> boards) {
@@ -46,8 +43,6 @@ public class WeeklyReportService {
         }
 
         promptBuilder.append("위의 민원을 요약해주세요.");
-
         return promptBuilder.toString();
     }
 }
-

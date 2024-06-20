@@ -48,25 +48,17 @@ public class BoardService {
     }
 
     @Transactional
-    public boolean changeBoardStatus(Long id, BoardStatus boardStatus, String adminPassword) {
-        if (!isAdminPasswordValid(adminPassword)) {
-            return false;
-        }
-
+    public boolean changeBoardStatus(Long id, BoardStatus boardStatus) {
         Board board = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Board not found"));
         board.changeStatus(boardStatus);
         return true;
-    }
-
-    private boolean isAdminPasswordValid(String adminPassword) {
-        return "024907345".equals(adminPassword);
     }
 
     @Transactional
     public void update(Long id, String newTitle, String newContent, String requester, String requesterLocation) {
         Board board = boardRepository.findById(id).orElse(null);
         board.changeTitle(newTitle);
-        board.chageContent(newContent);
+        board.changeContent(newContent);
         board.changeRequester(requester);
         board.changeRequesterLocation(requesterLocation);
     }
@@ -82,7 +74,7 @@ public class BoardService {
         return boardRepository.findAllWithMember(pageable);
     }
 
-    public Board findOneBoard(Long id) {
+    public Board findOneBoardWithMember(Long id) {
         return boardRepository.findWithMemberById(id);
     }
 
@@ -91,7 +83,7 @@ public class BoardService {
     }
 
     public Page<Board> findAllBoardsByStatus(Pageable pageable, String status) {
-        BoardStatus boardStatus = BoardStatus.valueOf(status); // 문자열을 BoardStatus 열거형으로 변환
+        BoardStatus boardStatus = BoardStatus.valueOf(status);
         return boardRepository.findAllByBoardStatus(pageable, boardStatus);
     }
 }

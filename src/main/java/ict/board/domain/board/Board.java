@@ -83,7 +83,7 @@ public class Board extends CreateTime {
         this.title = title;
     }
 
-    public void chageContent(String content) {
+    public void changeContent(String content) {
         this.content = content;
     }
 
