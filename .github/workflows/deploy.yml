@@ -1,0 +1,19 @@
+name: Deploy To EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH(원격접속)로 EC2에 접속하기
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:
+            username:
+            key:
+            script_stop: true
+            script:

@@ -1,6 +1,8 @@
 package ict.board.controller;
 
 import ict.board.constant.SessionConst;
+import ict.board.domain.member.IctStaffMember;
+import ict.board.domain.member.Member;
 import ict.board.dto.LoginForm;
 import ict.board.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,9 +38,17 @@ public class LoginController {
         }
 
         try {
-            String loginMemberEmail = loginService.login(form.getEmail(), form.getPassword()).getEmail();
+            Member loginMember = loginService.login(form.getEmail(), form.getPassword());
             HttpSession session = request.getSession();
-            session.setAttribute(SessionConst.LOGIN_MEMBER, loginMemberEmail);
+            session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.getEmail());
+
+            // IctStaffMember인 경우 역할도 추가로 저장
+            if (loginMember instanceof IctStaffMember) {
+                session.setAttribute(SessionConst.MEMBER_ROLE, ((IctStaffMember) loginMember).getRole().name());
+            } else {
+                session.setAttribute(SessionConst.MEMBER_ROLE, "NONE");
+            }
+
             return "redirect:" + redirectURL;
         } catch (IllegalArgumentException e) {
             model.addAttribute("loginError", e.getMessage());

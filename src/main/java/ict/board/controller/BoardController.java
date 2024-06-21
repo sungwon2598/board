@@ -1,10 +1,12 @@
 package ict.board.controller;
 
 import ict.board.config.argumentresolver.Login;
+import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.board.ReservationBoard;
 import ict.board.domain.member.Member;
+import ict.board.domain.member.Role;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
 import ict.board.dto.PostDetail;
@@ -56,7 +58,7 @@ public class BoardController {
 
     @PostMapping("/board/new")
     public String create(@Validated BoardForm form, BindingResult result,
-                         @Login String loginMemberEmail) throws IOException, InterruptedException {
+                         @Login LoginSessionInfo loginSessionInfo) throws IOException, InterruptedException {
         // Validate only if it is a reservation
         if (form.isReservation()) {
             if (form.getReservationDate() == null || form.getReservationTime() == null) {
@@ -76,11 +78,11 @@ public class BoardController {
                     form.getRequesterLocation(),
                     LocalDateTime.of(form.getReservationDate(), form.getReservationTime())
             );
-            boardService.save(reservationBoard, loginMemberEmail);
+            boardService.save(reservationBoard, loginSessionInfo.getEmail());
         } else {
             Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(),
                     form.getRequesterLocation());
-            boardService.save(board, loginMemberEmail);
+            boardService.save(board, loginSessionInfo.getEmail());
         }
 
         return "redirect:/";
@@ -88,7 +90,7 @@ public class BoardController {
 
     @GetMapping("/")
     public String listBoards(
-            @Login String loginMemberEmail,
+            @Login LoginSessionInfo loginSessionInfo,
             Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
             Pageable pageable) {
 
@@ -100,7 +102,7 @@ public class BoardController {
         Page<Board> boards = boardService.findAllBoardsByDate(pageable, today);
         Page<ReservationBoard> reservationBoards = reservationBoardService.findAllBoardsByDate(pageable, today);
 
-        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
+        Member loginMember = memberService.findMemberByEmail(loginSessionInfo.getEmail());
         model.addAttribute("reservationBoards", reservationBoards);
 
         model.addAttribute("loginMember", loginMember);
@@ -110,7 +112,7 @@ public class BoardController {
 
     @GetMapping("/date/{date}")
     public String listBoardsByDate(
-            @Login String loginMemberEmail, @PathVariable String date,
+            @Login LoginSessionInfo loginSessionInfo, @PathVariable String date,
             Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
             Pageable pageable) {
 
@@ -121,7 +123,7 @@ public class BoardController {
 
         Page<Board> boards = boardService.findAllBoardsByDate(pageable, selectedDate);
         Page<ReservationBoard> reservationBoards = reservationBoardService.findAllBoardsByDate(pageable, selectedDate);
-        Member loginMember = memberService.findMemberByEmail(loginMemberEmail);
+        Member loginMember = memberService.findMemberByEmail(loginSessionInfo.getEmail());
 
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("reservationBoards", reservationBoards);
@@ -153,34 +155,33 @@ public class BoardController {
     }
 
     @GetMapping("/board/{id}")
-    public String postDetail(@PathVariable Long id, Model model, @Login String loginMemberEmail) {
+    public String postDetail(@PathVariable Long id, Model model, @Login LoginSessionInfo loginSessionInfo) {
         Board board = boardService.findOneBoardWithMember(id);
 
         if (board == null) {
             return "redirect:/";
         }
 
-        boolean isLogin = board.getMember().getEmail().equals(loginMemberEmail);
-        boolean isManager = false;
-
-        if (ictStaffMemberService.findIctmemberById(loginMemberEmail)) {
-            isManager = true;
-        }
+        boolean isLogin = board.getMember().getEmail().equals(loginSessionInfo.getEmail());
+        log.info(loginSessionInfo.getRole().toString());
+        boolean isManager = loginSessionInfo.getRole() == Role.ADMIN ||
+                loginSessionInfo.getRole() == Role.MANAGER
+                || loginSessionInfo.getRole() == Role.STAFF;
 
         List<Reply> comments = replyService.getCommentsByPostId(id);
 
-        PostDetail postDetail = new PostDetail(isLogin, isManager, loginMemberEmail, board, comments);
+        PostDetail postDetail = new PostDetail(isLogin, isManager, loginSessionInfo.getEmail(), board, comments);
         model.addAttribute("postDetail", postDetail);
 
         return "board/postDetail";
     }
 
     @GetMapping("/board/{id}/editForm")
-    public String editForm(@Login String loginMemberEmail, @PathVariable Long id, Model model) {
+    public String editForm(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id, Model model) {
 
         Board board = boardService.findOneBoardWithMember(id);
 
-        if (board == null || loginMemberEmail == null) {
+        if (board == null || loginSessionInfo == null) {
             return "redirect:/board/" + id + "?error=auth";
         }
 
@@ -201,26 +202,23 @@ public class BoardController {
     }
 
     @PostMapping("/board/{id}/delete")
-    public String deletePost(@Login String loginMemberEmail, @PathVariable Long id,
+    public String deletePost(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
 
         Board board = boardService.findOneBoardWithMember(id);
 
-        if (board == null || loginMemberEmail == null) {
+        if (board == null || loginSessionInfo == null) {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
             return "redirect:/board/" + id;
         }
 
-        List<Reply> commentsByPostId = replyService.getCommentsByPostId(id);
-        for (Reply reply : commentsByPostId) {
-            replyService.deleteReply(reply.getId());
-        } //동적 쿼리 한방으로 하게 못하나?
+        replyService.deleteRepliesByBoardId(id);
         boardService.delete(id);
         return "redirect:/";
     }
 
     @PostMapping("/board/{id}/changeStatus")
-    public String changeStatus(@PathVariable Long id, String status,
+    public String changeStatus(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id, String status,
                                RedirectAttributes redirectAttributes) {
 
         BoardStatus boardStatus = BoardStatus.valueOf(status);
@@ -239,5 +237,4 @@ public class BoardController {
     public CompletableFuture<String> getWeeklyReport() {
         return weeklyReportService.getWeeklyReport();
     }
-
 }

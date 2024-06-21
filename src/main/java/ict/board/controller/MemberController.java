@@ -1,6 +1,7 @@
 package ict.board.controller;
 
 import ict.board.config.argumentresolver.Login;
+import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.member.Building;
 import ict.board.domain.member.Location;
 import ict.board.domain.member.Member;
@@ -82,7 +83,6 @@ public class MemberController {
         return "redirect:/";
     }
 
-
     @PostMapping("/members/sendVerificationCode")
     @ResponseBody
     public Map<String, Object> sendVerificationCode(@RequestParam String email, HttpSession session) {
@@ -108,8 +108,8 @@ public class MemberController {
     }
 
     @GetMapping("/mypage")
-    public String myPage(@Login String loginMemberEmail, Model model) {
-        MemberInfo memberInfo = memberService.getMemberInfo(loginMemberEmail);
+    public String myPage(@Login LoginSessionInfo loginSessionInfo, Model model) {
+        MemberInfo memberInfo = memberService.getMemberInfo(loginSessionInfo.getEmail());
         if(memberInfo.getRole() == Role.ADMIN ) {
             //List<Member> members = memberService.getAllMembers();
             List<Member> members = ictStaffMemberRepository.findAllByRoleIsNotNull();
@@ -119,5 +119,4 @@ public class MemberController {
         model.addAttribute("memberInfo", memberInfo);
         return "members/mypage";
     }
-
 }

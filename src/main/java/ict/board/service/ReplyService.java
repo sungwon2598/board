@@ -49,6 +49,10 @@ public class ReplyService {
         replyRepository.deleteById(replyId);
     }
 
+    @Transactional
+    public void deleteRepliesByBoardId(Long boardId) {
+        replyRepository.deleteByBoardId(boardId);
+    }
 
     public List<Reply> getCommentsByPostId(Long id) {
         return replyRepository.findRepliesByBoard(id);
