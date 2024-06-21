@@ -116,30 +116,30 @@ public class IctStaffMemberController {
         return "redirect:/";
     }
 
-    @GetMapping("/admin/approve-members")
-    public String approveMembers(Model model) {
-        model.addAttribute("pendingMembers", pendingIctStaffMemberRepository.findAll());
-        return "members/approveMembers";
-    }
-
-    @PostMapping("/admin/approve-member/{id}")
-    public String approveMember(@PathVariable Long id) {
-        PendingIctStaffMember pendingMember = pendingIctStaffMemberRepository.findById(id).orElseThrow();
-        Location location = new Location(Building.BY, "214");
-        IctStaffMember ictStaffMember = new IctStaffMember(
-                pendingMember.getEmail(), pendingMember.getName(), pendingMember.getPassword(), location,
-                "ICT지원실", pendingMember.getMemberNumber(), ShiftType.valueOf(pendingMember.getShiftType()), Role.STAFF);
-
-        ictStaffMemberService.joinIctmember(ictStaffMember);
-        pendingIctStaffMemberRepository.delete(pendingMember);
-
-        return "redirect:/members/approveMembers";
-    }
-
-    @PostMapping("/admin/reject-member/{id}")
-    public String rejectMember(@PathVariable Long id) {
-        pendingIctStaffMemberRepository.deleteById(id);
-        return "redirect:/members/approveMembers";
-    }
+//    @GetMapping("/admin/approve-members")
+//    public String approveMembers(Model model) {
+//        model.addAttribute("pendingMembers", pendingIctStaffMemberRepository.findAll());
+//        return "members/approveMembers";
+//    }
+//
+//    @PostMapping("/admin/approve-member/{id}")
+//    public String approveMember(@PathVariable Long id) {
+//        PendingIctStaffMember pendingMember = pendingIctStaffMemberRepository.findById(id).orElseThrow();
+//        Location location = new Location(Building.BY, "214");
+//        IctStaffMember ictStaffMember = new IctStaffMember(
+//                pendingMember.getEmail(), pendingMember.getName(), pendingMember.getPassword(), location,
+//                "ICT지원실", pendingMember.getMemberNumber(), ShiftType.valueOf(pendingMember.getShiftType()), Role.STAFF);
+//
+//        ictStaffMemberService.joinIctmember(ictStaffMember);
+//        pendingIctStaffMemberRepository.delete(pendingMember);
+//
+//        return "redirect:/members/approveMembers";
+//    }
+//
+//    @PostMapping("/admin/reject-member/{id}")
+//    public String rejectMember(@PathVariable Long id) {
+//        pendingIctStaffMemberRepository.deleteById(id);
+//        return "redirect:/members/approveMembers";
+//    }
 
 }
