@@ -13,7 +13,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Entity
@@ -47,8 +46,7 @@ public class IctStaffMember extends Member {
 
     public IctStaffMember(String email, String name, String password, Location location, String team,
                           String memberNumber,
-                          ShiftType shiftType, Role role, Integer overtimeVacationHours,
-                          Integer remainingLeaveDays, Integer networkConstructionHours) {
+                          ShiftType shiftType, Role role) {
         super(email, name, password, location, team, memberNumber);
         this.role = role;
         this.shiftType = shiftType;

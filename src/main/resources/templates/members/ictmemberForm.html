@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header}"></head>
+<body>
+
+<div th:replace="~{fragments/bodyHeader :: bodyHeader}"></div>
+
+<div class="container">
+    <h1>직원 회원 가입</h1>
+    <!-- 회원 정보 입력 폼 -->
+    <form id="memberForm" action="/staff-join/7345" method="post" th:object="${memberForm}">
+        <div class="form-group">
+            <label th:for="email">이메일</label>
+            <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="이메일을 입력하세요">
+            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
+            <button type="button" class="btn btn-info" id="sendVerificationCodeBtn">인증 코드 발송</button>
+        </div>
+        <div id="verificationCodeSection" style="display: none;">
+            <p class="text-success">인증 코드가 이메일로 발송되었습니다. 코드를 확인하고 입력하세요.</p>
+            <div class="form-group">
+                <label th:for="verificationCode">인증 코드</label>
+                <input type="text" th:field="*{verificationCode}" id="verificationCode" class="form-control" placeholder="이메일로 받은 인증 코드를 입력하세요">
+                <div th:if="${#fields.hasErrors('verificationCode')}" th:errors="*{verificationCode}" class="text-danger"></div>
+                <div id="codeError" class="text-danger" th:text="${codeError}"></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label th:for="name">이름</label>
+            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+            <label th:for="password">비밀번호</label>
+            <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
+            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+        </div>
+        <div class="form-group">
+            <label th:for="memberNumber">학번 / 사번</label>
+            <input type="text" th:field="*{memberNumber}" class="form-control" placeholder="학번/사번을 입력하세요">
+            <div th:if="${#fields.hasErrors('memberNumber')}" th:errors="*{memberNumber}" class="text-danger"></div>
+        </div>
+
+        <!-- 주간 야간 선택 라디오 버튼 추가 -->
+        <div class="form-group">
+            <label>근무 시간</label>
+            <div class="form-check">
+                <input type="radio" th:field="*{dayShift}" id="dayShift" class="form-check-input" name="dayShift" value="DAY" checked>
+                <label class="form-check-label" for="dayShift">주간</label>
+            </div>
+            <div class="form-check">
+                <input type="radio" th:field="*{dayShift}" id="nightShift" class="form-check-input" name="dayShift" value="NIGHT">
+                <label class="form-check-label" for="nightShift">야간</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">가입 완료</button>
+    </form>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#sendVerificationCodeBtn').click(function() {
+            var email = $('#email').val();
+            if (!validateEmail(email)) {
+                alert("유효한 이메일 주소를 입력하세요.");
+                return;
+            }
+            $.ajax({
+                url: '/members/sendVerificationCode',
+                type: 'POST',
+                data: { email: email },
+                success: function(response) {
+                    console.log("Response: ", response); // 응답 로그 출력
+                    if (response.success) {
+                        $('#verificationCodeSection').show();
+                        alert("인증 코드가 이메일로 발송되었습니다.");
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error: " + error); // 오류 로그 출력
+                    alert("인증 코드 발송에 실패했습니다. 다시 시도해 주세요.");
+                }
+            });
+        });
+    });
+
+    function validateEmail(email) {
+        var re = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return re.test(email);
+    }
+</script>
+</body>
+</html>

@@ -39,8 +39,7 @@ public class MemberController {
     private final MailService mailService;
     private final VerificationCodeCache verificationCodeCache;
     private final IctStaffMemberRepository ictStaffMemberRepository;
-
-    private final CombinedRandomStringGenerator generator = new CombinedRandomStringGenerator();
+    private final CombinedRandomStringGenerator generator;
 
     @GetMapping("/members/new")
     public String createForm(Model model) {

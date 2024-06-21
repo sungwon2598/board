@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Approve Members</title>
+</head>
+<body>
+<h1>Pending Member Approvals</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Email</th>
+        <th>Name</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="member : ${pendingMembers}">
+        <td th:text="${member.email}"></td>
+        <td th:text="${member.name}"></td>
+        <td>
+            <form th:action="@{/admin/approve-member/{id}(id=${member.id})}" method="post">
+                <button type="submit">Approve</button>
+            </form>
+            <form th:action="@{/admin/reject-member/{id}(id=${member.id})}" method="post">
+                <button type="submit">Reject</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
