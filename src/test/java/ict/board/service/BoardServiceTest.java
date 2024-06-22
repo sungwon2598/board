@@ -1,14 +1,11 @@
 package ict.board.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,6 +22,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,7 +115,7 @@ class BoardServiceTest {
         LocalDate date = LocalDate.now();
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
-        List<Board> boards = Arrays.asList(testBoard);
+        List<Board> boards = Collections.singletonList(testBoard);
         Page<Board> page = new PageImpl<>(boards, pageable, boards.size());
 
         when(boardRepository.findAllByCreatedAtBetween(startOfDay, endOfDay, pageable)).thenReturn(page);
@@ -132,7 +130,7 @@ class BoardServiceTest {
     @DisplayName("모든 게시판 조회 테스트")
     void findAllBoards() {
         Pageable pageable = PageRequest.of(0, 10);
-        List<Board> boards = Arrays.asList(testBoard);
+        List<Board> boards = Collections.singletonList(testBoard);
         Page<Board> page = new PageImpl<>(boards, pageable, boards.size());
 
         when(boardRepository.findAllWithMember(pageable)).thenReturn(page);
@@ -157,7 +155,7 @@ class BoardServiceTest {
     @Test
     @DisplayName("회원별 게시판 조회 테스트")
     void findBoardsbyMember() {
-        List<Board> boards = Arrays.asList(testBoard);
+        List<Board> boards = Collections.singletonList(testBoard);
 
         when(boardRepository.findByMember(testMember)).thenReturn(boards);
 
@@ -171,7 +169,7 @@ class BoardServiceTest {
     @DisplayName("상태별 게시판 조회 테스트")
     void findAllBoardsByStatus() {
         Pageable pageable = PageRequest.of(0, 10);
-        List<Board> boards = Arrays.asList(testBoard);
+        List<Board> boards = Collections.singletonList(testBoard);
         Page<Board> page = new PageImpl<>(boards, pageable, boards.size());
 
         when(boardRepository.findAllByBoardStatus(pageable, BoardStatus.COMPLETED)).thenReturn(page);

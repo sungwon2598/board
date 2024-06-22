@@ -14,13 +14,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ReservationNotificationScheduler {
 
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일 HH시 mm분");
     @Autowired
     private BoardRepository reservationBoardRepository;
-
     @Autowired
     private SlackMessageSender slackMessageSender;
-
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일 HH시 mm분");
 
     @Scheduled(fixedRate = 60000) // 매 1분마다 실행
     public void sendReservationNotifications() {

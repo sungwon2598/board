@@ -27,7 +27,8 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     List<Board> findByBoardStatus(BoardStatus boardStatus);
 
-    List<ReservationBoard> findByBoardStatusAndReservationDateBetween(BoardStatus status, LocalDateTime start, LocalDateTime end);
+    List<ReservationBoard> findByBoardStatusAndReservationDateBetween(BoardStatus status, LocalDateTime start,
+                                                                      LocalDateTime end);
 
     List<Board> findByCreatedAtAfter(LocalDateTime dateTime);
 

@@ -18,7 +18,8 @@
             <small>
                 작성자: <span th:text="${postDetail.getBoard().member.getName()}"></span> |
                 소속 : <span th:text="${postDetail.getBoard().member.getTeam()}"></span> |
-                작성시간: <span th:text="${#temporals.format(postDetail.getBoard().createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
+                작성시간: <span
+                    th:text="${#temporals.format(postDetail.getBoard().createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
             </small>
             <div class="mt-2">
                 <small>
@@ -32,42 +33,48 @@
                 </small>
             </div>
             <div class="mt-2">
-                <a th:if="${postDetail.isLogin}" th:href="@{/board/{id}/editForm(id=${postDetail.getBoard.getId()})}" class="btn btn-secondary d-inline-block me-2">수정</a>
-                <form th:if="${postDetail.isLogin}" id="deletePostForm" th:action="@{/board/{id}/delete(id=${postDetail.getBoard.getId()})}" method="post" class="d-inline-block">
-                    <input type="hidden" name="_method" value="delete" />
-                    <button type="button" onclick="submitDeleteForm()" class="btn btn-danger">삭제</button>
+                <a class="btn btn-secondary d-inline-block me-2" th:href="@{/board/{id}/editForm(id=${postDetail.getBoard.getId()})}"
+                   th:if="${postDetail.isLogin}">수정</a>
+                <form class="d-inline-block" id="deletePostForm"
+                      method="post" th:action="@{/board/{id}/delete(id=${postDetail.getBoard.getId()})}"
+                      th:if="${postDetail.isLogin}">
+                    <input name="_method" type="hidden" value="delete"/>
+                    <button class="btn btn-danger" onclick="submitDeleteForm()" type="button">삭제</button>
                 </form>
             </div>
         </div>
     </div>
 
     <!-- Status Change Button, visible if isManager is true -->
-    <button th:if="${postDetail.isManager}" type="button" class="btn btn-secondary" onclick="showStatusChangeForm()">상태 변경</button>
+    <button class="btn btn-secondary" onclick="showStatusChangeForm()" th:if="${postDetail.isManager}" type="button">상태
+        변경
+    </button>
 
     <!-- Status Change Form -->
     <div id="statusChangeForm" style="display:none;">
-        <form th:action="@{/board/{id}/changeStatus(id=${postDetail.getBoard.getId()})}" method="post">
+        <form method="post" th:action="@{/board/{id}/changeStatus(id=${postDetail.getBoard.getId()})}">
             <div class="row">
                 <div class="col">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" id="UNCHECKED" value="UNCHECKED" checked>
+                        <input checked class="form-check-input" id="UNCHECKED" name="status" type="radio"
+                               value="UNCHECKED">
                         <label class="form-check-label" for="UNCHECKED">미조치</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" id="IN_PROGRESS" value="IN_PROGRESS">
+                        <input class="form-check-input" id="IN_PROGRESS" name="status" type="radio" value="IN_PROGRESS">
                         <label class="form-check-label" for="IN_PROGRESS">보류</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" id="COMPLETED" value="COMPLETED">
+                        <input class="form-check-input" id="COMPLETED" name="status" type="radio" value="COMPLETED">
                         <label class="form-check-label" for="COMPLETED">조치완료</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="status" id="NIGHT_SHIFT" value="NIGHT_SHIFT">
+                        <input class="form-check-input" id="NIGHT_SHIFT" name="status" type="radio" value="NIGHT_SHIFT">
                         <label class="form-check-label" for="NIGHT_SHIFT">야간이전</label>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary mt-2">상태 변경</button>
+            <button class="btn btn-primary mt-2" type="submit">상태 변경</button>
         </form>
     </div>
 
@@ -75,6 +82,7 @@
         function showStatusChangeForm() {
             document.getElementById('statusChangeForm').style.display = 'block';
         }
+
         // JavaScript function to submit the delete form
         function submitDeleteForm() {
             if (confirm('정말 삭제하시겠습니까?')) {
@@ -88,12 +96,12 @@
     <!-- 댓글 섹션 -->
     <div class="mt-4">
         <h4>댓글</h4>
-        <form th:action="@{/board/{id}/reply(id=${postDetail.getBoard.getId()})}" method="post">
+        <form method="post" th:action="@{/board/{id}/reply(id=${postDetail.getBoard.getId()})}">
             <!-- 댓글 입력 필드 -->
             <div class="form-group mt-2">
                 <textarea class="form-control" name="reply" placeholder="댓글을 입력하세요"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary mt-2">댓글 달기</button>
+            <button class="btn btn-primary mt-2" type="submit">댓글 달기</button>
         </form>
     </div>
     <!-- 댓글 리스트 -->
@@ -108,11 +116,14 @@
                         <small>
                             작성자: <span th:text="${reply.getMember().getName()}"></span> |
                             소속 : <span th:text="${reply.getMember().getTeam()}"></span> |
-                            작성시간: <span th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
+                            작성시간: <span
+                                th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
                         </small>
-                        <form th:if="${reply.getMember().getEmail() == loginMemberEmail}" th:action="@{/board/{boardId}/reply/delete/{replyId}(boardId=${postDetail.getBoard.getId()}, replyId=${reply.id})}" method="post">
-                            <input type="hidden" name="_method" value="delete" />
-                            <button type="submit" class="btn btn-danger btn-sm">삭제</button>
+                        <form method="post"
+                              th:action="@{/board/{boardId}/reply/delete/{replyId}(boardId=${postDetail.getBoard.getId()}, replyId=${reply.id})}"
+                              th:if="${reply.getMember().getEmail() == loginMemberEmail}">
+                            <input name="_method" type="hidden" value="delete"/>
+                            <button class="btn btn-danger btn-sm" type="submit">삭제</button>
                         </form>
                     </div>
                 </div>

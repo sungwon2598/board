@@ -50,7 +50,8 @@ public class CombinedRandomStringGeneratorTest {
     @Test
     public void 인증번호_생성_후_캐시저장_및_검증() {
         String generatedString = combinedRandomStringGenerator.generateRandomString();
-        verificationCodeCache.storeCode(testEmail,generatedString);
-        org.assertj.core.api.Assertions.assertThat(verificationCodeCache.isValidCode(testEmail,generatedString)).isTrue();
+        verificationCodeCache.storeCode(testEmail, generatedString);
+        org.assertj.core.api.Assertions.assertThat(verificationCodeCache.isValidCode(testEmail, generatedString))
+                .isTrue();
     }
 }

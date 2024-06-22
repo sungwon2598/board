@@ -8,60 +8,64 @@
 <div class="container">
     <h1>회원 가입</h1>
     <!-- 회원 정보 입력 폼 -->
-    <form id="memberForm" action="/members/new" method="post" th:object="${memberForm}">
+    <form action="/members/new" id="memberForm" method="post" th:object="${memberForm}">
         <div class="form-group">
             <label th:for="email">이메일</label>
-            <input type="email" th:field="*{email}" id="email" class="form-control" placeholder="이메일을 입력하세요">
-            <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
-            <button type="button" class="btn btn-info" id="sendVerificationCodeBtn">인증 코드 발송</button>
+            <input class="form-control" id="email" placeholder="이메일을 입력하세요" th:field="*{email}" type="email">
+            <div class="text-danger" th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></div>
+            <button class="btn btn-info" id="sendVerificationCodeBtn" type="button">인증 코드 발송</button>
         </div>
         <div id="verificationCodeSection" style="display: none;">
             <p class="text-success">인증 코드가 이메일로 발송되었습니다. 코드를 확인하고 입력하세요.</p>
             <div class="form-group">
                 <label th:for="verificationCode">인증 코드</label>
-                <input type="text" th:field="*{verificationCode}" id="verificationCode" class="form-control" placeholder="이메일로 받은 인증 코드를 입력하세요">
-                <div th:if="${#fields.hasErrors('verificationCode')}" th:errors="*{verificationCode}" class="text-danger"></div>
-                <div id="codeError" class="text-danger" th:text="${codeError}"></div>
+                <input class="form-control" id="verificationCode" placeholder="이메일로 받은 인증 코드를 입력하세요" th:field="*{verificationCode}"
+                       type="text">
+                <div class="text-danger" th:errors="*{verificationCode}"
+                     th:if="${#fields.hasErrors('verificationCode')}"></div>
+                <div class="text-danger" id="codeError" th:text="${codeError}"></div>
             </div>
         </div>
 
         <div class="form-group">
             <label th:for="name">이름</label>
-            <input type="text" th:field="*{name}" class="form-control" placeholder="이름을 입력하세요">
-            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+            <input class="form-control" placeholder="이름을 입력하세요" th:field="*{name}" type="text">
+            <div class="text-danger" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></div>
         </div>
         <div class="form-group">
             <label th:for="password">비밀번호</label>
-            <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호를 입력하세요">
-            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger"></div>
+            <input class="form-control" placeholder="비밀번호를 입력하세요" th:field="*{password}" type="password">
+            <div class="text-danger" th:errors="*{password}" th:if="${#fields.hasErrors('password')}"></div>
         </div>
         <div class="form-group">
             <label th:for="team">소속</label>
-            <input type="text" th:field="*{team}" class="form-control" placeholder="소속을 입력하세요">
-            <div th:if="${#fields.hasErrors('team')}" th:errors="*{team}" class="text-danger"></div>
+            <input class="form-control" placeholder="소속을 입력하세요" th:field="*{team}" type="text">
+            <div class="text-danger" th:errors="*{team}" th:if="${#fields.hasErrors('team')}"></div>
         </div>
         <div class="form-group">
             <label>소속건물</label>
             <div>
                 <th:block th:each="building, iterStat : ${T(ict.board.domain.member.Building).values()}">
-                    <input type="radio" th:id="${'building'+iterStat.index}" th:field="*{building}" th:value="${building.name()}" />
-                    <label th:for="${'building'+iterStat.index}" th:text="${building.getKoreanName()}">Building Name</label>
+                    <input th:field="*{building}" th:id="${'building'+iterStat.index}" th:value="${building.name()}"
+                           type="radio"/>
+                    <label th:for="${'building'+iterStat.index}" th:text="${building.getKoreanName()}">Building
+                        Name</label>
                 </th:block>
             </div>
         </div>
 
         <div class="form-group">
             <label th:for="roomNumber">호수</label>
-            <input type="text" th:field="*{roomNumber}" class="form-control" placeholder="호수를 입력하세요">
+            <input class="form-control" placeholder="호수를 입력하세요" th:field="*{roomNumber}" type="text">
         </div>
 
         <div class="form-group">
             <label th:for="memberNumber">학번 / 사번</label>
-            <input type="text" th:field="*{memberNumber}" class="form-control" placeholder="학번/사번을 입력하세요">
-            <div th:if="${#fields.hasErrors('memberNumber')}" th:errors="*{memberNumber}" class="text-danger"></div>
+            <input class="form-control" placeholder="학번/사번을 입력하세요" th:field="*{memberNumber}" type="text">
+            <div class="text-danger" th:errors="*{memberNumber}" th:if="${#fields.hasErrors('memberNumber')}"></div>
         </div>
 
-        <button type="submit" class="btn btn-primary">가입 완료</button>
+        <button class="btn btn-primary" type="submit">가입 완료</button>
     </form>
 </div>
 
@@ -69,8 +73,8 @@
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#sendVerificationCodeBtn').click(function() {
+    $(document).ready(function () {
+        $('#sendVerificationCodeBtn').click(function () {
             var email = $('#email').val();
             if (!validateEmail(email)) {
                 alert("유효한 이메일 주소를 입력하세요.");
@@ -79,8 +83,8 @@
             $.ajax({
                 url: '/members/sendVerificationCode',
                 type: 'POST',
-                data: { email: email },
-                success: function(response) {
+                data: {email: email},
+                success: function (response) {
                     console.log("Response: ", response); // 응답 로그 출력
                     if (response.success) {
                         $('#verificationCodeSection').show();
@@ -89,7 +93,7 @@
                         alert(response.message);
                     }
                 },
-                error: function(xhr, status, error) {
+                error: function (xhr, status, error) {
                     console.log("Error: " + error); // 오류 로그 출력
                     alert("인증 코드 발송에 실패했습니다. 다시 시도해 주세요.");
                 }

@@ -21,7 +21,7 @@ import lombok.Getter;
 public class IctStaffMember extends Member {
 
     @ElementCollection(fetch = FetchType.LAZY)
-    private List<LocalDate> usedLeaveDates = new ArrayList<>();
+    private final List<LocalDate> usedLeaveDates = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(name = "shift_type")

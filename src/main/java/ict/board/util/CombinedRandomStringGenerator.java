@@ -16,20 +16,6 @@ public class CombinedRandomStringGenerator {
     private static final String SPECIAL_CHARACTERS = "!@#$%^&*()_+-=[]{}|;':,.<>/?";
     private static final int LENGTH = 12;
 
-    public String generateRandomString() {
-        SecureRandom random = new SecureRandom();
-        List<Character> chars = new ArrayList<>();
-
-        addInitialUpperCaseLetter(chars, UPPER_CASE_LETTERS, random);
-        addRandomCharsToList(chars, NUMBERS, 2, random);
-        addRandomCharsToList(chars, SPECIAL_CHARACTERS, 2, random);
-        addRandomCharsToList(chars, UPPER_CASE_LETTERS + LOWER_CASE_LETTERS + NUMBERS + SPECIAL_CHARACTERS, LENGTH - 5, random);
-
-        Collections.shuffle(chars, random);
-
-        return createStringFromList(chars);
-    }
-
     private static void addInitialUpperCaseLetter(List<Character> list, String characters, SecureRandom random) {
         list.add(characters.charAt(random.nextInt(characters.length())));
     }
@@ -42,5 +28,20 @@ public class CombinedRandomStringGenerator {
         StringBuilder sb = new StringBuilder();
         list.forEach(sb::append);
         return sb.toString();
+    }
+
+    public String generateRandomString() {
+        SecureRandom random = new SecureRandom();
+        List<Character> chars = new ArrayList<>();
+
+        addInitialUpperCaseLetter(chars, UPPER_CASE_LETTERS, random);
+        addRandomCharsToList(chars, NUMBERS, 2, random);
+        addRandomCharsToList(chars, SPECIAL_CHARACTERS, 2, random);
+        addRandomCharsToList(chars, UPPER_CASE_LETTERS + LOWER_CASE_LETTERS + NUMBERS + SPECIAL_CHARACTERS, LENGTH - 5,
+                random);
+
+        Collections.shuffle(chars, random);
+
+        return createStringFromList(chars);
     }
 }

@@ -32,23 +32,14 @@
             <p><strong>아이디 : </strong> <span th:text="${memberInfo.memberEmail}">Email</span></p>
             <p><strong>소속 : </strong> <span th:text="${memberInfo.memberTeam}">Team</span></p>
             <!-- Conditionally display the role if it is present -->
-            <p th:if="${memberInfo.role != null}"><strong>역할 : </strong> <span th:text="${memberInfo.role}">Role</span></p>
+            <p th:if="${memberInfo.role != null}"><strong>역할 : </strong> <span th:text="${memberInfo.role}">Role</span>
+            </p>
         </div>
     </div>
 
     <!-- Conditionally display members list if the role is ADMIN -->
-    <div th:if="${role == 'ADMIN'}" class="mb-4">
-        <h2 class="mb-3">회원 목록</h2>
-        <div class="list-group">
-            <th:block th:each="member : ${members}">
-                <a href="#" class="list-group-item list-group-item-action">
-                    <p><strong>이름: </strong> <span th:text="${member.name}">Member Name</span></p>
-                    <p><strong>아이디: </strong> <span th:text="${member.email}">Member Email</span></p>
-                    <p><strong>소속: </strong> <span th:text="${member.team}">Member Team</span></p>
-                    <p><strong>번호: </strong> <span th:text="${member.memberNumber}">Member Number</span></p>
-                </a>
-            </th:block>
-        </div>
+    <div class="mb-4" th:if="${role == 'ADMIN'}">
+
     </div>
 
     <!-- Boards and Replies in List Groups -->
@@ -56,7 +47,7 @@
         <h2 class="mb-3">접수한 민원</h2>
         <div class="list-group">
             <th:block th:each="board : ${memberInfo.boards}">
-                <a th:href="@{/board/{id}(id=${board.id})}" class="list-group-item list-group-item-action"
+                <a class="list-group-item list-group-item-action" th:href="@{/board/{id}(id=${board.id})}"
                    th:text="${board.title}">게시판 제목</a>
             </th:block>
         </div>

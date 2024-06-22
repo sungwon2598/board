@@ -9,7 +9,7 @@
 <body>
 <div id="username-page">
     <div>
-        <input type="text" id="name" placeholder="Enter your name"/>
+        <input id="name" placeholder="Enter your name" type="text"/>
         <button onclick="connect()">Connect</button>
     </div>
 </div>
@@ -19,7 +19,7 @@
         <ul id="messageList"></ul>
     </div>
     <div>
-        <input type="text" id="message" placeholder="Enter a message"/>
+        <input id="message" placeholder="Enter a message" type="text"/>
         <button onclick="sendMessage()">Send</button>
     </div>
 </div>
@@ -31,7 +31,7 @@
     function connect() {
         username = document.getElementById("name").value.trim();
 
-        if(username) {
+        if (username) {
             var socket = new SockJS('/ws');
             stompClient = Stomp.over(socket);
 
@@ -58,7 +58,7 @@
     function sendMessage() {
         var messageContent = document.getElementById("message").value.trim();
 
-        if(messageContent && stompClient) {
+        if (messageContent && stompClient) {
             var chatMessage = {
                 sender: username,
                 content: messageContent,

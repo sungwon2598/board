@@ -7,32 +7,34 @@
 
 <div class="container">
     <h1>민원 작성</h1>
-    <form action="/board/new" th:object="${BoardForm}" method="post">
+    <form action="/board/new" method="post" th:object="${BoardForm}">
         <!-- 기존 필드들 -->
         <div class="form-group">
             <label th:for="title">제목</label>
-            <input type="text" th:field="*{title}" class="form-control" placeholder="제목을 입력하세요">
-            <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger">제목을 입력해주세요.</p>
+            <input class="form-control" placeholder="제목을 입력하세요" th:field="*{title}" type="text">
+            <p class="text-danger" th:errors="*{title}" th:if="${#fields.hasErrors('title')}">제목을 입력해주세요.</p>
         </div>
         <div class="form-group">
             <label th:for="requester">요청자</label>
-            <input type="text" th:field="*{requester}" class="form-control" placeholder="요청자를 입력하세요">
-            <p th:if="${#fields.hasErrors('requester')}" th:errors="*{requester}" class="text-danger">요청자를 입력해주세요.</p>
+            <input class="form-control" placeholder="요청자를 입력하세요" th:field="*{requester}" type="text">
+            <p class="text-danger" th:errors="*{requester}" th:if="${#fields.hasErrors('requester')}">요청자를 입력해주세요.</p>
         </div>
         <div class="form-group">
             <label th:for="requesterLocation">요청자 위치</label>
-            <input type="text" th:field="*{requesterLocation}" class="form-control" placeholder="요청자 위치를 입력하세요">
-            <p th:if="${#fields.hasErrors('requesterLocation')}" th:errors="*{requesterLocation}" class="text-danger">요청자 위치를 입력해주세요.</p>
+            <input class="form-control" placeholder="요청자 위치를 입력하세요" th:field="*{requesterLocation}" type="text">
+            <p class="text-danger" th:errors="*{requesterLocation}" th:if="${#fields.hasErrors('requesterLocation')}">
+                요청자 위치를 입력해주세요.</p>
         </div>
         <div class="form-group">
             <label th:for="content">내용</label>
-            <textarea th:field="*{content}" class="form-control" placeholder="내용을 입력하세요" rows="10"></textarea>
-            <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}" class="text-danger">내용을 입력해주세요.</p>
+            <textarea class="form-control" placeholder="내용을 입력하세요" rows="10" th:field="*{content}"></textarea>
+            <p class="text-danger" th:errors="*{content}" th:if="${#fields.hasErrors('content')}">내용을 입력해주세요.</p>
         </div>
 
         <div class="form-group">
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="isReservation" name="reservation" th:field="*{reservation}" onchange="toggleReservationDate()">
+                <input class="form-check-input" id="isReservation" name="reservation" onchange="toggleReservationDate()"
+                       th:field="*{reservation}" type="checkbox">
                 <label class="form-check-label" for="isReservation">
                     예약민원 여부
                 </label>
@@ -40,15 +42,15 @@
         </div>
         <div class="form-group" id="reservationDateGroup" style="display:none;">
             <label for="reservationDate">예약 날짜</label>
-            <input type="date" id="reservationDate" th:field="*{reservationDate}" class="form-control">
+            <input class="form-control" id="reservationDate" th:field="*{reservationDate}" type="date">
         </div>
         <div class="form-group" id="reservationTimeGroup" style="display:none;">
             <label for="reservationTime">예약 시간</label>
-            <input type="time" id="reservationTime" th:field="*{reservationTime}" class="form-control">
+            <input class="form-control" id="reservationTime" th:field="*{reservationTime}" type="time">
         </div>
 
         <!-- 제출 버튼 -->
-        <button type="submit" class="btn btn-primary">민원접수하기</button>
+        <button class="btn btn-primary" type="submit">민원접수하기</button>
     </form>
 </div>
 
@@ -58,7 +60,7 @@
         var dateGroup = document.getElementById("reservationDateGroup");
         var timeGroup = document.getElementById("reservationTimeGroup");
 
-        if (checkBox.checked === true){
+        if (checkBox.checked === true) {
             dateGroup.style.display = "block";
             timeGroup.style.display = "block";
         } else {

@@ -2,14 +2,11 @@ package ict.board.service.ai;
 
 import ict.board.domain.board.Board;
 import ict.board.repository.BoardRepository;
-import ict.board.service.ai.OpenAIApiConnector;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
 @Service
 public class WeeklyReportService {

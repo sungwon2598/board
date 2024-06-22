@@ -1,18 +1,17 @@
 package ict.board.service.slack;
 
+import static com.slack.api.webhook.WebhookPayloads.payload;
+
 import com.slack.api.Slack;
 import com.slack.api.model.Attachment;
 import com.slack.api.model.Field;
-import lombok.Getter;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static com.slack.api.webhook.WebhookPayloads.payload;
+import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 @Getter

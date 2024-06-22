@@ -18,6 +18,20 @@ import lombok.Getter;
 @Getter
 public class Reply extends CreateTime {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "reply_id")
+    private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "board_id")
+    private Board board;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+    @Lob
+    @Column(length = 10000)
+    private String content;
+
     public Reply(String content, Board board, Member member) {
         this.content = content;
         this.board = board;
@@ -27,23 +41,6 @@ public class Reply extends CreateTime {
     public Reply() {
 
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "reply_id")
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id")
-    private Board board;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
-    private Member member;
-
-    @Lob
-    @Column(length = 10000)
-    private String content;
 
     private void addMember(Member member) {
         //member.getReplies().add(this);

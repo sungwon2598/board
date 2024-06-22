@@ -33,8 +33,7 @@ public class RoleCheckInterceptor implements HandlerInterceptor {
         Member member = memberService.findMemberByEmail(email);
         String uri = request.getRequestURI();
 
-        if (member instanceof IctStaffMember) {
-            IctStaffMember staffMember = (IctStaffMember) member;
+        if (member instanceof IctStaffMember staffMember) {
             if (staffMember.getRole() == Role.ADMIN && (uri.startsWith("/admin") || uri.startsWith("/manage"))) {
                 return true;
             } else if (staffMember.getRole() == Role.MANAGER && uri.startsWith("/manage")) {

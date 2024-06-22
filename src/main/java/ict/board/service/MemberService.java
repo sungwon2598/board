@@ -3,17 +3,15 @@ package ict.board.service;
 import ict.board.domain.board.Board;
 import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
+import ict.board.domain.member.Role;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.MemberInfo;
 import ict.board.repository.BoardRepository;
 import ict.board.repository.IctStaffMemberRepository;
 import ict.board.repository.MemberRepository;
 import ict.board.repository.ReplyRepository;
-import ict.board.service.ai.OpenAIApiBoardConnector;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +25,6 @@ public class MemberService {
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
 
-    private final Logger logger = LoggerFactory.getLogger(OpenAIApiBoardConnector.class);
-
     @Transactional
     public Long join(Member member) {
         validateDuplicate(member);
@@ -38,7 +34,7 @@ public class MemberService {
 
     private void validateDuplicate(Member member) {
         Member member1 = memberRepository.findMemberByEmail(member.getEmail()).orElse(null);
-        if ( member1 != null) {
+        if (member1 != null) {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
         }
     }
@@ -52,23 +48,18 @@ public class MemberService {
         String memberName = loginMember.getName();
         String memberTeam = loginMember.getTeam();
 
-        if(loginMember instanceof IctStaffMember) {
-            IctStaffMember loginIctStaffMember = (IctStaffMember)loginMember;
+        if (loginMember instanceof IctStaffMember loginIctStaffMember) {
             return new MemberInfo(boards, replies, memberName, email, memberTeam, loginIctStaffMember.getRole());
         }
-        return new MemberInfo(boards, replies, memberName, email, memberTeam);
+        return new MemberInfo(boards, replies, memberName, email, memberTeam, Role.NONE);
     }
 
     public Member findMemberByEmail(String email) {
         return memberRepository.findMemberByEmail(email).orElse(null);
     }
 
-    public List<Member> getAllIctStaffMembers() {
-        return ictStaffMemberRepository.findAllByRoleIsNotNull();
-    }
-
     public List<Member> getAllMembers() {
-        return memberRepository.findAll();
+        return memberRepository.findAllMembers();
     }
 
 }

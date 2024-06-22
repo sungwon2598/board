@@ -5,7 +5,6 @@ import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessio
 import ict.board.domain.member.Building;
 import ict.board.domain.member.Location;
 import ict.board.domain.member.Member;
-import ict.board.domain.member.Role;
 import ict.board.dto.MemberForm;
 import ict.board.dto.MemberInfo;
 import ict.board.repository.IctStaffMemberRepository;
@@ -16,7 +15,6 @@ import ict.board.util.cache.VerificationCodeCache;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -109,12 +107,6 @@ public class MemberController {
     @GetMapping("/mypage")
     public String myPage(@Login LoginSessionInfo loginSessionInfo, Model model) {
         MemberInfo memberInfo = memberService.getMemberInfo(loginSessionInfo.getEmail());
-        if(memberInfo.getRole() == Role.ADMIN ) {
-            //List<Member> members = memberService.getAllMembers();
-            List<Member> members = ictStaffMemberRepository.findAllByRoleIsNotNull();
-            model.addAttribute("members", members);
-            model.addAttribute("role", "ADMIN");
-        }
         model.addAttribute("memberInfo", memberInfo);
         return "members/mypage";
     }

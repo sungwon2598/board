@@ -1,10 +1,9 @@
 package ict.board.service.slack;
 
 import ict.board.domain.board.Board;
+import java.util.HashMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
 
 @Service
 public class NewBoardSender {

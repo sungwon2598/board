@@ -3,10 +3,11 @@
 <head th:fragment="header">
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link crossorigin="anonymous" href="/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet">
     <!-- Custom styles for this template -->
     <link href="/css/jumbotron-narrow.css" rel="stylesheet">
     <!-- TmoneyRoundWind Font CSS -->
@@ -18,6 +19,7 @@
         body {
             font-family: 'TmoneyRoundWind', sans-serif; /* 모든 폰트를 TmoneyRoundWind로 변경 */
         }
+
         .no-background {
             background-color: transparent;
             border: none;
@@ -36,55 +38,66 @@
             text-align: center;
             font-family: 'TmoneyRoundWind', sans-serif; /* 헤더 폰트 변경 */
         }
+
         .header .logo {
             font-size: 24px;
             font-weight: bold;
         }
+
         .header .navbar {
             display: flex;
             justify-content: center;
             padding: 5px 0;
         }
+
         .header .navbar a {
             color: white;
             margin: 0 15px;
             text-decoration: none;
         }
+
         .header .navbar a:hover {
             text-decoration: underline;
         }
+
         /* 나머지 스타일 */
         .board-list {
             width: 100%;
             margin-top: 20px;
         }
+
         .board-list th, .board-list td {
             padding: 12px;
             text-align: center;
             vertical-align: middle;
             font-family: 'TmoneyRoundWind', sans-serif; /* 테이블 폰트 변경 */
         }
+
         .table {
             border-collapse: separate;
             border-spacing: 0 15px;
         }
+
         .btn {
             margin-right: 10px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
             font-family: 'TmoneyRoundWind', sans-serif; /* 버튼 폰트 변경 */
         }
+
         .container {
             padding: 20px;
             background-color: #f8f9fa;
             border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
             max-width: 1000px;
             margin: auto;
             font-family: 'TmoneyRoundWind', sans-serif; /* 컨테이너 폰트 변경 */
         }
+
         .thead-light th {
             background-color: #e9ecef;
         }
+
         .footer {
             background-color: #f8f9fa;
             color: black;
@@ -96,9 +109,11 @@
             font-size: 16px;
             font-family: 'TmoneyRoundWind', sans-serif; /* 푸터 폰트 변경 */
         }
+
         .highlighted {
             background-color: #ffcccc;
         }
+
         .btn-selected-date {
             background-color: #007bff;
             color: white;
@@ -110,21 +125,26 @@
             background-color: #121212;
             color: #e0e0e0;
         }
+
         .header.dark-mode {
             background-color: #1c1c1c;
             color: #e0e0e0;
         }
+
         .container.dark-mode {
             background-color: #1e1e1e;
-            box-shadow: 2px 2px 10px rgba(255,255,255,0.1);
+            box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.1);
         }
+
         .table.dark-mode th, .table.dark-mode td {
             background-color: #2c2c2c;
             color: #e0e0e0;
         }
+
         .table.dark-mode button {
             color: #e0e0e0; /* 다크모드 버튼 글자색 */
         }
+
         .footer.dark-mode {
             background-color: #1c1c1c;
             color: #e0e0e0;
@@ -141,12 +161,15 @@
                 flex-direction: column;
                 align-items: center;
             }
+
             .header .navbar a {
                 margin: 5px 0;
             }
+
             .board-list th, .board-list td {
                 padding: 8px;
             }
+
             .container {
                 padding: 10px;
             }
@@ -156,6 +179,7 @@
         .table td {
             padding: 0 !important;
         }
+
         .table button {
             width: 85%;
             height: 50px;
@@ -165,6 +189,7 @@
             border-color: #ffffff; /* 버튼 테두리 색상을 흰색으로 변경 */
             font-family: 'TmoneyRoundWind', sans-serif; /* 버튼 폰트 변경 */
         }
+
         /* 민원 테이블 행 높이 수정 */
         .board-list tr {
             height: 50px; /* 민원 높이를 100px로 설정 */
@@ -175,6 +200,7 @@
             background-color: #ffcccc;
             color: white;
         }
+
         .table td.saturday button {
             background-color: #cce5ff;
             color: white;
@@ -187,12 +213,13 @@
             align-items: center;
             margin-bottom: 20px;
         }
+
         .calendar-header button {
             margin: 0 10px;
         }
     </style>
     <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             const today = new Date();
             const defaultYear = today.getFullYear();
             const defaultMonth = String(today.getMonth() + 1).padStart(2, '0');
@@ -204,7 +231,7 @@
 
             let year, month, day;
 
-            if(matches) {
+            if (matches) {
                 year = matches[1];
                 month = matches[2];
                 day = matches[3];
@@ -220,7 +247,7 @@
             const buttons = document.querySelectorAll('button[onclick="javascriptFunction(this)"]');
 
             buttons.forEach(button => {
-                if(button.getAttribute('data-date') === selectedDate) {
+                if (button.getAttribute('data-date') === selectedDate) {
                     button.classList.add('btn-selected-date');
                 }
             });
@@ -228,7 +255,7 @@
             const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
             const darkModeToggleButton = document.getElementById('darkModeToggle');
 
-            if(darkModeEnabled) {
+            if (darkModeEnabled) {
                 document.body.classList.add('dark-mode');
                 document.querySelectorAll('.container').forEach(el => el.classList.add('dark-mode'));
                 document.querySelectorAll('.table').forEach(el => el.classList.add('dark-mode'));
@@ -237,7 +264,7 @@
                 darkModeToggleButton.textContent = '라이트 모드';
             }
 
-            document.getElementById('darkModeToggle').addEventListener('click', function() {
+            document.getElementById('darkModeToggle').addEventListener('click', function () {
                 document.body.classList.toggle('dark-mode');
                 document.querySelectorAll('.container').forEach(el => el.classList.toggle('dark-mode'));
                 document.querySelectorAll('.table').forEach(el => el.classList.toggle('dark-mode'));
@@ -323,11 +350,11 @@
         <!--        <a href="/">홈</a>-->
         <!--        <a href="/about">소개</a>-->
         <!--        <a href="/contact">연락처</a>-->
-        <div th:if="${loginMember != null}" style="margin-left: auto; color: #FFFFFF;">
+        <div style="margin-left: auto; color: #FFFFFF;" th:if="${loginMember != null}">
             <span th:text="${loginMember.name}">사용자 이름</span>님, 환영합니다!
-            <a href="/mypage" class="btn btn-secondary" style="margin-left: 10px;">MyPage</a>
-            <form th:action="@{/logout}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-danger" style="margin-left: 5px;">Logout</button>
+            <a class="btn btn-secondary" href="/mypage" style="margin-left: 10px;">MyPage</a>
+            <form method="post" style="display: inline;" th:action="@{/logout}">
+                <button class="btn btn-danger" style="margin-left: 5px;" type="submit">Logout</button>
             </form>
         </div>
     </div>
@@ -335,17 +362,20 @@
 
 <!-- 다크모드 토글 버튼 -->
 <div style="text-align: right; padding: 10px;">
-    <button id="darkModeToggle" class="btn btn-dark">다크모드</button>
-    <button id="notionButton" class="btn" onclick="window.location.href='https://www.notion.so/1fb67b7abd184956af1ae2b2ac6d768a?pvs=4'" style="background: none; border: none; padding: 0;">
-        <img src="/notion.ico" alt="Notion Icon" style="width: 32px; height: 32px;">
+    <button class="btn btn-dark" id="darkModeToggle">다크모드</button>
+    <button class="btn" id="notionButton"
+            onclick="window.location.href='https://www.notion.so/1fb67b7abd184956af1ae2b2ac6d768a?pvs=4'"
+            style="background: none; border: none; padding: 0;">
+        <img alt="Notion Icon" src="/notion.ico" style="width: 32px; height: 32px;">
     </button>
-    <button id="calendarButton" class="btn btn-info" onclick="window.location.href='/calendar'" style="background: none; border: none; padding: 0;">
-        <img src="/claendar.ico" alt="Notion Icon" style="width: 32px; height: 32px;">
+    <button class="btn btn-info" id="calendarButton" onclick="window.location.href='/calendar'"
+            style="background: none; border: none; padding: 0;">
+        <img alt="Notion Icon" src="/claendar.ico" style="width: 32px; height: 32px;">
     </button>
 </div>
 
 <div class="container my-4">
-    <div id="calendarHeader" class="calendar-header"></div>
+    <div class="calendar-header" id="calendarHeader"></div>
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -362,7 +392,8 @@
             <tbody>
             <tr th:each="week : ${weeks}">
                 <td th:each="day : ${week}">
-                    <button type="button" onclick="javascriptFunction(this)" th:data-date="${day.toString()}" class="btn btn-outline-primary">
+                    <button class="btn btn-outline-primary" onclick="javascriptFunction(this)" th:data-date="${day.toString()}"
+                            type="button">
                         [[${day.dayOfMonth}]]
                     </button>
                 </td>
@@ -372,10 +403,10 @@
     </div>
 
     <div class="mb-3">
-        <a href="/board/new" class="btn btn-primary" th:if="${loginMember != null}">새 민원 접수</a>
+        <a class="btn btn-primary" href="/board/new" th:if="${loginMember != null}">새 민원 접수</a>
         <!--        <a href="/login" class="btn btn-secondary" th:if="${loginMember == null}">로그인</a>-->
         <!--        <a href="/members/new" class="btn btn-success" th:if="${loginMember == null}">회원가입</a>-->
-        <button id="searchButton" class="btn btn-info" onclick="window.location.href='/search'">검색</button>
+        <button class="btn btn-info" id="searchButton" onclick="window.location.href='/search'">검색</button>
     </div>
 
     <div class="table-responsive">
@@ -390,15 +421,18 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="reservationBoard : ${reservationBoards.content}" class="highlighted">
+            <tr class="highlighted" th:each="reservationBoard : ${reservationBoards.content}">
                 <td>
-                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.requester}">요청자</a>
+                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}"
+                       th:text="${reservationBoard.requester}">요청자</a>
                 </td>
                 <td>
-                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.requesterLocation}">위치</a>
+                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}"
+                       th:text="${reservationBoard.requesterLocation}">위치</a>
                 </td>
                 <td>
-                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.title}">게시글 내용</a>
+                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.title}">게시글
+                        내용</a>
                 </td>
                 <td th:text="${reservationBoard.boardStatus.koreanName}">민원상태</td>
                 <td th:text="${#temporals.format(reservationBoard.reservationDate, 'HH:mm')}">예약 시간</td>
@@ -414,7 +448,9 @@
                     <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 내용</a>
                 </td>
                 <td th:text="${board.boardStatus.koreanName}">민원상태</td>
-                <td th:text="${board instanceof T(ict.board.domain.board.ReservationBoard) ? #temporals.format(board.reservationDate, 'MM-dd HH:mm') : '-'}">-</td>
+                <td th:text="${board instanceof T(ict.board.domain.board.ReservationBoard) ? #temporals.format(board.reservationDate, 'MM-dd HH:mm') : '-'}">
+                    -
+                </td>
             </tr>
             </tbody>
         </table>
@@ -423,16 +459,22 @@
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${boards.number == 0} ? 'disabled'">
-                <a class="page-link" th:href="@{'/date/' + ${selectedDate} + '?page=' + (${boards.number - 1}) + '&size=' + ${boards.size}}" aria-label="Previous">
+                <a aria-label="Previous"
+                   class="page-link"
+                   th:href="@{'/date/' + ${selectedDate} + '?page=' + (${boards.number - 1}) + '&size=' + ${boards.size}}">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
-            <li class="page-item" th:each="page : ${#numbers.sequence(0, boards.totalPages - 1)}"
-                th:classappend="${page == boards.number} ? 'active'">
-                <a class="page-link" th:href="@{'/date/' + ${selectedDate} + '?page=' + ${page} + '&size=' + ${boards.size}}" th:text="${page + 1}">1</a>
+            <li class="page-item" th:classappend="${page == boards.number} ? 'active'"
+                th:each="page : ${#numbers.sequence(0, boards.totalPages - 1)}">
+                <a class="page-link"
+                   th:href="@{'/date/' + ${selectedDate} + '?page=' + ${page} + '&size=' + ${boards.size}}"
+                   th:text="${page + 1}">1</a>
             </li>
             <li class="page-item" th:classappend="${boards.number == boards.totalPages - 1} ? 'disabled'">
-                <a class="page-link" th:href="@{'/date/' + ${selectedDate} + '?page=' + (${boards.number + 1}) + '&size=' + ${boards.size}}" aria-label="Next">
+                <a aria-label="Next"
+                   class="page-link"
+                   th:href="@{'/date/' + ${selectedDate} + '?page=' + (${boards.number + 1}) + '&size=' + ${boards.size}}">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
