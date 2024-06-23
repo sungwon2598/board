@@ -1,16 +1,19 @@
 package ict.board.service;
 
-
 import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.board.ReservationBoard;
 import ict.board.domain.member.Member;
+import ict.board.domain.member.Role;
+import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
+import ict.board.dto.PostDetail;
 import ict.board.repository.BoardRepository;
 import ict.board.repository.MemberRepository;
 import ict.board.service.ai.AIResponseHandler;
 import ict.board.service.slack.NewBoardSender;
+import ict.board.util.DateUtils;
 import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -22,6 +25,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 
 @Service
 @RequiredArgsConstructor
@@ -33,6 +38,7 @@ public class BoardService {
     private final MemberRepository memberRepository;
     private final AIResponseHandler AIResponseHandler;
     private final NewBoardSender newBoardSender;
+    private final ReservationBoardService reservationBoardService;
 
     @Transactional
     public void saveBoard(BoardForm form, String imagePath, String loginMemberEmail) throws IOException, InterruptedException {
@@ -108,5 +114,50 @@ public class BoardService {
     public Page<Board> findAllBoardsByStatus(Pageable pageable, String status) {
         BoardStatus boardStatus = BoardStatus.valueOf(status);
         return boardRepository.findAllByBoardStatus(pageable, boardStatus);
+    }
+
+    public boolean validateBoardForm(BoardForm form, BindingResult result) {
+        if (form.isReservation() && (form.getReservationDate() == null || form.getReservationTime() == null)) {
+            result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
+        }
+        return result.hasErrors();
+    }
+
+    public void prepareBoardListPage(Model model, Pageable pageable, LocalDate date, String email) {
+        List<List<LocalDate>> weeks = DateUtils.calculateWeeks(date);
+        model.addAttribute("weeks", weeks);
+
+        Page<Board> boards = findAllBoardsByDate(pageable, date);
+        Page<ReservationBoard> reservationBoards = reservationBoardService.findAllBoardsByDate(pageable, date);
+        Member loginMember = memberRepository.findMemberByEmail(email).orElse(null);
+
+        model.addAttribute("reservationBoards", reservationBoards);
+        model.addAttribute("loginMember", loginMember);
+        model.addAttribute("boards", boards);
+    }
+
+    public void preparePostDetailPage(Long id, Model model, LoginSessionInfo loginSessionInfo) {
+        Board board = findOneBoardWithMember(id);
+        if (board == null) {
+            return;
+        }
+
+        boolean isLogin = board.getMember().getEmail().equals(loginSessionInfo.getEmail());
+        boolean isManager = loginSessionInfo.getRole() == Role.ADMIN || loginSessionInfo.getRole() == Role.MANAGER
+                || loginSessionInfo.getRole() == Role.STAFF;
+
+        List<Reply> comments = replyService.getCommentsByPostId(id);
+        PostDetail postDetail = new PostDetail(isLogin, isManager, loginSessionInfo.getEmail(), board, comments);
+
+        model.addAttribute("postDetail", postDetail);
+        model.addAttribute("imagePath", board.getImagePath());
+    }
+
+    public void prepareEditForm(Long id, Model model, LoginSessionInfo loginSessionInfo) {
+        Board board = findOneBoardWithMember(id);
+        if (board == null || loginSessionInfo == null) {
+            return;
+        }
+        model.addAttribute("board", board);
     }
 }
