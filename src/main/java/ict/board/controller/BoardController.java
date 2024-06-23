@@ -11,25 +11,21 @@ import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
 import ict.board.dto.PostDetail;
 import ict.board.service.BoardService;
+import ict.board.service.FileService;
 import ict.board.service.IctStaffMemberService;
 import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import ict.board.service.ReservationBoardService;
 import ict.board.service.ai.WeeklyReportService;
+import ict.board.util.DateUtils;
 import jakarta.validation.Valid;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -40,8 +36,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.SessionAttribute;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -55,9 +49,7 @@ public class BoardController {
     private final IctStaffMemberService ictStaffMemberService;
     private final ReservationBoardService reservationBoardService;
     private final WeeklyReportService weeklyReportService;
-
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private final FileService fileService;
 
     @GetMapping("board/new")
     public String createBoardForm(Model model) {
@@ -80,7 +72,7 @@ public class BoardController {
 
         String imagePath = null;
         if (!form.getImage().isEmpty()) {
-            imagePath = saveImage(form.getImage());
+            imagePath = fileService.saveImage(form.getImage());
         }
 
         if (form.isReservation()) {
@@ -102,21 +94,6 @@ public class BoardController {
         return "redirect:/";
     }
 
-    private String saveImage(MultipartFile image) throws IOException {
-        if (image.isEmpty()) {
-            return null;
-        }
-
-        String originalFilename = image.getOriginalFilename();
-        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String newFilename = System.currentTimeMillis() + fileExtension;
-        Path imagePath = Paths.get(uploadDir, newFilename);
-        Files.createDirectories(imagePath.getParent());
-        Files.write(imagePath, image.getBytes());
-
-        return newFilename;
-    }
-
     @GetMapping("/")
     public String listBoards(
             @Login LoginSessionInfo loginSessionInfo,
@@ -124,7 +101,7 @@ public class BoardController {
             Pageable pageable) {
 
         LocalDate today = LocalDate.now();
-        List<List<LocalDate>> weeks = calculateWeeks(today);
+        List<List<LocalDate>> weeks = DateUtils.calculateWeeks(today);
 
         model.addAttribute("weeks", weeks);
 
@@ -146,7 +123,7 @@ public class BoardController {
             Pageable pageable) {
 
         LocalDate selectedDate = LocalDate.parse(date);
-        List<List<LocalDate>> weeks = calculateWeeks(selectedDate);
+        List<List<LocalDate>> weeks = DateUtils.calculateWeeks(selectedDate);
 
         model.addAttribute("weeks", weeks);
 
@@ -157,30 +134,8 @@ public class BoardController {
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("reservationBoards", reservationBoards);
         model.addAttribute("boards", boards);
-        model.addAttribute("selectedDate", selectedDate);  // Add this line
+        model.addAttribute("selectedDate", selectedDate);
         return "Index";
-    }
-
-    private List<List<LocalDate>> calculateWeeks(LocalDate date) {
-        LocalDate start = date.withDayOfMonth(1);
-        LocalDate end = date.withDayOfMonth(date.lengthOfMonth());
-
-        start = start.minusDays(start.getDayOfWeek().getValue() % 7);
-
-        List<List<LocalDate>> weeks = new ArrayList<>();
-        List<LocalDate> currentWeek = new ArrayList<>();
-        weeks.add(currentWeek);
-
-        for (LocalDate currentDate = start; currentDate.isBefore(end.plusDays(1));
-             currentDate = currentDate.plusDays(1)) {
-            if (currentDate.getDayOfWeek() == DayOfWeek.SUNDAY && !currentWeek.isEmpty()) {
-                currentWeek = new ArrayList<>();
-                weeks.add(currentWeek);
-            }
-            currentWeek.add(currentDate);
-        }
-
-        return weeks;
     }
 
     @GetMapping("/board/{id}")
