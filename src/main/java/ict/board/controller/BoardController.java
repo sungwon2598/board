@@ -21,7 +21,6 @@ import ict.board.util.DateUtils;
 import jakarta.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
@@ -60,10 +59,8 @@ public class BoardController {
     @PostMapping("board/new")
     public String create(@Valid BoardForm form, BindingResult result,
                          @Login LoginSessionInfo loginSessionInfo) throws IOException, InterruptedException {
-        if (form.isReservation()) {
-            if (form.getReservationDate() == null || form.getReservationTime() == null) {
-                result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
-            }
+        if (form.isReservation() && (form.getReservationDate() == null || form.getReservationTime() == null)) {
+            result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
         }
 
         if (result.hasErrors()) {
@@ -76,30 +73,17 @@ public class BoardController {
         }
 
         if (form.isReservation()) {
-            ReservationBoard reservationBoard = new ReservationBoard(
-                    form.getTitle(),
-                    form.getContent(),
-                    form.getRequester(),
-                    form.getRequesterLocation(),
-                    LocalDateTime.of(form.getReservationDate(), form.getReservationTime()),
-                    imagePath
-            );
-            boardService.save(reservationBoard, loginSessionInfo.getEmail());
+            boardService.saveReservationBoard(form, imagePath, loginSessionInfo.getEmail());
         } else {
-            Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(),
-                    form.getRequesterLocation(), imagePath);
-            boardService.save(board, loginSessionInfo.getEmail());
+            boardService.saveBoard(form, imagePath, loginSessionInfo.getEmail());
         }
 
         return "redirect:/";
     }
 
     @GetMapping("/")
-    public String listBoards(
-            @Login LoginSessionInfo loginSessionInfo,
-            Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
-            Pageable pageable) {
-
+    public String listBoards(@Login LoginSessionInfo loginSessionInfo, Model model,
+                             @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
         LocalDate today = LocalDate.now();
         List<List<LocalDate>> weeks = DateUtils.calculateWeeks(today);
 
@@ -110,18 +94,15 @@ public class BoardController {
 
         Member loginMember = memberService.findMemberByEmail(loginSessionInfo.getEmail());
         model.addAttribute("reservationBoards", reservationBoards);
-
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("boards", boards);
+
         return "redirect:/date/" + today;
     }
 
     @GetMapping("/date/{date}")
-    public String listBoardsByDate(
-            @Login LoginSessionInfo loginSessionInfo, @PathVariable String date,
-            Model model, @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC)
-            Pageable pageable) {
-
+    public String listBoardsByDate(@Login LoginSessionInfo loginSessionInfo, @PathVariable String date, Model model,
+                                   @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
         LocalDate selectedDate = LocalDate.parse(date);
         List<List<LocalDate>> weeks = DateUtils.calculateWeeks(selectedDate);
 
@@ -135,6 +116,7 @@ public class BoardController {
         model.addAttribute("reservationBoards", reservationBoards);
         model.addAttribute("boards", boards);
         model.addAttribute("selectedDate", selectedDate);
+
         return "Index";
     }
 
@@ -147,23 +129,20 @@ public class BoardController {
         }
 
         boolean isLogin = board.getMember().getEmail().equals(loginSessionInfo.getEmail());
-        log.info(loginSessionInfo.getRole().toString());
-        boolean isManager = loginSessionInfo.getRole() == Role.ADMIN ||
-                loginSessionInfo.getRole() == Role.MANAGER ||
-                loginSessionInfo.getRole() == Role.STAFF;
+        boolean isManager = loginSessionInfo.getRole() == Role.ADMIN || loginSessionInfo.getRole() == Role.MANAGER
+                || loginSessionInfo.getRole() == Role.STAFF;
 
         List<Reply> comments = replyService.getCommentsByPostId(id);
 
         PostDetail postDetail = new PostDetail(isLogin, isManager, loginSessionInfo.getEmail(), board, comments);
         model.addAttribute("postDetail", postDetail);
-        model.addAttribute("imagePath", board.getImagePath()); // 이미지 경로 추가
+        model.addAttribute("imagePath", board.getImagePath());
 
         return "board/postDetail";
     }
 
     @GetMapping("/board/{id}/editForm")
     public String editForm(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id, Model model) {
-
         Board board = boardService.findOneBoardWithMember(id);
 
         if (board == null || loginSessionInfo == null) {
@@ -177,45 +156,30 @@ public class BoardController {
     @PostMapping("/board/{id}/edit")
     public String editPost(@PathVariable Long id, String title, String content, String requester,
                            String requesterLocation) {
-        Board board = boardService.findOneBoardWithMember(id);
-
-        if (board == null) {
-            return "redirect:/";
-        }
-        boardService.update(id, title, content, requester, requesterLocation);
+        boardService.updateBoard(id, title, content, requester, requesterLocation);
         return "redirect:/board/" + id;
     }
 
     @PostMapping("/board/{id}/delete")
     public String deletePost(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
-
-        Board board = boardService.findOneBoardWithMember(id);
-
-        if (board == null || loginSessionInfo == null) {
+        if (boardService.deleteBoard(id, loginSessionInfo)) {
+            return "redirect:/";
+        } else {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
             return "redirect:/board/" + id;
         }
-
-        replyService.deleteRepliesByBoardId(id);
-        boardService.delete(id);
-        return "redirect:/";
     }
 
     @PostMapping("/board/{id}/changeStatus")
     public String changeStatus(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id, String status,
                                RedirectAttributes redirectAttributes) {
-
-        BoardStatus boardStatus = BoardStatus.valueOf(status);
-
-        boolean success = boardService.changeBoardStatus(id, boardStatus);
-
-        if (!success) {
+        if (boardService.changeBoardStatus(id, BoardStatus.valueOf(status))) {
+            return "redirect:/board/" + id;
+        } else {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
             return "redirect:/board/" + id;
         }
-
-        return "redirect:/board/" + id;
     }
 
     @GetMapping("/weekly")
