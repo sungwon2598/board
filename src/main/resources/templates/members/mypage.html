@@ -38,8 +38,10 @@
     </div>
 
     <!-- Conditionally display members list if the role is ADMIN -->
-    <div class="mb-4" th:if="${role == 'ADMIN'}">
-
+    <div th:if="${memberInfo.role == 'ADMIN'}" class="mb-4">
+        <a class="btn btn-primary" th:href="@{/admin/approve-members}">직원가입 승인</a>
+        <a class="btn btn-secondary" th:href="@{/admin/members-control}">직원관리</a>
+        <a class="btn btn-outline-primary" th:href="@{/staff-join/7345}">직원가입 링크</a>
     </div>
 
     <!-- Boards and Replies in List Groups -->

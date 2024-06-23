@@ -18,6 +18,6 @@ public class MemberInfo {
     private final String memberName;
     private final String memberEmail;
     private final String memberTeam;
-    private final Role role;
+    private final String role;
 
 }

@@ -11,9 +11,19 @@ jobs:
     steps:
       - name: SSH(원격접속)로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
+        env :
+          APPLICATION_PROPERTIES : ${{ secrets.APPLICATION_PROPERTIES }}
         with:
-          host:
-            username:
-            key:
-            script_stop: true
-            script:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_PRIVATE_KEY }}
+          envs : APPLICATION_PROPERTIES
+          script_stop: true
+          script: |
+            cd /home/ubuntu/board
+            rm -rf src/maeil/resources/application.yml
+            git pull origin main
+            echo "&APPLICATION_PROPERTIES" > src/main/resources/application.yml
+            ./gradlew clean build
+            sudo fuser -k -n tcp 8080 || true
+            nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &

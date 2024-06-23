@@ -47,7 +47,11 @@ public class BoardController {
         }
 
         String imagePath = fileService.saveImage(form.getImage());
-        boardService.saveBoard(form, imagePath, loginSessionInfo.getEmail());
+        if (form.isReservation()) {
+            boardService.saveReservationBoard(form, imagePath, loginSessionInfo.getEmail());
+        } else {
+            boardService.saveBoard(form, imagePath, loginSessionInfo.getEmail());
+        }
 
         return "redirect:/";
     }

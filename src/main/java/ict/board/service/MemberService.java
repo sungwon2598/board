@@ -49,9 +49,9 @@ public class MemberService {
         String memberTeam = loginMember.getTeam();
 
         if (loginMember instanceof IctStaffMember loginIctStaffMember) {
-            return new MemberInfo(boards, replies, memberName, email, memberTeam, loginIctStaffMember.getRole());
+            return new MemberInfo(boards, replies, memberName, email, memberTeam, loginIctStaffMember.getRole().toString());
         }
-        return new MemberInfo(boards, replies, memberName, email, memberTeam, Role.NONE);
+        return new MemberInfo(boards, replies, memberName, email, memberTeam, Role.NONE.toString());
     }
 
     public Member findMemberByEmail(String email) {

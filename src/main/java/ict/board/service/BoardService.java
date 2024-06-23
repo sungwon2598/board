@@ -131,9 +131,11 @@ public class BoardService {
         Page<ReservationBoard> reservationBoards = reservationBoardService.findAllBoardsByDate(pageable, date);
         Member loginMember = memberRepository.findMemberByEmail(email).orElse(null);
 
+
         model.addAttribute("reservationBoards", reservationBoards);
         model.addAttribute("loginMember", loginMember);
         model.addAttribute("boards", boards);
+        model.addAttribute("selectedDate", date);
     }
 
     public void preparePostDetailPage(Long id, Model model, LoginSessionInfo loginSessionInfo) {
