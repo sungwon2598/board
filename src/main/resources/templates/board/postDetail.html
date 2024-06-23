@@ -13,6 +13,10 @@
         </div>
         <div class="card-body">
             <p th:text="${postDetail.getBoard().getContent()}">게시글 내용</p>
+            <!-- 이미지 표시 -->
+            <div th:if="${imagePath != null}">
+                <img th:src="@{'/images/' + ${imagePath}}" alt="게시글 이미지" class="img-fluid"/>
+            </div>
         </div>
         <div class="card-footer">
             <small>
@@ -46,9 +50,7 @@
     </div>
 
     <!-- Status Change Button, visible if isManager is true -->
-    <button class="btn btn-secondary" onclick="showStatusChangeForm()" th:if="${postDetail.isManager}" type="button">상태
-        변경
-    </button>
+    <button class="btn btn-secondary" onclick="showStatusChangeForm()" th:if="${postDetail.isManager}" type="button">상태 변경</button>
 
     <!-- Status Change Form -->
     <div id="statusChangeForm" style="display:none;">
@@ -56,8 +58,7 @@
             <div class="row">
                 <div class="col">
                     <div class="form-check">
-                        <input checked class="form-check-input" id="UNCHECKED" name="status" type="radio"
-                               value="UNCHECKED">
+                        <input checked class="form-check-input" id="UNCHECKED" name="status" type="radio" value="UNCHECKED">
                         <label class="form-check-label" for="UNCHECKED">미조치</label>
                     </div>
                     <div class="form-check">
@@ -116,8 +117,7 @@
                         <small>
                             작성자: <span th:text="${reply.getMember().getName()}"></span> |
                             소속 : <span th:text="${reply.getMember().getTeam()}"></span> |
-                            작성시간: <span
-                                th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
+                            작성시간: <span th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm:ss')}">작성 시간</span>
                         </small>
                         <form method="post"
                               th:action="@{/board/{boardId}/reply/delete/{replyId}(boardId=${postDetail.getBoard.getId()}, replyId=${reply.id})}"

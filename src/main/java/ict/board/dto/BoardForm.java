@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -23,6 +24,8 @@ public class BoardForm {
 
     // 예약 민원 여부
     private boolean reservation;
+
+    private MultipartFile image;
 
     // 예약 날짜 (예약 민원일 경우 필요)
     @NotNull(message = "예약 날짜를 입력해주세요", groups = ReservationValidationGroup.class)

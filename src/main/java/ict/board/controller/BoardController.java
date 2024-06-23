@@ -16,7 +16,11 @@ import ict.board.service.MemberService;
 import ict.board.service.ReplyService;
 import ict.board.service.ReservationBoardService;
 import ict.board.service.ai.WeeklyReportService;
+import jakarta.validation.Valid;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -32,10 +37,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -50,16 +56,18 @@ public class BoardController {
     private final ReservationBoardService reservationBoardService;
     private final WeeklyReportService weeklyReportService;
 
+    @Value("${file.upload-dir}")
+    private String uploadDir;
+
     @GetMapping("board/new")
     public String createBoardForm(Model model) {
         model.addAttribute("BoardForm", new BoardForm());
         return "board/boardform";
     }
 
-    @PostMapping("/board/new")
-    public String create(@Validated BoardForm form, BindingResult result,
+    @PostMapping("board/new")
+    public String create(@Valid BoardForm form, BindingResult result,
                          @Login LoginSessionInfo loginSessionInfo) throws IOException, InterruptedException {
-        // Validate only if it is a reservation
         if (form.isReservation()) {
             if (form.getReservationDate() == null || form.getReservationTime() == null) {
                 result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
@@ -70,22 +78,43 @@ public class BoardController {
             return "board/boardform";
         }
 
+        String imagePath = null;
+        if (!form.getImage().isEmpty()) {
+            imagePath = saveImage(form.getImage());
+        }
+
         if (form.isReservation()) {
             ReservationBoard reservationBoard = new ReservationBoard(
                     form.getTitle(),
                     form.getContent(),
                     form.getRequester(),
                     form.getRequesterLocation(),
-                    LocalDateTime.of(form.getReservationDate(), form.getReservationTime())
+                    LocalDateTime.of(form.getReservationDate(), form.getReservationTime()),
+                    imagePath
             );
             boardService.save(reservationBoard, loginSessionInfo.getEmail());
         } else {
             Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(),
-                    form.getRequesterLocation());
+                    form.getRequesterLocation(), imagePath);
             boardService.save(board, loginSessionInfo.getEmail());
         }
 
         return "redirect:/";
+    }
+
+    private String saveImage(MultipartFile image) throws IOException {
+        if (image.isEmpty()) {
+            return null;
+        }
+
+        String originalFilename = image.getOriginalFilename();
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        String newFilename = System.currentTimeMillis() + fileExtension;
+        Path imagePath = Paths.get(uploadDir, newFilename);
+        Files.createDirectories(imagePath.getParent());
+        Files.write(imagePath, image.getBytes());
+
+        return newFilename;
     }
 
     @GetMapping("/")
@@ -165,13 +194,14 @@ public class BoardController {
         boolean isLogin = board.getMember().getEmail().equals(loginSessionInfo.getEmail());
         log.info(loginSessionInfo.getRole().toString());
         boolean isManager = loginSessionInfo.getRole() == Role.ADMIN ||
-                loginSessionInfo.getRole() == Role.MANAGER
-                || loginSessionInfo.getRole() == Role.STAFF;
+                loginSessionInfo.getRole() == Role.MANAGER ||
+                loginSessionInfo.getRole() == Role.STAFF;
 
         List<Reply> comments = replyService.getCommentsByPostId(id);
 
         PostDetail postDetail = new PostDetail(isLogin, isManager, loginSessionInfo.getEmail(), board, comments);
         model.addAttribute("postDetail", postDetail);
+        model.addAttribute("imagePath", board.getImagePath()); // 이미지 경로 추가
 
         return "board/postDetail";
     }

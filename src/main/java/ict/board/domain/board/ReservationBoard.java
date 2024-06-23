@@ -18,9 +18,9 @@ public class ReservationBoard extends Board {
         super();
     }
 
-    public ReservationBoard(String title, String content, String requester, String requseterLocation,
-                            LocalDateTime reservationDate) {
-        super(title, content, requester, requseterLocation);
+    public ReservationBoard(String title, String content, String requester, String requesterLocation,
+                            LocalDateTime reservationDate, String imagePath) {
+        super(title, content, requester, requesterLocation, imagePath);
         this.reservationDate = reservationDate;
     }
 

@@ -29,9 +29,6 @@ public class Board extends CreateTime {
     @JoinColumn(name = "member_id")
     private Member member;
 
-//    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-//    private List<Reply> replies = new ArrayList<>();
-
     private String title;
 
     @Column(name = "last_modified_at")
@@ -50,33 +47,26 @@ public class Board extends CreateTime {
     @Column(name = "requester_location")
     private String requesterLocation;
 
-    public Board() {
+    @Column(name = "image_path")
+    private String imagePath;
 
-    }
+    public Board() {}
 
-    public Board(String title, String content, String requester, String requesterLocation) {
+    public Board(String title, String content, String requester, String requesterLocation, String imagePath) {
         this.title = title;
         this.content = content;
         this.requester = requester;
         this.requesterLocation = requesterLocation;
+        this.imagePath = imagePath;
         this.boardStatus = BoardStatus.UNCHECKED;
     }
 
     public void addMember(Member member) {
-        //member.getBoards().add(this);
         this.member = member;
     }
 
     public void changeStatus(BoardStatus boardStatus) {
-        if (boardStatus.equals(BoardStatus.UNCHECKED)) {
-            this.boardStatus = BoardStatus.UNCHECKED;
-        } else if (boardStatus.equals(BoardStatus.IN_PROGRESS)) {
-            this.boardStatus = BoardStatus.IN_PROGRESS;
-        } else if (boardStatus.equals(BoardStatus.COMPLETED)) {
-            this.boardStatus = BoardStatus.COMPLETED;
-        } else if (boardStatus.equals(BoardStatus.NIGHT_SHIFT)) {
-            this.boardStatus = BoardStatus.NIGHT_SHIFT;
-        }
+        this.boardStatus = boardStatus;
     }
 
     public void changeTitle(String title) {
@@ -95,4 +85,7 @@ public class Board extends CreateTime {
         this.requesterLocation = requesterLocation;
     }
 
+    public void changeImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
 }
