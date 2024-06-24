@@ -34,4 +34,6 @@ public interface BoardRepository extends JpaRepository<Board, Long> {
 
     Page<Board> findAllByBoardStatus(Pageable pageable, BoardStatus boardStatus);
 
+    Page<Board> findAllByMemberEmail(String email, Pageable pageable);
+
 }

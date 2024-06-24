@@ -3,6 +3,7 @@ package ict.board.controller;
 import ict.board.config.argumentresolver.Login;
 import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.board.BoardStatus;
+import ict.board.domain.member.Role;
 import ict.board.dto.BoardForm;
 import ict.board.service.BoardService;
 import ict.board.service.FileService;
@@ -60,6 +61,9 @@ public class BoardController {
     public String listBoards(@Login LoginSessionInfo loginSessionInfo, Model model,
                              @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
         boardService.prepareBoardListPage(model, pageable, LocalDate.now(), loginSessionInfo.getEmail());
+        if(loginSessionInfo.getRole() == Role.NONE) {
+            return "redirect:/guest/boards";
+        }
         return "redirect:/date/" + LocalDate.now();
     }
 

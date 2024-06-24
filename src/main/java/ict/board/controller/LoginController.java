@@ -43,7 +43,6 @@ public class LoginController {
             HttpSession session = request.getSession();
             session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.getEmail());
 
-            // IctStaffMember인 경우 역할도 추가로 저장
             if (loginMember instanceof IctStaffMember) {
                 session.setAttribute(SessionConst.MEMBER_ROLE, ((IctStaffMember) loginMember).getRole().name());
             } else {

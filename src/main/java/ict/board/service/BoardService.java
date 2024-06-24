@@ -162,4 +162,8 @@ public class BoardService {
         }
         model.addAttribute("board", board);
     }
+
+    public Page<Board> findAllByMemberEmail (String email, Pageable pageable) {
+        return boardRepository.findAllByMemberEmail(email, pageable);
+    }
 }

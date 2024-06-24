@@ -33,7 +33,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/login", "/css/**", "/*.ico", "/members/new", "/logout",
-                        "/members/email-verification", "/members/register", "/newMan", "/members/sendVerificationCode"
+                        "/members/email-verification", "/members/register", "/members/sendVerificationCode"
                         , "/staff-join/7345");
 
         // Adding the role check interceptor

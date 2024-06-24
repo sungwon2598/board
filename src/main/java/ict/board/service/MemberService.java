@@ -11,6 +11,7 @@ import ict.board.repository.IctStaffMemberRepository;
 import ict.board.repository.MemberRepository;
 import ict.board.repository.ReplyRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,6 +61,10 @@ public class MemberService {
 
     public List<Member> getAllMembers() {
         return memberRepository.findAllMembers();
+    }
+
+    public Optional<String> findMemberNameByEmail(String email) {
+        return memberRepository.findMemberNameByEmail(email);
     }
 
 }
