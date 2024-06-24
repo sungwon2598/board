@@ -62,6 +62,7 @@ public class BoardController {
                              @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
         boardService.prepareBoardListPage(model, pageable, LocalDate.now(), loginSessionInfo.getEmail());
         if(loginSessionInfo.getRole() == Role.NONE) {
+            log.info(loginSessionInfo.getRole().toString()+"================================");
             return "redirect:/guest/boards";
         }
         return "redirect:/date/" + LocalDate.now();

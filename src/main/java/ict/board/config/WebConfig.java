@@ -1,8 +1,7 @@
 package ict.board.config;
 
 import ict.board.config.argumentresolver.LoginMemberArgumentResolver;
-import ict.board.interceptor.LoginCheckInterceptor;
-import ict.board.interceptor.RoleCheckInterceptor;
+import ict.board.interceptor.CombinedInterceptor;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Autowired
-    private RoleCheckInterceptor roleCheckInterceptor;
+    private CombinedInterceptor combinedInterceptor;
 
     @Value("${file.upload-dir}")
     private String uploadDir;
@@ -29,17 +28,12 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginCheckInterceptor())
+        registry.addInterceptor(combinedInterceptor)
                 .order(1)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/login", "/css/**", "/*.ico", "/members/new", "/logout",
-                        "/members/email-verification", "/members/register", "/members/sendVerificationCode"
-                        , "/staff-join/7345");
-
-        // Adding the role check interceptor
-        registry.addInterceptor(roleCheckInterceptor)
-                .order(2)
-                .addPathPatterns("/admin/**", "/staff-only/**", "/manage/**"); // Define paths that need role checks
+                        "/members/email-verification", "/members/register", "/members/sendVerificationCode",
+                        "/staff-join/7345");
     }
 
     @Override
