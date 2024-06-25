@@ -1,6 +1,6 @@
 package ict.board.controller;
 
-import ict.board.config.argumentresolver.Login;
+import ict.board.config.annotation.Login;
 import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.member.Building;
 import ict.board.domain.member.Location;

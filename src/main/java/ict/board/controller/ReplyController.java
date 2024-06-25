@@ -1,11 +1,13 @@
 package ict.board.controller;
 
-import ict.board.config.argumentresolver.Login;
+import ict.board.config.annotation.Login;
+import ict.board.config.annotation.OnlyIctAndAuthor;
 import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.dto.ReplyForm;
 import ict.board.service.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,11 +29,7 @@ public class ReplyController {
 
     @PostMapping("/board/{boardId}/reply/delete/{replyId}")
     public String deleteReply(@PathVariable Long replyId, @PathVariable Long boardId,
-                              @Login LoginSessionInfo loginSessionInfo) {
-        // 관리자 권한 확인
-        if (!"MANAGER".equals(loginSessionInfo.getRole().name())) {
-            return "redirect:/board/" + boardId + "?error=auth";
-        }
+                              @Login LoginSessionInfo loginSessionInfo, Model model) {
         replyService.deleteReply(replyId);
         return "redirect:/board/" + boardId;
     }

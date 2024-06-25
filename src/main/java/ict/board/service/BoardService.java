@@ -166,4 +166,9 @@ public class BoardService {
     public Page<Board> findAllByMemberEmail (String email, Pageable pageable) {
         return boardRepository.findAllByMemberEmail(email, pageable);
     }
+
+    public boolean isUserAuthorOfBoard(Long boardId, String userEmail) {
+        Board board = boardRepository.findById(boardId).orElse(null);
+        return board != null && board.getMember().getEmail().equals(userEmail);
+    }
 }
