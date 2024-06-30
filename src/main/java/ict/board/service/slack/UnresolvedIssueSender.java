@@ -19,7 +19,18 @@ public class UnresolvedIssueSender {
     private final SlackMessageSender slackMessageSender;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM월 dd일 HH시 mm분");
 
-    @Scheduled(cron = "0 23 16 * * *")
+    @Scheduled(cron = "0 0 10 * * *")
+    @Transactional
+    public void logUncheckedBoardsMorning() {
+        logUncheckedBoards();
+    }
+
+    @Scheduled(cron = "0 0 14 * * *")
+    @Transactional
+    public void logUncheckedBoardsAfternoon() {
+        logUncheckedBoards();
+    }
+
     @Transactional
     public void logUncheckedBoards() {
         List<Board> uncheckedBoards = boardRepository.findByBoardStatus(BoardStatus.UNCHECKED);

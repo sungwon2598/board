@@ -1,7 +1,8 @@
 package ict.board.controller;
 
+import ict.board.config.annotation.ICTOnly;
+import ict.board.config.annotation.ICTorAuthor;
 import ict.board.config.annotation.Login;
-import ict.board.config.annotation.OnlyIctAndAuthor;
 import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.member.Role;
@@ -62,7 +63,7 @@ public class BoardController {
     public String listBoards(@Login LoginSessionInfo loginSessionInfo, Model model,
                              @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
         boardService.prepareBoardListPage(model, pageable, LocalDate.now(), loginSessionInfo.getEmail());
-        if(loginSessionInfo.getRole() == Role.NONE) {
+        if (loginSessionInfo.getRole() == Role.NONE) {
             return "redirect:/guest/boards";
         }
         return "redirect:/date/" + LocalDate.now();
@@ -71,28 +72,28 @@ public class BoardController {
     @GetMapping("/date/{date}")
     public String listBoardsByDate(@Login LoginSessionInfo loginSessionInfo, @PathVariable String date, Model model,
                                    @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
-        if(loginSessionInfo.getRole() == Role.NONE) {
+        if (loginSessionInfo.getRole() == Role.NONE) {
             return "redirect:/guest/boards";
         }
         boardService.prepareBoardListPage(model, pageable, LocalDate.parse(date), loginSessionInfo.getEmail());
         return "Index";
     }
 
-    @OnlyIctAndAuthor
+    @ICTorAuthor
     @GetMapping("/board/{id}")
     public String postDetail(@PathVariable Long id, Model model, @Login LoginSessionInfo loginSessionInfo) {
         boardService.preparePostDetailPage(id, model, loginSessionInfo);
         return "board/postDetail";
     }
 
-    @OnlyIctAndAuthor
+    @ICTorAuthor
     @GetMapping("/board/{id}/editForm")
     public String editForm(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id, Model model) {
         boardService.prepareEditForm(id, model, loginSessionInfo);
         return "board/editForm";
     }
 
-    @OnlyIctAndAuthor
+    @ICTorAuthor
     @PostMapping("/board/{id}/edit")
     public String editPost(@PathVariable Long id, String title, String content, String requester,
                            String requesterLocation) {
@@ -100,7 +101,7 @@ public class BoardController {
         return "redirect:/board/" + id;
     }
 
-    @OnlyIctAndAuthor
+    @ICTorAuthor
     @PostMapping("/board/{id}/delete")
     public String deletePost(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
@@ -112,8 +113,9 @@ public class BoardController {
         }
     }
 
+    @ICTOnly
     @PostMapping("/board/{id}/changeStatus")
-    public String changeStatus(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id, String status,
+    public String changeStatus(@PathVariable Long id, String status,
                                RedirectAttributes redirectAttributes) {
         if (boardService.changeBoardStatus(id, BoardStatus.valueOf(status))) {
             return "redirect:/board/" + id;
