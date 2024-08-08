@@ -25,7 +25,7 @@ public class CombinedInterceptor implements HandlerInterceptor {
             throws Exception {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
-            response.sendRedirect("/login");
+            response.sendRedirect("login");
             return false;
         }
 
@@ -44,7 +44,7 @@ public class CombinedInterceptor implements HandlerInterceptor {
                     return false;
                 }
             }
-            response.sendRedirect("/access-denied");
+            response.sendRedirect("access-denied");
             return false;
         }
 

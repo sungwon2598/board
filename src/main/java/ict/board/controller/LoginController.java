@@ -1,12 +1,10 @@
 package ict.board.controller;
 
-import ict.board.constant.SessionConst;
-import ict.board.domain.member.IctStaffMember;
-import ict.board.domain.member.Member;
 import ict.board.dto.LoginForm;
+import ict.board.dto.LoginResult;
 import ict.board.service.LoginService;
+import ict.board.service.SessionService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginController {
 
     private final LoginService loginService;
+    private final SessionService sessionService;
 
     @GetMapping("/login")
     public String loginForm(Model model) {
@@ -30,39 +29,30 @@ public class LoginController {
     }
 
     @PostMapping("/login")
-    public String myPage(@Valid @ModelAttribute("loginForm") LoginForm form, BindingResult result,
-                         HttpServletRequest request,
-                         @RequestParam(defaultValue = "/") String redirectURL, Model model) {
+    public String login(@Valid @ModelAttribute("loginForm") LoginForm form,
+                        BindingResult bindingResult,
+                        HttpServletRequest request,
+                        @RequestParam(defaultValue = "/") String redirectURL,
+                        Model model) {
 
-        if (result.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             return "login";
         }
 
-        try {
-            Member loginMember = loginService.login(form.getEmail(), form.getPassword());
-            HttpSession session = request.getSession();
-            session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember.getEmail());
+        LoginResult loginResult = loginService.authenticate(form.getEmail(), form.getPassword());
 
-            if (loginMember instanceof IctStaffMember) {
-                session.setAttribute(SessionConst.MEMBER_ROLE, ((IctStaffMember) loginMember).getRole().name());
-            } else {
-                session.setAttribute(SessionConst.MEMBER_ROLE, "NONE");
-            }
-
+        if (loginResult.isSuccess()) {
+            sessionService.createLoginSession(request.getSession(), loginResult.getMember());
             return "redirect:" + redirectURL;
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("loginError", e.getMessage());
+        } else {
+            model.addAttribute("loginError", loginResult.getErrorMessage());
             return "login";
         }
     }
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null) {
-            session.invalidate();
-        }
-        return "redirect:/";
+        sessionService.invalidateSession(request.getSession(false));
+        return "redirect:/login";
     }
-
 }
