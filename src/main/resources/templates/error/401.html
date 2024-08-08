@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>401 - Unauthorized</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6 offset-md-3 text-center">
+      <h1 class="display-1">401</h1>
+      <h2 class="mb-3">인증 오류</h2>
+      <p class="lead mb-4" th:text="${errorMessage}">인증에 실패했습니다.</p>
+      <a href="/login" class="btn btn-primary">로그인 페이지로 이동</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

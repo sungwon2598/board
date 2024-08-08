@@ -6,6 +6,7 @@ import ict.board.config.annotation.ICTorAuthor;
 import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.constant.SessionConst;
 import ict.board.domain.member.Role;
+import ict.board.exception.CustomAccessDeniedException;
 import ict.board.service.BoardService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -42,7 +43,7 @@ public class AccessAspect {
     private void checkStaffAccess() {
         LoginSessionInfo loginSessionInfo = getSessionInfo();
         if (!isStaff(loginSessionInfo.getRole())) {
-            throw new SecurityException("Access denied");
+            throw new CustomAccessDeniedException("Access denied");
         }
     }
 
@@ -56,19 +57,19 @@ public class AccessAspect {
             return;
         }
 
-        throw new SecurityException("Access denied");
+        throw new CustomAccessDeniedException("Access denied");
     }
 
     private LoginSessionInfo getSessionInfo() {
         HttpSession session = request.getSession(false);
         if (session == null) {
-            throw new SecurityException("No session found");
+            throw new CustomAccessDeniedException("No session found");
         }
 
         String email = (String) session.getAttribute(SessionConst.LOGIN_MEMBER);
         String roleStr = (String) session.getAttribute(SessionConst.MEMBER_ROLE);
         if (email == null || roleStr == null) {
-            throw new SecurityException("User not logged in");
+            throw new CustomAccessDeniedException("User not logged in");
         }
 
         Role role = Role.valueOf(roleStr);
