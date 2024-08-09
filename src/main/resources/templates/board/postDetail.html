@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:replace="fragments/header :: header"></head>
 <body>
 
@@ -42,6 +42,7 @@
                 <form class="d-inline-block" id="deletePostForm"
                       method="post" th:action="@{/board/{id}/delete(id=${postDetail.getBoard.getId()})}"
                       th:if="${postDetail.isLogin}">
+                    <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                     <input name="_method" type="hidden" value="delete"/>
                     <button class="btn btn-danger" onclick="submitDeleteForm()" type="button">삭제</button>
                 </form>
@@ -55,6 +56,7 @@
     <!-- Status Change Form -->
     <div id="statusChangeForm" style="display:none;">
         <form method="post" th:action="@{/board/{id}/changeStatus(id=${postDetail.getBoard.getId()})}">
+            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <div class="row">
                 <div class="col">
                     <div class="form-check">
@@ -98,6 +100,7 @@
     <div class="mt-4">
         <h4>댓글</h4>
         <form method="post" th:action="@{/board/{id}/reply(id=${postDetail.getBoard.getId()})}">
+            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <!-- 댓글 입력 필드 -->
             <div class="form-group mt-2">
                 <textarea class="form-control" name="reply" placeholder="댓글을 입력하세요"></textarea>
@@ -122,6 +125,7 @@
                         <form method="post"
                               th:action="@{/board/{boardId}/reply/delete/{replyId}(boardId=${postDetail.getBoard.getId()}, replyId=${reply.id})}"
                               th:if="${reply.getMember().getEmail() == loginMemberEmail}">
+                            <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                             <input name="_method" type="hidden" value="delete"/>
                             <button class="btn btn-danger btn-sm" type="submit">삭제</button>
                         </form>

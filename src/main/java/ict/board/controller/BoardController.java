@@ -1,11 +1,6 @@
 package ict.board.controller;
 
-import ict.board.config.annotation.ICTOnly;
-import ict.board.config.annotation.ICTorAuthor;
-import ict.board.config.annotation.Login;
-import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.board.BoardStatus;
-import ict.board.domain.member.Role;
 import ict.board.dto.BoardForm;
 import ict.board.service.BoardService;
 import ict.board.service.FileService;
@@ -19,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -44,56 +42,80 @@ public class BoardController {
 
     @PostMapping("board/new")
     public String create(@Valid BoardForm form, BindingResult result,
-                         @Login LoginSessionInfo loginSessionInfo) throws IOException, InterruptedException {
+                         @AuthenticationPrincipal UserDetails userDetails) throws IOException, InterruptedException {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
         if (boardService.validateBoardForm(form, result)) {
             return "board/boardform";
         }
 
         String imagePath = fileService.saveImage(form.getImage());
+        String email = userDetails.getUsername();
         if (form.isReservation()) {
-            boardService.saveReservationBoard(form, imagePath, loginSessionInfo.getEmail());
+            boardService.saveReservationBoard(form, imagePath, email);
         } else {
-            boardService.saveBoard(form, imagePath, loginSessionInfo.getEmail());
+            boardService.saveBoard(form, imagePath, email);
         }
 
         return "redirect:/";
     }
 
     @GetMapping("/")
-    public String listBoards(@Login LoginSessionInfo loginSessionInfo, Model model,
+    public String listBoards(@AuthenticationPrincipal UserDetails userDetails, Model model,
                              @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
-        boardService.prepareBoardListPage(model, pageable, LocalDate.now(), loginSessionInfo.getEmail());
-        if (loginSessionInfo.getRole() == Role.NONE) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        String email = userDetails.getUsername();
+        boardService.prepareBoardListPage(model, pageable, LocalDate.now(), email);
+
+        if (userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_NONE"))) {
             return "redirect:/guest/boards";
         }
         return "redirect:/date/" + LocalDate.now();
     }
 
     @GetMapping("/date/{date}")
-    public String listBoardsByDate(@Login LoginSessionInfo loginSessionInfo, @PathVariable String date, Model model,
+    public String listBoardsByDate(@AuthenticationPrincipal UserDetails userDetails, @PathVariable String date, Model model,
                                    @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
-        if (loginSessionInfo.getRole() == Role.NONE) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+
+        if (userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_NONE"))) {
             return "redirect:/guest/boards";
         }
-        boardService.prepareBoardListPage(model, pageable, LocalDate.parse(date), loginSessionInfo.getEmail());
+
+        String email = userDetails.getUsername();
+        boardService.prepareBoardListPage(model, pageable, LocalDate.parse(date), email);
         return "Index";
     }
 
-    @ICTorAuthor
+    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN') or @boardService.isUserAuthorOfBoard(#id, principal.username)")
     @GetMapping("/board/{id}")
-    public String postDetail(@PathVariable Long id, Model model, @Login LoginSessionInfo loginSessionInfo) {
-        boardService.preparePostDetailPage(id, model, loginSessionInfo);
+    public String postDetail(@PathVariable Long id, Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        boardService.preparePostDetailPage(id, model, userDetails);
         return "board/postDetail";
     }
 
-    @ICTorAuthor
+    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN') or @boardService.isUserAuthorOfBoard(#id, principal.username)")
     @GetMapping("/board/{id}/editForm")
-    public String editForm(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id, Model model) {
-        boardService.prepareEditForm(id, model, loginSessionInfo);
+    public String editForm(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id, Model model) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        boardService.prepareEditForm(id, model, userDetails);
         return "board/editForm";
     }
 
-    @ICTorAuthor
+    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN') or @boardService.isUserAuthorOfBoard(#id, principal.username)")
     @PostMapping("/board/{id}/edit")
     public String editPost(@PathVariable Long id, String title, String content, String requester,
                            String requesterLocation) {
@@ -101,11 +123,14 @@ public class BoardController {
         return "redirect:/board/" + id;
     }
 
-    @ICTorAuthor
+    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN') or @boardService.isUserAuthorOfBoard(#id, principal.username)")
     @PostMapping("/board/{id}/delete")
-    public String deletePost(@Login LoginSessionInfo loginSessionInfo, @PathVariable Long id,
+    public String deletePost(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
-        if (boardService.deleteBoard(id, loginSessionInfo)) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        if (boardService.deleteBoard(id, userDetails)) {
             return "redirect:/";
         } else {
             redirectAttributes.addFlashAttribute("error", "인증 실패");
@@ -113,7 +138,7 @@ public class BoardController {
         }
     }
 
-    @ICTOnly
+    @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN')")
     @PostMapping("/board/{id}/changeStatus")
     public String changeStatus(@PathVariable Long id, String status,
                                RedirectAttributes redirectAttributes) {

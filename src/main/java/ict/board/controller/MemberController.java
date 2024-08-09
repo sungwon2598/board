@@ -1,32 +1,28 @@
 package ict.board.controller;
 
-import ict.board.config.annotation.Login;
-import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.member.Building;
 import ict.board.domain.member.Location;
 import ict.board.domain.member.Member;
 import ict.board.dto.MemberForm;
 import ict.board.dto.MemberInfo;
-import ict.board.repository.IctStaffMemberRepository;
 import ict.board.service.MailService;
 import ict.board.service.MemberService;
 import ict.board.util.CombinedRandomStringGenerator;
 import ict.board.util.cache.VerificationCodeCache;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,8 +32,8 @@ public class MemberController {
     private final MemberService memberService;
     private final MailService mailService;
     private final VerificationCodeCache verificationCodeCache;
-    private final IctStaffMemberRepository ictStaffMemberRepository;
     private final CombinedRandomStringGenerator generator;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/members/new")
     public String createForm(Model model) {
@@ -67,9 +63,9 @@ public class MemberController {
                 return "members/registrationForm";
             }
 
-            String hashedPassword = BCrypt.hashpw(form.getPassword(), BCrypt.gensalt());
+            String encodedPassword = passwordEncoder.encode(form.getPassword());
             Location location = new Location(Building.valueOf(form.getBuilding()), form.getRoomNumber());
-            Member member = new Member(sessionEmail, form.getName(), hashedPassword, location, form.getTeam(),
+            Member member = new Member(sessionEmail, form.getName(), encodedPassword, location, form.getTeam(),
                     form.getMemberNumber());
 
             memberService.join(member);
@@ -83,30 +79,35 @@ public class MemberController {
     @PostMapping("/members/sendVerificationCode")
     @ResponseBody
     public Map<String, Object> sendVerificationCode(@RequestParam String email, HttpSession session) {
+        log.info("0==============================");
         Map<String, Object> response = new HashMap<>();
         if (memberService.findMemberByEmail(email) != null) {
             response.put("success", false);
             response.put("message", "이미 존재하는 이메일입니다.");
+            log.info("0.5==============================");
             return response;
         }
+        log.info("1==============================");
 
         String verificationCode = generator.generateRandomString();
         log.info("email={}", email);
         log.info("verificationCode={}", verificationCode);
 
         verificationCodeCache.storeCode(email, verificationCode);
+        log.info("2==============================");
         mailService.sendEmail(email, "Verification Code", verificationCode);
 
         session.setAttribute("userEmail", email);
         session.setAttribute("emailSent", true);
 
+        log.info("3==============================");
         response.put("success", true);
         return response;
     }
 
     @GetMapping("/mypage")
-    public String myPage(@Login LoginSessionInfo loginSessionInfo, Model model) {
-        MemberInfo memberInfo = memberService.getMemberInfo(loginSessionInfo.getEmail());
+    public String myPage(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        MemberInfo memberInfo = memberService.getMemberInfo(userDetails.getUsername());
         model.addAttribute("memberInfo", memberInfo);
         return "members/mypage";
     }

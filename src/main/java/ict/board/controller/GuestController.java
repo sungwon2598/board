@@ -1,7 +1,5 @@
 package ict.board.controller;
 
-import ict.board.config.annotation.Login;
-import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.board.Board;
 import ict.board.dto.GusetInfo;
 import ict.board.service.BoardService;
@@ -13,6 +11,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,16 +27,19 @@ public class GuestController {
     private final MemberService memberService;
 
     @GetMapping("/boards")
-    public String listBoards(@Login LoginSessionInfo loginSessionInfo, Model model,
+    public String listBoards(@AuthenticationPrincipal UserDetails userDetails, Model model,
                              @PageableDefault(size = 10, sort = "createdAt", direction = Direction.DESC) Pageable pageable) {
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
 
-        boardService.prepareBoardListPage(model, pageable, LocalDate.now(), loginSessionInfo.getEmail());
-        Optional<String> memberName = memberService.findMemberNameByEmail(loginSessionInfo.getEmail());
-        Page<Board> allByMemberEmail = boardService.findAllByMemberEmail(loginSessionInfo.getEmail(), pageable);
+        String email = userDetails.getUsername();
+        boardService.prepareBoardListPage(model, pageable, LocalDate.now(), email);
+        Optional<String> memberName = memberService.findMemberNameByEmail(email);
+        Page<Board> allByMemberEmail = boardService.findAllByMemberEmail(email, pageable);
         GusetInfo guestInfo = new GusetInfo(memberName, allByMemberEmail);
         model.addAttribute("guestInfo", guestInfo);
 
         return "guest";
     }
-
 }

@@ -1,11 +1,8 @@
 package ict.board.service;
 
-import ict.board.config.argumentresolver.LoginMemberArgumentResolver.LoginSessionInfo;
 import ict.board.domain.board.Board;
 import ict.board.domain.board.BoardStatus;
 import ict.board.domain.board.ReservationBoard;
-import ict.board.domain.member.Member;
-import ict.board.domain.member.Role;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
 import ict.board.dto.PostDetail;
@@ -23,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -71,9 +70,9 @@ public class BoardService {
     }
 
     @Transactional
-    public boolean deleteBoard(Long id, LoginSessionInfo loginSessionInfo) {
+    public boolean deleteBoard(Long id, UserDetails userDetails) {
         Board board = boardRepository.findById(id).orElse(null);
-        if (board == null || loginSessionInfo == null || !board.getMember().getEmail().equals(loginSessionInfo.getEmail())) {
+        if (board == null || userDetails == null || !board.getMember().getEmail().equals(userDetails.getUsername())) {
             return false;
         }
         replyService.deleteRepliesByBoardId(id);
@@ -107,9 +106,9 @@ public class BoardService {
         return boardRepository.findWithMemberById(id);
     }
 
-    public List<Board> findBoardsbyMember(Member member) {
-        return boardRepository.findByMember(member);
-    }
+//    public List<Board> findBoardsbyMember(String email) {
+//        return boardRepository.findByMemberEmail(email);
+//    }
 
     public Page<Board> findAllBoardsByStatus(Pageable pageable, String status) {
         BoardStatus boardStatus = BoardStatus.valueOf(status);
@@ -117,6 +116,7 @@ public class BoardService {
     }
 
     public boolean validateBoardForm(BoardForm form, BindingResult result) {
+        log.info("0.5===========================");
         if (form.isReservation() && (form.getReservationDate() == null || form.getReservationTime() == null)) {
             result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
         }
@@ -129,35 +129,34 @@ public class BoardService {
 
         Page<Board> boards = findAllBoardsByDate(pageable, date);
         Page<ReservationBoard> reservationBoards = reservationBoardService.findAllBoardsByDate(pageable, date);
-        Member loginMember = memberRepository.findMemberByEmail(email).orElse(null);
-
 
         model.addAttribute("reservationBoards", reservationBoards);
-        model.addAttribute("loginMember", loginMember);
+        model.addAttribute("loginMemberEmail", email);
         model.addAttribute("boards", boards);
         model.addAttribute("selectedDate", date);
     }
 
-    public void preparePostDetailPage(Long id, Model model, LoginSessionInfo loginSessionInfo) {
+    public void preparePostDetailPage(Long id, Model model, UserDetails userDetails) {
         Board board = findOneBoardWithMember(id);
         if (board == null) {
             return;
         }
 
-        boolean isLogin = board.getMember().getEmail().equals(loginSessionInfo.getEmail());
-        boolean isManager = loginSessionInfo.getRole() == Role.ADMIN || loginSessionInfo.getRole() == Role.MANAGER
-                || loginSessionInfo.getRole() == Role.STAFF;
+        boolean isLogin = board.getMember().getEmail().equals(userDetails.getUsername());
+        boolean isManager = userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) ||
+                userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_MANAGER")) ||
+                userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_STAFF"));
 
         List<Reply> comments = replyService.getCommentsByPostId(id);
-        PostDetail postDetail = new PostDetail(isLogin, isManager, loginSessionInfo.getEmail(), board, comments);
+        PostDetail postDetail = new PostDetail(isLogin, isManager, userDetails.getUsername(), board, comments);
 
         model.addAttribute("postDetail", postDetail);
         model.addAttribute("imagePath", board.getImagePath());
     }
 
-    public void prepareEditForm(Long id, Model model, LoginSessionInfo loginSessionInfo) {
+    public void prepareEditForm(Long id, Model model, UserDetails userDetails) {
         Board board = findOneBoardWithMember(id);
-        if (board == null || loginSessionInfo == null) {
+        if (board == null || userDetails == null) {
             return;
         }
         model.addAttribute("board", board);
