@@ -6,12 +6,15 @@ import ict.board.domain.board.ReservationBoard;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.BoardForm;
 import ict.board.dto.PostDetail;
+import ict.board.exception.BoardNotFoundException;
+import ict.board.exception.BoardSaveException;
+import ict.board.exception.EntityNotFoundException;
+import ict.board.exception.UnauthorizedAccessException;
 import ict.board.repository.BoardRepository;
 import ict.board.repository.MemberRepository;
 import ict.board.service.ai.AIResponseHandler;
 import ict.board.service.slack.NewBoardSender;
 import ict.board.util.DateUtils;
-import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,7 +28,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 
 @Service
 @RequiredArgsConstructor
@@ -33,63 +35,112 @@ import org.springframework.validation.BindingResult;
 public class BoardService {
 
     private final BoardRepository boardRepository;
-    private final ReplyService replyService;
     private final MemberRepository memberRepository;
-    private final AIResponseHandler AIResponseHandler;
+    private final ReplyService replyService;
+    private final AIResponseHandler aiResponseHandler;
     private final NewBoardSender newBoardSender;
     private final ReservationBoardService reservationBoardService;
 
+
     @Transactional
-    public void saveBoard(BoardForm form, String imagePath, String loginMemberEmail) throws IOException, InterruptedException {
-        Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(), form.getRequesterLocation(), imagePath);
-        save(board, loginMemberEmail);
+    public Long saveBoard(BoardForm form, String imagePath, String loginMemberEmail) {
+        try {
+            Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(), form.getRequesterLocation(), imagePath);
+            return save(board, loginMemberEmail);
+        } catch (IOException | InterruptedException e) {
+            log.error("Error saving board: ", e);
+            throw new BoardSaveException("게시물 저장 중 오류가 발생했습니다.", e);
+        }
     }
 
     @Transactional
-    public void saveReservationBoard(BoardForm form, String imagePath, String loginMemberEmail) throws IOException, InterruptedException {
-        ReservationBoard reservationBoard = new ReservationBoard(
-                form.getTitle(),
-                form.getContent(),
-                form.getRequester(),
-                form.getRequesterLocation(),
-                LocalDateTime.of(form.getReservationDate(), form.getReservationTime()),
-                imagePath
-        );
-        save(reservationBoard, loginMemberEmail);
+    public Long saveReservationBoard(BoardForm form, String imagePath, String loginMemberEmail) {
+        try {
+            ReservationBoard reservationBoard = new ReservationBoard(
+                    form.getTitle(),
+                    form.getContent(),
+                    form.getRequester(),
+                    form.getRequesterLocation(),
+                    LocalDateTime.of(form.getReservationDate(), form.getReservationTime()),
+                    imagePath
+            );
+            return save(reservationBoard, loginMemberEmail);
+        } catch (IOException | InterruptedException e) {
+            log.error("Error saving reservation board: ", e);
+            throw new BoardSaveException("예약 게시물 저장 중 오류가 발생했습니다.", e);
+        }
     }
 
     @Transactional
-    protected void save(Board board, String loginMemberEmail) throws IOException, InterruptedException {
-        board.addMember(memberRepository.findMemberByEmail(loginMemberEmail).orElse(null));
+    protected Long save(Board board, String loginMemberEmail) throws IOException, InterruptedException {
+        board.addMember(memberRepository.findMemberByEmail(loginMemberEmail)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found: " + loginMemberEmail)));
         boardRepository.save(board);
 
         String ask = board.getContent();
-
         newBoardSender.sendFromBoard(board);
-        AIResponseHandler.answerGpt(board, ask);
+        aiResponseHandler.answerGpt(board, ask);
+        return board.getId();
     }
 
+//    @Transactional
+//    public Long saveBoard(BoardForm form, String imagePath, String loginMemberEmail)
+//            throws IOException, InterruptedException {
+//        Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(), form.getRequesterLocation(),
+//                imagePath);
+//        return save(board, loginMemberEmail);
+//    }
+//
+//    @Transactional
+//    public Long saveReservationBoard(BoardForm form, String imagePath, String loginMemberEmail)
+//            throws IOException, InterruptedException {
+//        ReservationBoard reservationBoard = new ReservationBoard(
+//                form.getTitle(),
+//                form.getContent(),
+//                form.getRequester(),
+//                form.getRequesterLocation(),
+//                LocalDateTime.of(form.getReservationDate(), form.getReservationTime()),
+//                imagePath
+//        );
+//        return save(reservationBoard, loginMemberEmail);
+//    }
+//
+//    @Transactional
+//    protected Long save(Board board, String loginMemberEmail) throws IOException, InterruptedException {
+//        board.addMember(memberRepository.findMemberByEmail(loginMemberEmail)
+//                .orElseThrow(() -> new EntityNotFoundException("Member not found")));
+//        boardRepository.save(board);
+//
+//        String ask = board.getContent();
+//        newBoardSender.sendFromBoard(board);
+//        AIResponseHandler.answerGpt(board, ask);
+//        return board.getId();
+//    }
+
     @Transactional
-    public boolean deleteBoard(Long id, UserDetails userDetails) {
-        Board board = boardRepository.findById(id).orElse(null);
-        if (board == null || userDetails == null || !board.getMember().getEmail().equals(userDetails.getUsername())) {
-            return false;
+    public void deleteBoard(Long id, UserDetails userDetails) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new BoardNotFoundException("게시물을 찾을 수 없습니다."));
+
+        if (userDetails == null || !board.getMember().getEmail().equals(userDetails.getUsername())) {
+            throw new UnauthorizedAccessException("게시물을 삭제할 권한이 없습니다.");
         }
+
         replyService.deleteRepliesByBoardId(id);
         boardRepository.deleteById(id);
-        return true;
     }
 
     @Transactional
-    public boolean changeBoardStatus(Long id, BoardStatus boardStatus) {
-        Board board = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Board not found"));
+    public void changeBoardStatus(Long id, BoardStatus boardStatus) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new BoardNotFoundException("게시물을 찾을 수 없습니다."));
         board.changeStatus(boardStatus);
-        return true;
     }
 
     @Transactional
     public void updateBoard(Long id, String newTitle, String newContent, String requester, String requesterLocation) {
-        Board board = boardRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Board not found"));
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new BoardNotFoundException("게시물을 찾을 수 없습니다."));
         board.changeTitle(newTitle);
         board.changeContent(newContent);
         board.changeRequester(requester);
@@ -103,24 +154,13 @@ public class BoardService {
     }
 
     public Board findOneBoardWithMember(Long id) {
-        return boardRepository.findWithMemberById(id);
+        return boardRepository.findWithMemberById(id)
+                .orElseThrow(() -> new BoardNotFoundException("게시물을 찾을 수 없습니다."));
     }
-
-//    public List<Board> findBoardsbyMember(String email) {
-//        return boardRepository.findByMemberEmail(email);
-//    }
 
     public Page<Board> findAllBoardsByStatus(Pageable pageable, String status) {
         BoardStatus boardStatus = BoardStatus.valueOf(status);
         return boardRepository.findAllByBoardStatus(pageable, boardStatus);
-    }
-
-    public boolean validateBoardForm(BoardForm form, BindingResult result) {
-        log.info("0.5===========================");
-        if (form.isReservation() && (form.getReservationDate() == null || form.getReservationTime() == null)) {
-            result.rejectValue("reservationDate", "NotNull", "예약 날짜와 시간을 입력해주세요");
-        }
-        return result.hasErrors();
     }
 
     public void prepareBoardListPage(Model model, Pageable pageable, LocalDate date, String email) {
@@ -138,9 +178,6 @@ public class BoardService {
 
     public void preparePostDetailPage(Long id, Model model, UserDetails userDetails) {
         Board board = findOneBoardWithMember(id);
-        if (board == null) {
-            return;
-        }
 
         boolean isLogin = board.getMember().getEmail().equals(userDetails.getUsername());
         boolean isManager = userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN")) ||
@@ -156,18 +193,19 @@ public class BoardService {
 
     public void prepareEditForm(Long id, Model model, UserDetails userDetails) {
         Board board = findOneBoardWithMember(id);
-        if (board == null || userDetails == null) {
-            return;
+        if (userDetails == null) {
+            throw new UnauthorizedAccessException("로그인이 필요합니다.");
         }
         model.addAttribute("board", board);
     }
 
-    public Page<Board> findAllByMemberEmail (String email, Pageable pageable) {
+    public Page<Board> findAllByMemberEmail(String email, Pageable pageable) {
         return boardRepository.findAllByMemberEmail(email, pageable);
     }
 
     public boolean isUserAuthorOfBoard(Long boardId, String userEmail) {
-        Board board = boardRepository.findById(boardId).orElse(null);
-        return board != null && board.getMember().getEmail().equals(userEmail);
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new BoardNotFoundException("게시물을 찾을 수 없습니다."));
+        return board.getMember().getEmail().equals(userEmail);
     }
 }

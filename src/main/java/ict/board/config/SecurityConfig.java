@@ -2,6 +2,7 @@ package ict.board.config;
 
 import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
+import ict.board.domain.member.Role;
 import ict.board.service.MemberService;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +19,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -35,7 +35,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/", "/login", "/css/**", "/*.ico", "/members/new",
+                        .requestMatchers("/login", "/css/**", "/*.ico", "/members/new",
                                 "/members/email-verification", "/members/register",
                                 "/members/sendVerificationCode", "/staff-join/7345", "/access-denied").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
@@ -50,7 +50,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/login")
                         .permitAll()
                 )
                 .exceptionHandling(exceptionHandling ->
@@ -82,10 +82,6 @@ public class SecurityConfig {
         return username -> {
             log.info("Attempting to load user: {}", username);
             Member member = memberService.findMemberByEmail(username);
-            if (member == null) {
-                log.error("User not found: {}", username);
-                throw new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + username);
-            }
             log.info("User found: {}, Role: {}", username, member.getRole());
             return new org.springframework.security.core.userdetails.User(
                     member.getEmail(),
@@ -100,7 +96,7 @@ public class SecurityConfig {
         if (member instanceof IctStaffMember) {
             authorities.add(new SimpleGrantedAuthority("ROLE_" + ((IctStaffMember) member).getRole().name()));
         } else {
-            authorities.add(new SimpleGrantedAuthority("ROLE_" + member.getRole().name()));
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + Role.NONE.name()));
         }
         log.info("Authorities for user {}: {}", member.getEmail(), authorities);
         return authorities;

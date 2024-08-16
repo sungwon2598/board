@@ -1,5 +1,6 @@
 package ict.board.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -12,27 +13,24 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 public class BoardForm {
 
-    @NotEmpty(message = "제목을 입력해주세요")
+    @NotBlank(message = "제목을 입력해주세요", groups = {ReservationValidation.class, GeneralValidation.class})
     private String title;
 
-    @NotEmpty(message = "내용을 입력해주세요")
+    @NotEmpty(message = "내용을 입력해주세요", groups = {ReservationValidation.class, GeneralValidation.class})
     private String content;
 
     private String requester;
 
     private String requesterLocation;
 
-    // 예약 민원 여부
     private boolean reservation;
 
     private MultipartFile image;
 
-    // 예약 날짜 (예약 민원일 경우 필요)
-    @NotNull(message = "예약 날짜를 입력해주세요", groups = ReservationValidationGroup.class)
+    @NotNull(message = "예약 날짜를 입력해주세요", groups = ReservationValidation.class)
     private LocalDate reservationDate;
 
-    // 예약 시간 (예약 민원일 경우 필요)
-    @NotNull(message = "예약 시간을 입력해주세요", groups = ReservationValidationGroup.class)
+    @NotNull(message = "예약 시간을 입력해주세요", groups = ReservationValidation.class)
     private LocalTime reservationTime;
 
 }

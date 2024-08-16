@@ -79,28 +79,22 @@ public class MemberController {
     @PostMapping("/members/sendVerificationCode")
     @ResponseBody
     public Map<String, Object> sendVerificationCode(@RequestParam String email, HttpSession session) {
-        log.info("0==============================");
         Map<String, Object> response = new HashMap<>();
         if (memberService.findMemberByEmail(email) != null) {
             response.put("success", false);
             response.put("message", "이미 존재하는 이메일입니다.");
-            log.info("0.5==============================");
             return response;
         }
-        log.info("1==============================");
 
         String verificationCode = generator.generateRandomString();
         log.info("email={}", email);
-        log.info("verificationCode={}", verificationCode);
 
         verificationCodeCache.storeCode(email, verificationCode);
-        log.info("2==============================");
         mailService.sendEmail(email, "Verification Code", verificationCode);
 
         session.setAttribute("userEmail", email);
         session.setAttribute("emailSent", true);
 
-        log.info("3==============================");
         response.put("success", true);
         return response;
     }

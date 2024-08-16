@@ -7,6 +7,7 @@ import ict.board.domain.board.ReservationBoard;
 import ict.board.domain.member.Member;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,7 +17,7 @@ import org.springframework.data.repository.query.Param;
 public interface BoardRepository extends JpaRepository<Board, Long> {
 
     @Query("select b from Board b join fetch b.member where b.id = :id")
-    Board findWithMemberById(@Param("id") Long id);
+    Optional<Board> findWithMemberById(@Param("id") Long id);
 
     @Query("select b from Board b join fetch b.member order by b.createdAt desc")
     Page<Board> findAllWithMember(Pageable pageable);
