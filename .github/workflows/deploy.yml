@@ -9,21 +9,29 @@ jobs:
   Deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: SSH(원격접속)로 EC2에 접속하기
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
+      - name: SSH로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
-        env :
-          APPLICATION_PROPERTIES : ${{ secrets.APPLICATION_PROPERTIES }}
+        env:
+          APPLICATION_PROPERTIES: ${{ secrets.APPLICATION_PROPERTIES }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_PRIVATE_KEY }}
-          envs : APPLICATION_PROPERTIES
+          envs: APPLICATION_PROPERTIES
           script_stop: true
           script: |
             cd /home/ubuntu/board
-            rm -rf src/maeil/resources/application.yml
             git pull origin main
-            echo "&APPLICATION_PROPERTIES" > src/main/resources/application.yml
+            echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
             ./gradlew clean build
             sudo fuser -k -n tcp 8080 || true
             nohup java -jar build/libs/*SNAPSHOT.jar > ./output.log 2>&1 &
