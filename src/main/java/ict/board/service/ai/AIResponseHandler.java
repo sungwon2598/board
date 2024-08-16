@@ -1,14 +1,18 @@
 package ict.board.service.ai;
 
 import ict.board.domain.board.Board;
+import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
+import ict.board.repository.IctStaffMemberRepository;
 import ict.board.repository.MemberRepository;
 import ict.board.service.ReplyService;
 import ict.board.exception.AIProcessingException;
 import ict.board.exception.MemberNotFoundException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AIResponseHandler {
 
-    private static final Long AI_MEMBER_ID = 2L;
     private static final String PROCESSING_MESSAGE = "AI-ICT가 답변을 작성중입니다. 조금만 기다려주세요.";
     private static final String ERROR_MESSAGE = "AI 자동답변 기능이 일시적으로 중단되었습니다. 직원이 곧 답변을 달아드리겠습니다.";
 
+    private final IctStaffMemberRepository staffMemberRepository;
     private final MemberRepository memberRepository;
     private final ReplyService replyService;
     private final OpenAIApiBoardConnector aiClient;
+
+    @Value("${ict.ai-ict.email}")
+    private String AI_Member_EMAIL;
 
     @Transactional
     public CompletableFuture<Void> answerGpt(Board board, String question) {
@@ -36,7 +43,7 @@ public class AIResponseHandler {
     }
 
     private Member findAIMember() {
-        return memberRepository.findById(AI_MEMBER_ID)
+        return (Member) staffMemberRepository.findByEmail(AI_Member_EMAIL)
                 .orElseThrow(() -> new MemberNotFoundException("AI 회원을 찾을 수 없습니다."));
     }
 
