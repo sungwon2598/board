@@ -83,40 +83,6 @@ public class BoardService {
         return board.getId();
     }
 
-//    @Transactional
-//    public Long saveBoard(BoardForm form, String imagePath, String loginMemberEmail)
-//            throws IOException, InterruptedException {
-//        Board board = new Board(form.getTitle(), form.getContent(), form.getRequester(), form.getRequesterLocation(),
-//                imagePath);
-//        return save(board, loginMemberEmail);
-//    }
-//
-//    @Transactional
-//    public Long saveReservationBoard(BoardForm form, String imagePath, String loginMemberEmail)
-//            throws IOException, InterruptedException {
-//        ReservationBoard reservationBoard = new ReservationBoard(
-//                form.getTitle(),
-//                form.getContent(),
-//                form.getRequester(),
-//                form.getRequesterLocation(),
-//                LocalDateTime.of(form.getReservationDate(), form.getReservationTime()),
-//                imagePath
-//        );
-//        return save(reservationBoard, loginMemberEmail);
-//    }
-//
-//    @Transactional
-//    protected Long save(Board board, String loginMemberEmail) throws IOException, InterruptedException {
-//        board.addMember(memberRepository.findMemberByEmail(loginMemberEmail)
-//                .orElseThrow(() -> new EntityNotFoundException("Member not found")));
-//        boardRepository.save(board);
-//
-//        String ask = board.getContent();
-//        newBoardSender.sendFromBoard(board);
-//        AIResponseHandler.answerGpt(board, ask);
-//        return board.getId();
-//    }
-
     @Transactional
     public void deleteBoard(Long id, UserDetails userDetails) {
         Board board = boardRepository.findById(id)

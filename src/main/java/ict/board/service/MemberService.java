@@ -3,7 +3,6 @@ package ict.board.service;
 import ict.board.domain.board.Board;
 import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
-import ict.board.domain.member.Role;
 import ict.board.domain.reply.Reply;
 import ict.board.dto.MemberInfo;
 import ict.board.repository.BoardRepository;
@@ -12,6 +11,8 @@ import ict.board.repository.MemberRepository;
 import ict.board.repository.ReplyRepository;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,12 +20,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -36,7 +33,7 @@ public class MemberService implements UserDetailsService {
     private final IctStaffMemberRepository ictStaffMemberRepository;
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
-    private final PasswordEncoder passwordEncoder;
+    //private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long join(Member member) {

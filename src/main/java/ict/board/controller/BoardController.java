@@ -87,17 +87,11 @@ public class BoardController {
 
         String email = userDetails.getUsername();
         Long boardId;
-        //try {
         if (isReservation) {
             boardId = boardService.saveReservationBoard(form, imagePath, email);
         } else {
             boardId = boardService.saveBoard(form, imagePath, email);
         }
-//        } catch (Exception e) {
-//            model.addAttribute("errorMessages", List.of("게시물 저장 중 오류가 발생했습니다."));
-//            return "board/boardform";
-//        }
-
         model.addAttribute("successMessage", "게시물이 성공적으로 등록되었습니다.");
         return "redirect:/board/" + boardId;
     }
