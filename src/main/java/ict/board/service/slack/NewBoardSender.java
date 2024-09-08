@@ -2,8 +2,9 @@ package ict.board.service.slack;
 
 import ict.board.domain.board.Board;
 import java.util.HashMap;
+import java.util.concurrent.CompletableFuture;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class NewBoardSender {
@@ -14,12 +15,15 @@ public class NewBoardSender {
         this.slackMessageSender = slackMessageSender;
     }
 
-    @Transactional
-    public void sendFromBoard(Board board) {
-        String title = "작성자 : " + board.getMember().getName() + "  소속 : " + board.getMember().getTeam();
+    @Async
+    public CompletableFuture<Void> sendFromBoard(Board board) {
+        String title = "작성자 : " + board.getMember().getName() + "  소속 : " + board.getMember().getTeam()
+                + " 위치 : " + board.getRequesterLocation() + " 요청자 : " + board.getRequester();
         HashMap<String, String> data = new HashMap<>();
         data.put(board.getTitle(), board.getContent());
 
-        slackMessageSender.sendMessage(slackMessageSender.getSlackWebhookUrlBoard(), title, data);
+        return CompletableFuture.runAsync(() -> {
+            slackMessageSender.sendMessage(slackMessageSender.getSlackWebhookUrlBoard(), title, data);
+        });
     }
 }

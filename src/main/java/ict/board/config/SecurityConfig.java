@@ -51,7 +51,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/login", "/css/**", "/*.ico", "/members/new",
                                 "/members/email-verification", "/members/register",
-                                "/members/sendVerificationCode", "/staff-join/7345", "/access-denied").permitAll()
+                                "/members/sendVerificationCode", "/staff-join/7345", "/access-denied"
+                        ,"/favicon.ico", "/resources/**", "/error").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/manage/**").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers("/staff-only/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")

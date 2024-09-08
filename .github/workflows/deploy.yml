@@ -31,7 +31,7 @@ jobs:
           script: |
             cd /home/ubuntu/board
             git pull origin main
-            echo "$APPLICATION_PROPERTIES" > src/main/resources/application.yml
+            echo "$APPLICATION_PROPERTIES" > src/main/resources/application-prod.yml
             ./gradlew clean build
             sudo fuser -k -n tcp 8080 || true
-            nohup java -jar build/libs/app.jar > ./output.log 2>&1 &
+            nohup java -jar -Dspring.profiles.active=prod build/libs/app.jar > ./output.log 2>&1 &

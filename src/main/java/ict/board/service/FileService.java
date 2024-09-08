@@ -16,8 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileService {
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private final String uploadDir;
+
+    public FileService(@Value("${file.upload-dir}") String uploadDir) {
+        this.uploadDir = uploadDir;
+    }
 
     public String saveImage(MultipartFile image) {
         if (image == null || image.isEmpty()) {
