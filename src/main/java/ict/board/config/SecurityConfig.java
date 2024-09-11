@@ -30,6 +30,10 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenBasedRememberMeServices;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Slf4j
 @Configuration
@@ -49,14 +53,18 @@ public class SecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers("/login", "/css/**", "/*.ico", "/members/new",
+                        .requestMatchers("/login","/logout", "/css/**", "/*.ico", "/members/new",
                                 "/members/email-verification", "/members/register",
                                 "/members/sendVerificationCode", "/staff-join/7345", "/access-denied"
                         ,"/favicon.ico", "/resources/**", "/error").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/acess/**").hasRole("ADMIN")
                         .requestMatchers("/manage/**").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers("/staff-only/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")
                         .anyRequest().authenticated()
+                )
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -75,7 +83,12 @@ public class SecurityConfig {
                 )
                 .exceptionHandling(exceptionHandling ->
                         exceptionHandling
-                                .accessDeniedHandler(accessDeniedHandler())
+                                .accessDeniedHandler((request, response, accessDeniedException) -> {
+                                    log.error("Access Denied: {}", accessDeniedException.getMessage());
+                                    log.error("Request URL: {}", request.getRequestURL());
+                                    log.error("User: {}", request.getUserPrincipal());
+                                    accessDeniedHandler().handle(request, response, accessDeniedException);
+                                })
                                 .authenticationEntryPoint(authenticationEntryPoint())
                 );
 

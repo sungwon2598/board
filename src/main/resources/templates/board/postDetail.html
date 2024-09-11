@@ -50,6 +50,9 @@
         </div>
     </div>
 
+    <!-- CSRF 토큰을 위한 숨겨진 입력 필드 추가 -->
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" id="csrfToken"/>
+
     <!-- Status Change Button, visible if isManager is true -->
     <button class="btn btn-secondary" onclick="showStatusChangeForm()" th:if="${postDetail.isManager}" type="button">상태 변경</button>
 
@@ -86,12 +89,50 @@
             document.getElementById('statusChangeForm').style.display = 'block';
         }
 
-        // JavaScript function to submit the delete form
         function submitDeleteForm() {
             if (confirm('정말 삭제하시겠습니까?')) {
                 document.getElementById('deletePostForm').submit();
             }
         }
+
+        // CSRF 토큰 갱신 함수
+        function refreshCsrfToken() {
+            fetch('/csrf', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('csrfToken').value = data.token;
+                    // 모든 폼에서 CSRF 토큰 업데이트
+                    document.querySelectorAll('form input[name="${_csrf.parameterName}"]').forEach(input => {
+                        input.value = data.token;
+                    });
+                    console.log('CSRF 토큰이 갱신되었습니다.');
+                })
+                .catch(error => console.error('CSRF 토큰 갱신 실패:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지 로드 시 CSRF 토큰 갱신
+            refreshCsrfToken();
+
+            // 5분마다 CSRF 토큰 갱신
+            setInterval(refreshCsrfToken, 300000);
+
+            // 폼 제출 전 CSRF 토큰 갱신을 위한 이벤트 리스너 추가
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    refreshCsrfToken();
+                    setTimeout(() => this.submit(), 100);
+                });
+            });
+        });
     </script>
 
     <br>

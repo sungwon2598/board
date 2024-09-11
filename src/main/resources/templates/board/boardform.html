@@ -13,7 +13,7 @@
     <h1>민원 작성</h1>
 
     <form id="boardForm" th:action="@{/board/new/general}" method="post" th:object="${boardForm}" enctype="multipart/form-data">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" id="csrfToken"/>
 
         <!-- 제목 입력 필드 -->
         <div class="form-group">
@@ -139,6 +139,37 @@
                 dateGroup.style.display = 'none';
                 timeGroup.style.display = 'none';
             }
+        });
+
+        // CSRF 토큰 갱신 함수
+        function refreshCsrfToken() {
+            fetch('/csrf', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('csrfToken').value = data.token;
+                    console.log('CSRF 토큰이 갱신되었습니다.');
+                })
+                .catch(error => console.error('CSRF 토큰 갱신 실패:', error));
+        }
+
+        // 페이지 로드 시 즉시 CSRF 토큰 갱신
+        refreshCsrfToken();
+
+        // 5분마다 CSRF 토큰 갱신
+        setInterval(refreshCsrfToken, 300000);
+
+        // 폼 제출 직전에 CSRF 토큰 갱신
+        document.getElementById('boardForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            refreshCsrfToken();
+            setTimeout(() => this.submit(), 100);
         });
     });
 </script>
