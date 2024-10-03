@@ -34,7 +34,7 @@ public class OpenAIApiBoardConnector {
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
 
             String requestBody =
-                    "{\"model\": \"gpt-3.5-turbo\", \"messages\": [{\"role\": \"system\", \"content\": "
+                    "{\"model\": \"gpt-4o-mini\", \"messages\": [{\"role\": \"system\", \"content\": "
                             + "\"This system is used for responding to questions about computer hardware and software issues.\"}"
                             + ", {\"role\": \"user\", \"content\": \""
                             + prompt + "\"}]}";
