@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>보강 일정 수정</title>
+    <!-- 부트스트랩 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">보강 일정 수정</h1>
+
+    <form th:action="@{/makeup-classes/edit/{id}(id=${makeupClass.id})}" method="post" th:object="${makeupClass}">
+        <!-- 여기에 폼 필드들을 추가합니다. 각 필드에 기존 데이터를 미리 채워넣습니다. -->
+        <div class="mb-3">
+            <label for="date" class="form-label">날짜</label>
+            <input type="date" class="form-control" id="date" name="date" th:value="${#temporals.format(makeupClass.date, 'yyyy-MM-dd')}" required>
+        </div>
+        <div class="mb-3">
+            <label for="startTime" class="form-label">시작 시간</label>
+            <input type="time" class="form-control" id="startTime" name="startTime" th:value="${#temporals.format(makeupClass.startTime, 'HH:mm')}" required>
+        </div>
+        <div class="mb-3">
+            <label for="endTime" class="form-label">종료 시간</label>
+            <input type="time" class="form-control" id="endTime" name="endTime" th:value="${#temporals.format(makeupClass.endTime, 'HH:mm')}" required>
+        </div>
+        <div class="mb-3">
+            <label for="classroomName" class="form-label">강의실</label>
+            <select class="form-select" id="classroomName" name="classroomName" required>
+                <option th:each="classroom : ${classrooms}"
+                        th:value="${classroom}"
+                        th:text="${classroom}"
+                        th:selected="${classroom == makeupClass.classroom.name}">
+                </option>
+            </select>
+        </div>
+        <!-- 필요한 다른 필드들을 추가합니다 -->
+
+        <button type="submit" class="btn btn-primary">수정</button>
+        <a href="/makeup-classes/all" class="btn btn-secondary">취소</a>
+    </form>
+</div>
+
+<!-- 부트스트랩 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

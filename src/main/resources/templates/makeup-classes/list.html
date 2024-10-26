@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>보강 일정 목록</title>
+    <!-- 부트스트랩 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">보강 일정 목록</h1>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <input type="text" id="datePicker" class="form-control" th:value="${#temporals.format(selectedDate, 'yyyy-MM-dd')}" placeholder="날짜 선택">
+        </div>
+        <div class="col-md-2">
+            <button id="searchBtn" class="btn btn-primary">검색</button>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>날짜</th>
+            <th>시작 시간</th>
+            <th>종료 시간</th>
+            <th>강의실</th>
+            <th>학과</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="makeup : ${makeupClasses}">
+            <td th:text="${#temporals.format(makeup.date, 'yyyy-MM-dd')}"></td>
+            <td th:text="${#temporals.format(makeup.startTime, 'HH:mm')}"></td>
+            <td th:text="${#temporals.format(makeup.endTime, 'HH:mm')}"></td>
+            <td th:text="${makeup.classroom.name}"></td>
+            <td th:text="${makeup.department.name}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div th:if="${makeupClasses.isEmpty()}" class="alert alert-info">
+        선택한 날짜에 등록된 보강 일정이 없습니다.
+    </div>
+
+    <a href="/makeup-classes/register" class="btn btn-success">새 보강 일정 등록</a>
+</div>
+
+<!-- 부트스트랩 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    flatpickr("#datePicker", {
+        dateFormat: "Y-m-d",
+    });
+
+    document.getElementById('searchBtn').addEventListener('click', function() {
+        var date = document.getElementById('datePicker').value;
+        window.location.href = '/makeup-classes?date=' + date;
+    });
+</script>
+</body>
+</html>

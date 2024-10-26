@@ -1,4 +1,4 @@
-package ict.board.controller;
+package ict.board.controller.board;
 
 import ict.board.dto.ReplyForm;
 import ict.board.service.ReplyService;

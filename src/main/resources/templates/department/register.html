@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Register Department</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Register New Department</h2>
+                    <form th:action="@{/department/register}" th:object="${departmentDTO}" method="post">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Department Name:</label>
+                            <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="memberId" class="form-label">Department Head:</label>
+                            <select class="form-select" id="memberId" th:field="*{memberId}">
+                                <option value="">Select a member (optional)</option>
+                                <option th:if="${members != null}" th:each="member : ${members}"
+                                        th:value="${member.id}"
+                                        th:text="${member.name + ' (' + member.email + ')'}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Register Department</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS Bundle with Popper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

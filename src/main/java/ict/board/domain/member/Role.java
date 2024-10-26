@@ -1,5 +1,5 @@
 package ict.board.domain.member;
 
 public enum Role {
-    ADMIN, MANAGER, STAFF, NONE
+    ADMIN, MANAGER, STAFF, NONE, DEPARTMENT
 }

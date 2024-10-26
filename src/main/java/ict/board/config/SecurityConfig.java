@@ -110,7 +110,7 @@ public class SecurityConfig {
                         userDetailsService,
                         persistentTokenRepository()
                 );
-        rememberMeServices.setTokenValiditySeconds(86400);
+        rememberMeServices.setTokenValiditySeconds(604800);
         return rememberMeServices;
     }
 

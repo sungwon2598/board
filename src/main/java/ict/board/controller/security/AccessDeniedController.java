@@ -1,4 +1,4 @@
-package ict.board.controller;
+package ict.board.controller.security;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

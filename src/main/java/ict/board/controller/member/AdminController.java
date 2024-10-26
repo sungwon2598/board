@@ -1,4 +1,4 @@
-package ict.board.controller;
+package ict.board.controller.member;
 
 import ict.board.domain.member.Building;
 import ict.board.domain.member.IctStaffMember;
@@ -74,6 +74,11 @@ public class AdminController {
         model.addAttribute("allMembersInfo", allMembersInfo);
 
         return "members/membersControl";
+    }
+
+    @GetMapping("/class")
+    public String classMembers(Model model) {
+        return "class-control";
     }
 
 }

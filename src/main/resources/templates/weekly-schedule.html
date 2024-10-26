@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>주간 시간표</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .time-slot {
+            width: 80px;
+            background-color: #f2f2f2;
+        }
+        .schedule-item {
+            background-color: #e6f3ff;
+            border-radius: 4px;
+            padding: 4px;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>주간 시간표</h1>
+<table>
+    <tr>
+        <th>시간</th>
+        <th th:each="day : ${weeklySchedule.keySet()}" th:text="${day}">요일</th>
+    </tr>
+    <tr th:each="timeSlot : ${timeSlots}">
+        <td class="time-slot" th:text="${timeSlot}">시간</td>
+        <td th:each="day : ${weeklySchedule.keySet()}">
+            <div th:each="schedule : ${weeklySchedule.get(day)}"
+                 th:if="${schedule.startTime.isBefore(timeSlot) and schedule.endTime.isAfter(timeSlot)}"
+                 class="schedule-item">
+                <div th:text="${schedule.className}"></div>
+                <div th:text="${schedule.professorName}"></div>
+                <div th:text="${schedule.classroom.name}"></div>
+            </div>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

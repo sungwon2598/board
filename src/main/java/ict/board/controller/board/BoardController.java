@@ -1,4 +1,4 @@
-package ict.board.controller;
+package ict.board.controller.board;
 
 import ict.board.domain.board.BoardStatus;
 import ict.board.dto.BoardForm;

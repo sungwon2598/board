@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title layout:title-pattern="$CONTENT_TITLE - ICT 보드">ICT 보드</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+        }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            padding: 48px 0 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+            transition: all 0.3s;
+        }
+        .sidebar-sticky {
+            position: relative;
+            top: 0;
+            height: calc(100vh - 48px);
+            padding-top: .5rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color) !important;
+        }
+        .nav-link {
+            color: var(--secondary-color);
+            transition: all 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color);
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        .nav-link i {
+            margin-right: 10px;
+        }
+        main {
+            padding-top: 20px;
+        }
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .nav-header {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+            padding-left: 1rem;
+        }
+    </style>
+</head>
+<body>
+<header class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="/">ICT 보드</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</header>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-white sidebar collapse">
+            <div class="position-sticky pt-3">
+                <div class="nav-header">시간표 관리</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/weekly-schedule">
+                            <i class="fas fa-calendar-week"></i> 주간 일정
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/regular-schedules/register">
+                            <i class="fas fa-clock"></i> 정기 일정 등록
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/makeup-classes/register">
+                            <i class="fas fa-chalkboard-teacher"></i> 보강 등록
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/makeup-classes/all">
+                            <i class="fas fa-list"></i> 보강 목록
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-header">강의실 관리</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/classrooms/search">
+                            <i class="fas fa-search"></i> 강의실 검색
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/classrooms/register">
+                            <i class="fas fa-plus-circle"></i> 강의실 등록
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-header">소프트웨어 관리</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/software/list">
+                            <i class="fas fa-laptop-code"></i> 소프트웨어 목록
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/software/add">
+                            <i class="fas fa-plus-circle"></i> 소프트웨어 추가
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/categories">
+                            <i class="fas fa-tags"></i> 카테고리 관리
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="nav-header">부서 관리</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/department/list">
+                            <i class="fas fa-sitemap"></i> 부서 관리
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/department/register">
+                            <i class="fas fa-plus-circle"></i> 부서 등록
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">대시보드</h1>
+            </div>
+            <div layout:fragment="content">
+                <!-- 페이지 내용이 여기에 삽입됩니다 -->
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">주간 일정</h5>
+                                <p class="card-text">이번 주 일정을 확인하세요.</p>
+                                <a href="/weekly-schedule" class="btn btn-primary">일정 보기</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">강의실 검색</h5>
+                                <p class="card-text">사용 가능한 강의실을 찾아보세요.</p>
+                                <a href="/classrooms/search" class="btn btn-primary">검색하기</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">소프트웨어 목록</h5>
+                                <p class="card-text">설치된 소프트웨어를 확인하세요.</p>
+                                <a href="/software/list" class="btn btn-primary">목록 보기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

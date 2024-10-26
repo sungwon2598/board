@@ -1,4 +1,4 @@
-package ict.board.controller;
+package ict.board.controller.member;
 
 import ict.board.domain.member.Building;
 import ict.board.domain.member.Location;

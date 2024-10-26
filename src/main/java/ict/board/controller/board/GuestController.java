@@ -1,4 +1,4 @@
-package ict.board.controller;
+package ict.board.controller.board;
 
 import ict.board.domain.board.Board;
 import ict.board.dto.GusetInfo;

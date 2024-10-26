@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Department List</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+        }
+        .btn-delete:hover {
+            background-color: #c82333;
+        }
+        .action-buttons {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<h1>Department List</h1>
+
+<a href="/department/register" class="btn">Register New Department</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Department Head</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="department : ${departments}">
+        <td th:text="${department.id}"></td>
+        <td>
+            <span th:text="${department.name}" th:id="'name-' + ${department.id}"></span>
+            <input type="text" th:id="'edit-name-' + ${department.id}" th:value="${department.name}" style="display: none;">
+        </td>
+        <td>
+            <span th:text="${department.member != null ? department.member.name + ' (' + department.member.email + ')' : 'Not Assigned'}" th:id="'head-' + ${department.id}"></span>
+            <select th:id="'edit-head-' + ${department.id}" style="display: none;">
+                <option value="">Select a member</option>
+                <option th:each="member : ${members}"
+                        th:value="${member.id}"
+                        th:text="${member.name + ' (' + member.email + ')'}"
+                        th:selected="${department.member != null and department.member.id == member.id}">
+                </option>
+            </select>
+        </td>
+        <td class="action-buttons">
+            <button class="btn btn-edit" th:onclick="'editDepartment(' + ${department.id} + ')'">Edit</button>
+            <button class="btn btn-delete" th:onclick="'deleteDepartment(' + ${department.id} + ')'">Delete</button>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<script th:inline="javascript">
+    // CSRF 토큰을 쿠키에서 가져오는 함수
+    function getCsrfToken() {
+        return document.cookie.replace(/(?:(?:^|.*;\s*)XSRF-TOKEN\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+    }
+
+    $(document).ready(function() {
+        // CSRF 토큰을 모든 AJAX 요청에 자동으로 포함
+        $.ajaxSetup({
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader('X-XSRF-TOKEN', getCsrfToken());
+            }
+        });
+    });
+
+    function editDepartment(id) {
+        var nameSpan = $('#name-' + id);
+        var nameInput = $('#edit-name-' + id);
+        var headSpan = $('#head-' + id);
+        var headSelect = $('#edit-head-' + id);
+        var editButton = $('button.btn-edit').filter(function() {
+            return $(this).attr('onclick') === 'editDepartment(' + id + ')';
+        });
+
+        if (nameSpan.is(':visible')) {
+            nameSpan.hide();
+            nameInput.show();
+            headSpan.hide();
+            headSelect.show();
+            editButton.text('Save');
+        } else {
+            var newName = nameInput.val();
+            var newHeadId = headSelect.val();
+
+            $.ajax({
+                url: '/department/update/' + id,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    name: newName,
+                    memberId: newHeadId
+                }),
+                success: function(response) {
+                    nameSpan.text(newName).show();
+                    nameInput.hide();
+                    headSpan.text(response.headName).show();
+                    headSelect.hide();
+                    editButton.text('Edit');
+                },
+                error: function(xhr, status, error) {
+                    alert('Error updating department: ' + error);
+                }
+            });
+        }
+    }
+
+    function deleteDepartment(id) {
+        if (confirm('Are you sure you want to delete this department?')) {
+            $.ajax({
+                url: '/department/delete/' + id,
+                type: 'POST',
+                success: function(response) {
+                    $('tr:has(td:contains(' + id + '))').remove();
+                },
+                error: function(xhr, status, error) {
+                    alert('Error deleting department: ' + error);
+                }
+            });
+        }
+    }
+</script>
+
+</body>
+</html>

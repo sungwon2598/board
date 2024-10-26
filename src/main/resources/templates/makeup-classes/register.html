@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>보강 일정 등록</title>
+    <!-- 부트스트랩 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <!-- Flatpickr for date/time picker -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .form-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="form-container p-5">
+                <h1 class="text-center mb-4">보강 일정 등록</h1>
+                <form th:action="@{/makeup-classes/register}" th:object="${registerMakeupClassDto}" method="post">
+                    <div class="mb-3">
+                        <label for="date" class="form-label">보강 날짜</label>
+                        <input type="text" id="date" th:field="*{date}" class="form-control flatpickr-date" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="startTime" class="form-label">시작 시간</label>
+                            <input type="text" id="startTime" th:field="*{startTime}" class="form-control flatpickr-time" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="endTime" class="form-label">종료 시간</label>
+                            <input type="text" id="endTime" th:field="*{endTime}" class="form-control flatpickr-time" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="classroomName" class="form-label">강의실</label>
+                        <select id="classroomName" th:field="*{classroomName}" class="form-select" required>
+                            <option value="">선택하세요</option>
+                            <option th:each="classroom : ${classrooms}"
+                                    th:value="${classroom}"
+                                    th:text="${classroom + '호'}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="departmentName" class="form-label">학과</label>
+                        <input type="text" id="departmentName" th:field="*{departmentName}" class="form-control" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-save me-2"></i>등록
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 부트스트랩 JS 및 Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<!-- Flatpickr -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr(".flatpickr-date", {
+            locale: "ko",
+            dateFormat: "Y-m-d",
+            minDate: "today"
+        });
+
+        flatpickr(".flatpickr-time", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package ict.board.controller;
+package ict.board.controller.security;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;

@@ -33,7 +33,6 @@ public class MemberService implements UserDetailsService {
     private final IctStaffMemberRepository ictStaffMemberRepository;
     private final BoardRepository boardRepository;
     private final ReplyRepository replyRepository;
-    //private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Long join(Member member) {
