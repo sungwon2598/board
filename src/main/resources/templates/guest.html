@@ -186,7 +186,7 @@
     </div>
     <div class="navbar">
         <div style="margin-left: auto; color: #FFFFFF;" sec:authorize="isAuthenticated()">
-            <span sec:authentication="name">사용자 이름</span>님, 환영합니다!
+            <span th:text="${guestInfo.memberName.orElse('사용자')}">사용자</span>님, 환영합니다!
             <a class="btn btn-secondary" href="/mypage" style="margin-left: 10px;">MyPage</a>
             <form method="post" style="display: inline;" th:action="@{/logout}">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />

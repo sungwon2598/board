@@ -1,4 +1,4 @@
-package ict.board.config;
+package ict.board.config.security;
 
 import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
@@ -32,8 +32,9 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
+
 
 @Slf4j
 @Configuration
@@ -47,9 +48,12 @@ public class SecurityConfig {
 
     private final DataSource dataSource;
     private final UserDetailsService userDetailsService;
+    private final CustomAuthenticationSuccessHandler successHandler;
+    private final CustomAuthenticationFailureHandler failureHandler;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices)
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, RememberMeServices rememberMeServices
+    )
             throws Exception {
         http
                 .authorizeHttpRequests(authz -> authz
@@ -69,16 +73,18 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/")
-                        .failureUrl("/login?error")
+                        .failureHandler(failureHandler)
+                        .successHandler(successHandler)
                         .permitAll()
                 )
                 .rememberMe(rememberMe -> rememberMe
                         .userDetailsService(userDetailsService)
                         .tokenRepository(persistentTokenRepository())
-                        .tokenValiditySeconds(86400)
+                        .tokenValiditySeconds(604800)
                 )
                 .logout(logout -> logout
                         .logoutSuccessUrl("/login")
+                        .deleteCookies("remember-me")
                         .permitAll()
                 )
                 .exceptionHandling(exceptionHandling ->
@@ -90,6 +96,12 @@ public class SecurityConfig {
                                     accessDeniedHandler().handle(request, response, accessDeniedException);
                                 })
                                 .authenticationEntryPoint(authenticationEntryPoint())
+                )
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .maxSessionsPreventsLogin(false)
+                        .expiredUrl("/session-expired")
+                        .sessionRegistry(sessionRegistry())
                 );
 
         return http.build();
@@ -149,4 +161,10 @@ public class SecurityConfig {
 
         return new ProviderManager(authenticationProvider);
     }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
 }

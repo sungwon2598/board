@@ -1,4 +1,4 @@
-package ict.board.config;
+package ict.board.config.security;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

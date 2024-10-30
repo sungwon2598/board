@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>세션 만료</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+<div class="container">
+    <div class="alert alert-warning">
+        <h2>세션이 만료되었습니다</h2>
+        <p th:text="${message}">다른 기기에서 로그인이 감지되어 현재 세션이 만료되었습니다.</p>
+        <div class="mt-3">
+            <a href="/login" class="btn btn-primary">다시 로그인하기</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
