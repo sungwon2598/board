@@ -1,7 +1,7 @@
 package ict.board.controller.board;
 
 import ict.board.dto.ReplyForm;
-import ict.board.service.ReplyService;
+import ict.board.service.board.ReplyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -1,15 +1,13 @@
 package ict.board.service.ai;
 
 import ict.board.domain.board.Board;
-import ict.board.domain.member.IctStaffMember;
 import ict.board.domain.member.Member;
 import ict.board.domain.reply.Reply;
 import ict.board.repository.IctStaffMemberRepository;
 import ict.board.repository.MemberRepository;
-import ict.board.service.ReplyService;
+import ict.board.service.board.ReplyService;
 import ict.board.exception.AIProcessingException;
 import ict.board.exception.MemberNotFoundException;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

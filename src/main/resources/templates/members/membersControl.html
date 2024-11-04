@@ -1,42 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragments/header :: header">
-    <!-- Add some custom CSS for additional styling -->
-    <style>
-        .container {
-            margin-top: 20px;
-        }
-
-        .card-header {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .list-group-item-action:hover {
-            background-color: #f8f9fa;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            font-weight: bold;
-        }
-
-        .form-control {
-            display: block;
-            width: 100%;
-            padding: 0.375rem 0.75rem;
-            font-size: 1rem;
-            line-height: 1.5;
-            color: #495057;
-            background-color: #fff;
-            background-clip: padding-box;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-        }
-    </style>
+    <!-- 스타일 부분은 동일하게 유지 -->
 </head>
 <body>
 
@@ -61,21 +26,22 @@
                     <label class="form-label">역할:</label>
                     <select class="form-control" th:field="*{ictMembers[__${iterStat.index}__].role}">
                         <option th:each="role : ${T(ict.board.domain.member.Role).values()}"
-                                th:selected="${role == ictMember.role}" th:text="${role}"
+                                th:selected="${role != null && ictMember.role != null && role.name() == ictMember.role.name()}"
+                                th:text="${role}"
                                 th:value="${role}"></option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">초과 근무 휴가 시간:</label>
                     <input class="form-control" th:field="*{ictMembers[__${iterStat.index}__].overtimeVacationHours}"
-                           th:value="${ictMember.overtimeVacationHours}" type="number"/>
+                           type="number"/>
                 </div>
                 <div class="form-group">
                     <label class="form-label">남은 휴가 일수:</label>
                     <input class="form-control" th:field="*{ictMembers[__${iterStat.index}__].remainingLeaveDays}"
-                           th:value="${ictMember.remainingLeaveDays}" type="number"/>
+                           type="number"/>
                 </div>
-                <input th:field="*{ictMembers[__${iterStat.index}__].id}" th:value="${ictMember.id}" type="hidden"/>
+                <input th:field="*{ictMembers[__${iterStat.index}__].id}" type="hidden"/>
             </div>
         </div>
         <button class="btn btn-primary" type="submit">변경 사항 저장</button>

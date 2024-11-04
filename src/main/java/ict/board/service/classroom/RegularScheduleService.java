@@ -1,4 +1,4 @@
-package ict.board.service;
+package ict.board.service.classroom;
 
 import ict.board.domain.schedule.Classroom;
 import ict.board.domain.schedule.Department;
@@ -61,5 +61,14 @@ public class RegularScheduleService {
         }
 
         return weeklySchedule;
+    }
+
+    public List<RegularSchedule> findByDayOfWeek(String dayOfWeek) {
+        return regularScheduleRepository.findByDayOfWeek(dayOfWeek);
+    }
+
+    public List<RegularSchedule> findByClassroomNumberAndDayOfWeek(Integer roomNumber, String dayOfWeek) {
+        String roomName = String.valueOf(roomNumber);
+        return regularScheduleRepository.findByClassroom_NameAndDayOfWeek(roomName, dayOfWeek);
     }
 }

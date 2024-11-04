@@ -2,7 +2,7 @@ package ict.board.controller.schedule;
 
 import ict.board.domain.member.Member;
 import ict.board.dto.request.DepartmentDTO;
-import ict.board.service.DepartmentService;
+import ict.board.service.classroom.DepartmentService;
 import ict.board.service.MemberService;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

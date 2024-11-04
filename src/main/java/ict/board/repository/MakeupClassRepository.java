@@ -12,4 +12,5 @@ public interface MakeupClassRepository extends JpaRepository<MakeupClass, Long> 
     List<MakeupClass> findByDate(LocalDate date);
     List<MakeupClass> findByDateBetween(LocalDate startDate, LocalDate endDate);
     List<MakeupClass> findAllByOrderByDateAscStartTimeAsc();
+    List<MakeupClass> findByClassroom_NameAndDate(String name, LocalDate date);
 }

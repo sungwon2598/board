@@ -1,4 +1,4 @@
-package ict.board.service;
+package ict.board.service.classroom;
 
 import ict.board.domain.schedule.Classroom;
 import ict.board.domain.schedule.Department;
@@ -96,6 +96,8 @@ public class MakeupClassService {
         return makeupClass;
     }
 
+
+
     public void deleteMakeupClass(Long id) {
         makeupClassRepository.deleteById(id);
     }
@@ -121,5 +123,15 @@ public class MakeupClassService {
                 .collect(Collectors.toList()));
 
         return classrooms;
+    }
+
+    public List<MakeupClass> findByDate(LocalDate selectedDate) {
+        return makeupClassRepository.findByDate(selectedDate);
+    }
+
+    public List<MakeupClass> findByClassroomNumberAndDate(Integer roomNumber, LocalDate date) {
+        // 정수를 문자열로 변환하여 검색
+        String roomName = String.valueOf(roomNumber);
+        return makeupClassRepository.findByClassroom_NameAndDate(roomName, date);
     }
 }

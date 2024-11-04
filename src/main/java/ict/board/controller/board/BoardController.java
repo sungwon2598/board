@@ -5,7 +5,7 @@ import ict.board.dto.BoardForm;
 import ict.board.dto.GeneralValidation;
 import ict.board.dto.ReservationValidation;
 import ict.board.exception.UnauthorizedAccessException;
-import ict.board.service.BoardService;
+import ict.board.service.board.BoardService;
 import ict.board.service.FileService;
 import ict.board.service.ai.WeeklyReportService;
 import java.time.LocalDate;

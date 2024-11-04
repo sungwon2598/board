@@ -2,7 +2,7 @@ package ict.board.controller.board;
 
 import ict.board.domain.board.Board;
 import ict.board.dto.GusetInfo;
-import ict.board.service.BoardService;
+import ict.board.service.board.BoardService;
 import ict.board.service.MemberService;
 import java.time.LocalDate;
 import java.util.Optional;

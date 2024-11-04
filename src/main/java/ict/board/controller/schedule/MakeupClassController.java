@@ -2,7 +2,7 @@ package ict.board.controller.schedule;
 
 import ict.board.domain.schedule.MakeupClass;
 import ict.board.dto.request.RegisterMakeupClassDto;
-import ict.board.service.MakeupClassService;
+import ict.board.service.classroom.MakeupClassService;
 import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;

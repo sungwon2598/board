@@ -1,4 +1,4 @@
-package ict.board.service;
+package ict.board.service.classroom;
 
 import ict.board.domain.schedule.Category;
 import ict.board.domain.schedule.Software;

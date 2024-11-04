@@ -1,7 +1,7 @@
 package ict.board.controller;
 
 import ict.board.domain.board.Board;
-import ict.board.service.BoardService;
+import ict.board.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

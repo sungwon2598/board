@@ -1,7 +1,7 @@
 package ict.board.controller.schedule;
 
 import ict.board.dto.request.CategoryDTO;
-import ict.board.service.CategoryService;
+import ict.board.service.classroom.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

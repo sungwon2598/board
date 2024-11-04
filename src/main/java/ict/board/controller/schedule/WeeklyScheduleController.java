@@ -1,7 +1,7 @@
 package ict.board.controller.schedule;
 
 import ict.board.domain.schedule.RegularSchedule;
-import ict.board.service.RegularScheduleService;
+import ict.board.service.classroom.RegularScheduleService;
 import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.ArrayList;

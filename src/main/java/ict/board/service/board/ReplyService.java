@@ -1,4 +1,4 @@
-package ict.board.service;
+package ict.board.service.board;
 
 
 import ict.board.domain.board.Board;

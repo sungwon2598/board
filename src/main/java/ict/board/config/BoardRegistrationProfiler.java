@@ -16,7 +16,7 @@ public class BoardRegistrationProfiler {
 
     private ThreadLocal<StopWatch> totalStopWatch = new ThreadLocal<>();
 
-    @Around("execution(public * ict.board.service.BoardService.*(..))")
+    @Around("execution(public * ict.board.service.board.BoardService.*(..))")
     public Object profileMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();

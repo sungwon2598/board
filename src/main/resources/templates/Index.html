@@ -349,15 +349,62 @@
     </div>
     <div class="navbar">
         <div style="margin-left: auto; color: #FFFFFF;" sec:authorize="isAuthenticated()">
+            <input type="hidden" id="csrfToken" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <span sec:authentication="name">사용자 이름</span>님, 환영합니다!
             <a class="btn btn-secondary" href="/mypage" style="margin-left: 10px;">MyPage</a>
-            <form method="post" style="display: inline;" th:action="@{/logout}">
+            <form id="logoutForm" method="post" style="display: inline;" th:action="@{/logout}">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
                 <button class="btn btn-danger" style="margin-left: 5px;" type="submit">Logout</button>
             </form>
         </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        // CSRF 토큰 갱신 함수
+        function refreshCsrfToken() {
+            fetch('/csrf', {
+                method: 'GET',
+                credentials: 'same-origin',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('csrfToken').value = data.token;
+                    // 로그아웃 폼의 CSRF 토큰도 함께 업데이트
+                    const logoutForm = document.getElementById('logoutForm');
+                    if (logoutForm) {
+                        const csrfInput = logoutForm.querySelector('input[type="hidden"]');
+                        if (csrfInput) {
+                            csrfInput.value = data.token;
+                        }
+                    }
+                    console.log('CSRF 토큰이 갱신되었습니다.');
+                })
+                .catch(error => console.error('CSRF 토큰 갱신 실패:', error));
+        }
+
+        // 페이지 로드 시 즉시 CSRF 토큰 갱신
+        refreshCsrfToken();
+
+        // 5분마다 CSRF 토큰 갱신
+        setInterval(refreshCsrfToken, 300000);
+
+        // 로그아웃 폼 제출 직전에 CSRF 토큰 갱신
+        const logoutForm = document.getElementById('logoutForm');
+        if (logoutForm) {
+            logoutForm.addEventListener('submit', function(event) {
+                event.preventDefault();
+                refreshCsrfToken();
+                setTimeout(() => this.submit(), 100);
+            });
+        }
+    });
+</script>
 
 <!-- 다크모드 토글 버튼 -->
 <div style="text-align: right; padding: 10px;">

@@ -9,7 +9,7 @@ import ict.board.domain.member.Role;
 import ict.board.domain.member.ShiftType;
 import ict.board.dto.AllMembersInfo;
 import ict.board.repository.PendingIctStaffMemberRepository;
-import ict.board.service.BoardService;
+import ict.board.service.board.BoardService;
 import ict.board.service.IctStaffMemberService;
 import ict.board.service.MailService;
 import ict.board.service.MemberService;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/admin/*")
+@RequestMapping("/access/*")
 @RequiredArgsConstructor
 @Slf4j
 public class AdminController {

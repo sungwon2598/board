@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StopWatch;
 
-import ict.board.service.BoardService;
+import ict.board.service.board.BoardService;
 import ict.board.service.FileService;
 import ict.board.repository.BoardRepository;
 import ict.board.domain.board.Board;
