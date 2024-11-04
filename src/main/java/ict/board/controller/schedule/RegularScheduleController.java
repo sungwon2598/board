@@ -1,19 +1,14 @@
 package ict.board.controller.schedule;
 
-
 import ict.board.domain.schedule.RegularSchedule;
 import ict.board.dto.request.RegisterRegularScheduleDto;
 import ict.board.service.classroom.RegularScheduleService;
+import ict.board.util.ScheduleFormUtils;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.time.format.DateTimeParseException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -29,98 +24,59 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class RegularScheduleController {
 
     private final RegularScheduleService regularScheduleService;
+    private final ScheduleFormUtils scheduleFormUtils;
 
     @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN')")
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
-        model.addAttribute("registerRegularScheduleDto", new RegisterRegularScheduleDto());
-        addCommonAttributes(model);
+        scheduleFormUtils.addScheduleFormAttributes(model);
         return "regular-schedules/register";
     }
 
     @PreAuthorize("hasAnyRole('STAFF', 'MANAGER', 'ADMIN')")
     @PostMapping("/register")
-    public String registerRegularSchedule(@ModelAttribute RegisterRegularScheduleDto dto) {
-        RegularSchedule regularSchedule = RegularSchedule.builder()
-                .dayOfWeek(dto.getDayOfWeek())
-                .startTime(LocalTime.parse(dto.getStartTime().split("~")[0]))
-                .endTime(LocalTime.parse(dto.getEndTime().split("~")[1]))
-                .className(dto.getClassName())
-                .classSection(dto.getClassSection())
-                .professorName(dto.getProfessorName())
-                .build();
+    public ResponseEntity<String> registerRegularSchedule(@ModelAttribute RegisterRegularScheduleDto dto) {
+        try {
+            log.debug("=== 스케줄 등록 요청 ===");
+            log.debug("요청 데이터: {}", dto);
+            log.debug("시작시간: {}", dto.getStartTime());
+            log.debug("종료시간: {}", dto.getEndTime());
 
-        regularScheduleService.registerRegularSchedule(regularSchedule, dto.getClassroomName(),
-                dto.getDepartmentName());
+            String[] startTimes = dto.getStartTime().split("~");
+            String[] endTimes = dto.getEndTime().split("~");
 
-        return "redirect:/regular-schedules";
-    }
+            LocalTime startTime = LocalTime.parse(startTimes[0].trim());
+            LocalTime endTime = LocalTime.parse(endTimes[1].trim());
 
-    private void addCommonAttributes(Model model) {
-        model.addAttribute("dayTimeTypes", getDayTimeTypes());
-        model.addAttribute("dayTimes", getDayTimes());
-        model.addAttribute("nightTimes", getNightTimes());
-        model.addAttribute("classrooms", getClassrooms());
-        model.addAttribute("daysOfWeek", getDaysOfWeek());
-    }
+            log.debug("파싱된 시간 - 시작: {}, 종료: {}", startTime, endTime);
 
-    private List<String> getDaysOfWeek() {
-        return Arrays.asList("MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY");
-    }
+            if (endTime.isBefore(startTime)) {
+                return ResponseEntity.badRequest()
+                        .body("<div data-error-message=\"종료 시간이 시작 시간보다 빠를 수 없습니다.\"></div>");
+            }
 
-    private Map<String, String> getDayTimeTypes() {
-        Map<String, String> types = new LinkedHashMap<>();
-        types.put("day", "주간");
-        types.put("night", "야간");
-        return types;
-    }
+            RegularSchedule regularSchedule = RegularSchedule.builder()
+                    .dayOfWeek(dto.getDayOfWeek())
+                    .startTime(startTime)
+                    .endTime(endTime)
+                    .className(dto.getClassName())
+                    .classSection(dto.getClassSection())
+                    .professorName(dto.getProfessorName())
+                    .build();
 
-    private Map<String, String> getDayTimes() {
-        Map<String, String> times = new LinkedHashMap<>();
-        times.put("09:00~09:50", "1교시(09:00～09:50)");
-        times.put("10:00~10:50", "2교시(10:00～10:50)");
-        times.put("11:00~11:50", "3교시(11:00～11:50)");
-        times.put("12:00~12:50", "4교시(12:00～12:50)");
-        times.put("13:00~13:50", "5교시(13:00～13:50)");
-        times.put("14:00~14:50", "6교시(14:00～14:50)");
-        times.put("15:00~15:50", "7교시(15:00～15:50)");
-        times.put("16:00~16:50", "8교시(16:00～16:50)");
-        times.put("17:00~17:50", "9교시(17:00～17:50)");
-        times.put("18:00~18:50", "10교시(18:00～18:50)");
-        return times;
-    }
+            regularScheduleService.registerRegularSchedule(regularSchedule, dto.getClassroomName(),
+                    dto.getDepartmentName());
 
-    private Map<String, String> getNightTimes() {
-        Map<String, String> times = new LinkedHashMap<>();
-        times.put("17:30~18:15", "1교시(17:30～18:15)");
-        times.put("18:15~19:00", "2교시(18:15～19:00)");
-        times.put("19:05~19:50", "3교시(19:05～19:50)");
-        times.put("19:50~20:35", "4교시(19:50～20:35)");
-        times.put("20:40~21:25", "5교시(20:40～21:25)");
-        times.put("21:25~22:10", "6교시(21:25～22:10)");
-        return times;
-    }
+            return ResponseEntity.ok().build();
 
-    private List<String> getClassrooms() {
-        List<String> classrooms = new ArrayList<>();
-
-        // 201 - 215 (214 제외)
-        classrooms.addAll(IntStream.rangeClosed(201, 215)
-                .filter(i -> i != 214)
-                .mapToObj(String::valueOf)
-                .collect(Collectors.toList()));
-
-        // 301 - 315 (314 제외)
-        classrooms.addAll(IntStream.rangeClosed(301, 315)
-                .filter(i -> i != 314)
-                .mapToObj(String::valueOf)
-                .collect(Collectors.toList()));
-
-        // 410, 411, 412, 413
-        classrooms.addAll(IntStream.rangeClosed(410, 413)
-                .mapToObj(String::valueOf)
-                .collect(Collectors.toList()));
-
-        return classrooms;
+        } catch (DateTimeParseException e) {
+            log.error("시간 파싱 오류", e);
+            return ResponseEntity.badRequest()
+                    .body("<div data-error-message=\"시간 형식이 올바르지 않습니다.\"></div>");
+        } catch (Exception e) {
+            log.error("스케줄 등록 오류", e);
+            return ResponseEntity.badRequest()
+                    .body("<div data-error-message=\"" + e.getMessage() + "\"></div>");
+        }
     }
 }

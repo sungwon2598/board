@@ -191,9 +191,17 @@
 <body>
 <div class="schedule-container">
     <div class="date-navigation flex items-center justify-center">
-        <a href="#" class="hover:bg-blue-50 rounded transition-colors">&lt; 이전</a>
-        <span class="current-date">2024년 11월 04일 (월요일)</span>
-        <a href="#" class="hover:bg-blue-50 rounded transition-colors">다음 &gt;</a>
+        <a th:href="@{/schedule(date=${selectedDate.minusDays(1)})}"
+           class="hover:bg-blue-50 rounded transition-colors">&lt; 이전</a>
+
+        <span class="current-date"
+              th:text="${#temporals.format(selectedDate, 'yyyy년 MM월 dd일')} + ' (' +
+                  ${#temporals.dayOfWeekName(selectedDate)} + ')'">
+        2024년 11월 04일 (월요일)
+    </span>
+
+        <a th:href="@{/schedule(date=${selectedDate.plusDays(1)})}"
+           class="hover:bg-blue-50 rounded transition-colors">다음 &gt;</a>
     </div>
 
     <div class="floor-navigation">
@@ -207,7 +215,8 @@
             <div class="schedule-header-scroll">
                 <div class="classroom-header flex">
                     <div class="w-20 flex-shrink-0 text-center">시간</div>
-                    <div class="flex-1 min-w-[120px] text-center" th:each="room : ${#numbers.sequence(201, 215)}" th:text="${room + '호'}">201호</div>
+                    <div class="flex-1 min-w-[120px] text-center" th:each="room : ${#numbers.sequence(201, 213)}" th:text="${room + '호'}">201호</div>
+                    <div class="flex-1 min-w-[120px] text-center">215호</div>
                 </div>
 
                 <div class="timetable flex">
@@ -216,8 +225,189 @@
                     </div>
 
                     <div class="schedule-grid flex flex-1">
-                        <div class="classroom-column flex-1 min-w-[120px]" th:each="room : ${#numbers.sequence(201, 215)}">
+                        <!-- 201-213호 -->
+                        <div class="classroom-column flex-1 min-w-[120px]" th:each="room : ${#numbers.sequence(201, 213)}">
                             <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                                <!-- Regular Classes -->
+                                <div th:each="schedule : ${regularSchedules}"
+                                     th:if="${schedule.classroom.name == room.toString() and schedule.startTime.hour == hour}"
+                                     class="regular-class absolute inset-x-0"
+                                     th:style="'top: 0; height: ' + ((${schedule.endTime.hour} - ${schedule.startTime.hour}) * 70 +
+                                          ${schedule.endTime.minute} - ${schedule.startTime.minute}) + 'px;'">
+                                    <div class="class-content">
+                                        <div class="font-medium" th:text="${schedule.className}">강의명</div>
+                                        <div th:text="${schedule.professorName}">교수명</div>
+                                        <div th:text="${schedule.department.name}">학과</div>
+                                        <div class="class-time" th:text="${#temporals.format(schedule.startTime, 'HH:mm')} + ' - ' +
+                                         ${#temporals.format(schedule.endTime, 'HH:mm')}">09:00 - 10:30</div>
+                                    </div>
+                                </div>
+
+                                <!-- Makeup Classes -->
+                                <div th:each="makeup : ${makeupClasses}"
+                                     th:if="${makeup.classroom.name == room.toString() and makeup.startTime.hour == hour}"
+                                     class="makeup-class absolute inset-x-0"
+                                     th:style="'top: 0; height: ' + ((${makeup.endTime.hour} - ${makeup.startTime.hour}) * 70 +
+                                          ${makeup.endTime.minute} - ${makeup.startTime.minute}) + 'px;'">
+                                    <div class="class-content">
+                                        <div class="font-medium">보강</div>
+                                        <div th:text="${makeup.department?.name}">학과</div>
+                                        <div class="class-time" th:text="${#temporals.format(makeup.startTime, 'HH:mm')} + ' - ' +
+                                         ${#temporals.format(makeup.endTime, 'HH:mm')}">13:00 - 14:30</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 215호 -->
+                        <div class="classroom-column flex-1 min-w-[120px]">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                                <!-- Same class scheduling logic for 215 -->
+                                <!-- Regular Classes -->
+                                <div th:each="schedule : ${regularSchedules}"
+                                     th:if="${schedule.classroom.name == '215' and schedule.startTime.hour == hour}"
+                                     class="regular-class absolute inset-x-0"
+                                     th:style="'top: 0; height: ' + ((${schedule.endTime.hour} - ${schedule.startTime.hour}) * 70 +
+                                          ${schedule.endTime.minute} - ${schedule.startTime.minute}) + 'px;'">
+                                    <div class="class-content">
+                                        <div class="font-medium" th:text="${schedule.className}">강의명</div>
+                                        <div th:text="${schedule.professorName}">교수명</div>
+                                        <div th:text="${schedule.department.name}">학과</div>
+                                        <div class="class-time" th:text="${#temporals.format(schedule.startTime, 'HH:mm')} + ' - ' +
+                                         ${#temporals.format(schedule.endTime, 'HH:mm')}">09:00 - 10:30</div>
+                                    </div>
+                                </div>
+
+                                <!-- Makeup Classes -->
+                                <div th:each="makeup : ${makeupClasses}"
+                                     th:if="${makeup.classroom.name == '215' and makeup.startTime.hour == hour}"
+                                     class="makeup-class absolute inset-x-0"
+                                     th:style="'top: 0; height: ' + ((${makeup.endTime.hour} - ${makeup.startTime.hour}) * 70 +
+                                          ${makeup.endTime.minute} - ${makeup.startTime.minute}) + 'px;'">
+                                    <div class="class-content">
+                                        <div class="font-medium">보강</div>
+                                        <div th:text="${makeup.department?.name}">학과</div>
+                                        <div class="class-time" th:text="${#temporals.format(makeup.startTime, 'HH:mm')} + ' - ' +
+                                         ${#temporals.format(makeup.endTime, 'HH:mm')}">13:00 - 14:30</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="floor3" class="floor-schedule hidden">
+        <div class="schedule-grid-container">
+            <div class="schedule-header-scroll">
+                <div class="classroom-header flex">
+                    <div class="w-20 flex-shrink-0 text-center">시간</div>
+                    <div class="flex-1 min-w-[120px] text-center" th:each="room : ${#numbers.sequence(301, 313)}" th:text="${room + '호'}">301호</div>
+                    <div class="flex-1 min-w-[120px] text-center">315호</div>
+                </div>
+
+                <div class="timetable flex">
+                    <div class="time-column w-20 flex-shrink-0">
+                        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 18)}" th:text="${hour + ':00'}">9:00</div>
+                    </div>
+
+                    <div class="schedule-grid flex flex-1">
+                        <!-- 301-313호 -->
+                        <div class="classroom-column flex-1 min-w-[120px]" th:each="room : ${#numbers.sequence(301, 313)}">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                                <!-- Regular Classes -->
+                                <div th:each="schedule : ${regularSchedules}"
+                                     th:if="${schedule.classroom.name == room.toString() and schedule.startTime.hour == hour}"
+                                     class="regular-class absolute inset-x-0"
+                                     th:style="'top: 0; height: ' + ((${schedule.endTime.hour} - ${schedule.startTime.hour}) * 70 +
+                                          ${schedule.endTime.minute} - ${schedule.startTime.minute}) + 'px;'">
+                                    <div class="class-content">
+                                        <div class="font-medium" th:text="${schedule.className}">강의명</div>
+                                        <div th:text="${schedule.professorName}">교수명</div>
+                                        <div th:text="${schedule.department.name}">학과</div>
+                                        <div class="class-time" th:text="${#temporals.format(schedule.startTime, 'HH:mm')} + ' - ' +
+                                         ${#temporals.format(schedule.endTime, 'HH:mm')}">09:00 - 10:30</div>
+                                    </div>
+                                </div>
+
+                                <!-- Makeup Classes -->
+                                <div th:each="makeup : ${makeupClasses}"
+                                     th:if="${makeup.classroom.name == room.toString() and makeup.startTime.hour == hour}"
+                                     class="makeup-class absolute inset-x-0"
+                                     th:style="'top: 0; height: ' + ((${makeup.endTime.hour} - ${makeup.startTime.hour}) * 70 +
+                                          ${makeup.endTime.minute} - ${makeup.startTime.minute}) + 'px;'">
+                                    <div class="class-content">
+                                        <div class="font-medium">보강</div>
+                                        <div th:text="${makeup.department?.name}">학과</div>
+                                        <div class="class-time" th:text="${#temporals.format(makeup.startTime, 'HH:mm')} + ' - ' +
+                                         ${#temporals.format(makeup.endTime, 'HH:mm')}">13:00 - 14:30</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 315호 -->
+                        <div class="classroom-column flex-1 min-w-[120px]">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                                <!-- Same class scheduling logic for 315 -->
+                                <!-- Regular Classes -->
+                                <div th:each="schedule : ${regularSchedules}"
+                                     th:if="${schedule.classroom.name == '315' and schedule.startTime.hour == hour}"
+                                     class="regular-class absolute inset-x-0"
+                                     th:style="'top: 0; height: ' + ((${schedule.endTime.hour} - ${schedule.startTime.hour}) * 70 +
+                                          ${schedule.endTime.minute} - ${schedule.startTime.minute}) + 'px;'">
+                                    <div class="class-content">
+                                        <div class="font-medium" th:text="${schedule.className}">강의명</div>
+                                        <div th:text="${schedule.professorName}">교수명</div>
+                                        <div th:text="${schedule.department.name}">학과</div>
+                                        <div class="class-time" th:text="${#temporals.format(schedule.startTime, 'HH:mm')} + ' - ' +
+                                         ${#temporals.format(schedule.endTime, 'HH:mm')}">09:00 - 10:30</div>
+                                    </div>
+                                </div>
+
+                                <!-- Makeup Classes -->
+                                <div th:each="makeup : ${makeupClasses}"
+                                     th:if="${makeup.classroom.name == '315' and makeup.startTime.hour == hour}"
+                                     class="makeup-class absolute inset-x-0"
+                                     th:style="'top: 0; height: ' + ((${makeup.endTime.hour} - ${makeup.startTime.hour}) * 70 +
+                                          ${makeup.endTime.minute} - ${makeup.startTime.minute}) + 'px;'">
+                                    <div class="class-content">
+                                        <div class="font-medium">보강</div>
+                                        <div th:text="${makeup.department?.name}">학과</div>
+                                        <div class="class-time" th:text="${#temporals.format(makeup.startTime, 'HH:mm')} + ' - ' +
+                                         ${#temporals.format(makeup.endTime, 'HH:mm')}">13:00 - 14:30</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="floor4" class="floor-schedule hidden">
+        <div class="schedule-grid-container">
+            <div class="schedule-header-scroll">
+                <div class="classroom-header flex">
+                    <div class="w-20 flex-shrink-0 text-center">시간</div>
+                    <div class="flex-1 min-w-[120px] text-center" th:each="room : ${#numbers.sequence(410, 413)}" th:text="${room + '호'}">410호</div>
+                </div>
+
+                <div class="timetable flex">
+                    <div class="time-column w-20 flex-shrink-0">
+                        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 18)}" th:text="${hour + ':00'}">9:00</div>
+                    </div>
+
+                    <div class="schedule-grid flex flex-1">
+                        <div class="classroom-column flex-1 min-w-[120px]" th:each="room : ${#numbers.sequence(410, 413)}">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                                <!-- Regular Classes -->
                                 <div th:each="schedule : ${regularSchedules}"
                                      th:if="${schedule.classroom.name == room.toString() and schedule.startTime.hour == hour}"
                                      class="regular-class absolute inset-x-0"
@@ -232,6 +422,7 @@
                                     </div>
                                 </div>
 
+                                <!-- Makeup Classes -->
                                 <div th:each="makeup : ${makeupClasses}"
                                      th:if="${makeup.classroom.name == room.toString() and makeup.startTime.hour == hour}"
                                      class="makeup-class absolute inset-x-0"
@@ -251,15 +442,39 @@
             </div>
         </div>
     </div>
-
-    <div id="floor3" class="floor-schedule hidden">
-        <!-- 3층 내용 -->
-    </div>
-
-    <div id="floor4" class="floor-schedule hidden">
-        <!-- 4층 내용 -->
-    </div>
 </div>
+
+<script>
+    function showFloor(floor) {
+        // 모든 층 숨기기
+        document.querySelectorAll('.floor-schedule').forEach(el => {
+            el.classList.add('hidden');
+        });
+
+        // 선택된 층 보이기
+        document.getElementById('floor' + floor).classList.remove('hidden');
+
+        // 버튼 스타일 업데이트
+        document.querySelectorAll('.floor-button').forEach(btn => {
+            btn.classList.remove('active-floor');
+        });
+        event.target.classList.add('active-floor');
+    }
+
+    // 스크롤 동기화
+    document.addEventListener('DOMContentLoaded', () => {
+        const scheduleHeaders = document.querySelectorAll('.schedule-header-scroll');
+        scheduleHeaders.forEach(header => {
+            header.addEventListener('scroll', (e) => {
+                scheduleHeaders.forEach(otherHeader => {
+                    if (otherHeader !== e.target) {
+                        otherHeader.scrollLeft = e.target.scrollLeft;
+                    }
+                });
+            });
+        });
+    });
+</script>
 
 <script>
     function showFloor(floor) {

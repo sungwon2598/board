@@ -12,9 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RegularScheduleService {
@@ -22,15 +24,29 @@ public class RegularScheduleService {
     private final RegularScheduleRepository regularScheduleRepository;
     private final ClassroomRepository classroomRepository;
     private final DepartmentRepository departmentRepository;
+    private final ScheduleValidationService scheduleValidationService;
 
     @Transactional
     public RegularSchedule registerRegularSchedule(RegularSchedule regularSchedule, String classroomName, String departmentName) {
+        log.debug("스케줄 등록 시작: {} / {} / {}", regularSchedule, classroomName, departmentName);
+
         Classroom classroom = findClassroom(classroomName);
         Department department = findOrCreateDepartment(departmentName);
 
+        // 충돌 검사를 위해 먼저 기존 스케줄 조회
+        List<RegularSchedule> existingSchedules = regularScheduleRepository
+                .findByClassroom_NameAndDayOfWeek(classroomName, regularSchedule.getDayOfWeek());
+
+        log.debug("기존 스케줄 수: {}", existingSchedules.size());
+
+        // 시간 중복 검증
+        scheduleValidationService.validateScheduleConflicts(regularSchedule, existingSchedules);
+
+        // 검증 통과 후 엔티티 연관관계 설정
         regularSchedule.setClassroom(classroom);
         regularSchedule.setDepartment(department);
 
+        // 저장
         return regularScheduleRepository.save(regularSchedule);
     }
 

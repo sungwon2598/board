@@ -1,5 +1,8 @@
 package ict.board.exception;
 
+import ict.board.dto.ScheduleConflictDetails;
+import ict.board.util.ScheduleFormUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.ui.Model;
@@ -9,7 +12,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final ScheduleFormUtils scheduleFormUtils;
 
     @ExceptionHandler(BoardNotFoundException.class)
     public String handleBoardNotFoundException(BoardNotFoundException ex, Model model) {
@@ -52,6 +58,33 @@ public class GlobalExceptionHandler {
         log.error("디렉토리 생성 오류: ", ex);
         model.addAttribute("errorMessage", "파일 저장을 위한 디렉토리를 생성할 수 없습니다.");
         return "error/directoryCreationError";
+    }
+
+    @ExceptionHandler(ScheduleConflictException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleScheduleConflictException(ScheduleConflictException e, Model model) {
+        log.error("스케줄 충돌 발생: {}", e.getMessage());
+
+        model.addAttribute("error", e.getMessage());
+        model.addAttribute("scheduleConflict", new ScheduleConflictDetails(
+                e.getNewClassName(),
+                e.getExistingClassName(),
+                e.getClassroomName(),
+                e.getDayOfWeek(),
+                e.getNewScheduleTime(),
+                e.getExistingScheduleTime()
+        ));
+
+        scheduleFormUtils.addScheduleFormAttributes(model);  // 변경된 부분
+
+        return "regular-schedules/register";
+    }
+    @ExceptionHandler(ScheduleNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleScheduleNotFoundException(ScheduleNotFoundException e, Model model) {
+        log.error("스케줄을 찾을 수 없음: {}", e.getMessage());
+        model.addAttribute("error", e.getMessage());
+        return "error/404";
     }
 
 //    @ExceptionHandler(FileUploadException.class)
