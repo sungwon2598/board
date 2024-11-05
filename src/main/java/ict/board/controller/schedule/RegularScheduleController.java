@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-@Slf4j
 @Controller
 @RequestMapping("/regular-schedules")
 @RequiredArgsConstructor
@@ -37,18 +36,11 @@ public class RegularScheduleController {
     @PostMapping("/register")
     public ResponseEntity<String> registerRegularSchedule(@ModelAttribute RegisterRegularScheduleDto dto) {
         try {
-            log.debug("=== 스케줄 등록 요청 ===");
-            log.debug("요청 데이터: {}", dto);
-            log.debug("시작시간: {}", dto.getStartTime());
-            log.debug("종료시간: {}", dto.getEndTime());
-
             String[] startTimes = dto.getStartTime().split("~");
             String[] endTimes = dto.getEndTime().split("~");
 
             LocalTime startTime = LocalTime.parse(startTimes[0].trim());
             LocalTime endTime = LocalTime.parse(endTimes[1].trim());
-
-            log.debug("파싱된 시간 - 시작: {}, 종료: {}", startTime, endTime);
 
             if (endTime.isBefore(startTime)) {
                 return ResponseEntity.badRequest()
@@ -70,11 +62,9 @@ public class RegularScheduleController {
             return ResponseEntity.ok().build();
 
         } catch (DateTimeParseException e) {
-            log.error("시간 파싱 오류", e);
             return ResponseEntity.badRequest()
                     .body("<div data-error-message=\"시간 형식이 올바르지 않습니다.\"></div>");
         } catch (Exception e) {
-            log.error("스케줄 등록 오류", e);
             return ResponseEntity.badRequest()
                     .body("<div data-error-message=\"" + e.getMessage() + "\"></div>");
         }

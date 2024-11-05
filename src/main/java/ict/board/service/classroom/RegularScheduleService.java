@@ -3,10 +3,13 @@ package ict.board.service.classroom;
 import ict.board.domain.schedule.Classroom;
 import ict.board.domain.schedule.Department;
 import ict.board.domain.schedule.RegularSchedule;
+import ict.board.exception.ScheduleConflictException;
 import ict.board.repository.ClassroomRepository;
 import ict.board.repository.DepartmentRepository;
+import ict.board.repository.MakeupClassRepository;
 import ict.board.repository.RegularScheduleRepository;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -22,31 +25,62 @@ import org.springframework.transaction.annotation.Transactional;
 public class RegularScheduleService {
 
     private final RegularScheduleRepository regularScheduleRepository;
+    private final MakeupClassRepository makeupClassRepository;
     private final ClassroomRepository classroomRepository;
     private final DepartmentRepository departmentRepository;
-    private final ScheduleValidationService scheduleValidationService;
 
     @Transactional
     public RegularSchedule registerRegularSchedule(RegularSchedule regularSchedule, String classroomName, String departmentName) {
-        log.debug("스케줄 등록 시작: {} / {} / {}", regularSchedule, classroomName, departmentName);
+        // 강의실과 학과 정보 조회
+        Classroom classroom = classroomRepository.findByName(classroomName)
+                .orElseThrow(() -> new IllegalArgumentException("Classroom not found: " + classroomName));
 
-        Classroom classroom = findClassroom(classroomName);
-        Department department = findOrCreateDepartment(departmentName);
+        Department department = departmentRepository.findByName(departmentName)
+                .orElseGet(() -> departmentRepository.save(Department.builder().name(departmentName).build()));
 
-        // 충돌 검사를 위해 먼저 기존 스케줄 조회
-        List<RegularSchedule> existingSchedules = regularScheduleRepository
-                .findByClassroom_NameAndDayOfWeek(classroomName, regularSchedule.getDayOfWeek());
+        // 정규 수업 시간 충돌 검사 (충돌하는 스케줄 조회)
+        List<RegularSchedule> conflictingSchedules = regularScheduleRepository.findConflictingSchedules(
+                classroomName,
+                regularSchedule.getDayOfWeek(),
+                regularSchedule.getId(),
+                regularSchedule.getStartTime(),
+                regularSchedule.getEndTime()
+        );
 
-        log.debug("기존 스케줄 수: {}", existingSchedules.size());
+        if (!conflictingSchedules.isEmpty()) {
+            RegularSchedule conflictingSchedule = conflictingSchedules.get(0);
+            throw new ScheduleConflictException(
+                    regularSchedule.getClassName(),
+                    classroomName,
+                    regularSchedule.getDayOfWeek(),
+                    regularSchedule.getStartTime() + " ~ " + regularSchedule.getEndTime(),
+                    "정규 수업",
+                    conflictingSchedule.getClassName()
+            );
+        }
 
-        // 시간 중복 검증
-        scheduleValidationService.validateScheduleConflicts(regularSchedule, existingSchedules);
+        // 보강 수업 시간 충돌 검사
+        boolean hasMakeupConflict = makeupClassRepository.existsConflictingMakeupClass(
+                classroomName,
+                LocalDate.now(),
+                regularSchedule.getStartTime(),
+                regularSchedule.getEndTime()
+        );
 
-        // 검증 통과 후 엔티티 연관관계 설정
+        if (hasMakeupConflict) {
+            throw new ScheduleConflictException(
+                    regularSchedule.getClassName(),
+                    classroomName,
+                    regularSchedule.getDayOfWeek(),
+                    regularSchedule.getStartTime() + " ~ " + regularSchedule.getEndTime(),
+                    "보강 수업"
+            );
+        }
+
+        // 엔티티 연관관계 설정 및 저장
         regularSchedule.setClassroom(classroom);
         regularSchedule.setDepartment(department);
 
-        // 저장
         return regularScheduleRepository.save(regularSchedule);
     }
 

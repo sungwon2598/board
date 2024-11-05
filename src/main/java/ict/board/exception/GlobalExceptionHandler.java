@@ -5,6 +5,7 @@ import ict.board.util.ScheduleFormUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -62,23 +63,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ScheduleConflictException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleScheduleConflictException(ScheduleConflictException e, Model model) {
+    public ResponseEntity<String> handleScheduleConflictException(ScheduleConflictException e) {
         log.error("스케줄 충돌 발생: {}", e.getMessage());
 
-        model.addAttribute("error", e.getMessage());
-        model.addAttribute("scheduleConflict", new ScheduleConflictDetails(
-                e.getNewClassName(),
-                e.getExistingClassName(),
-                e.getClassroomName(),
-                e.getDayOfWeek(),
-                e.getNewScheduleTime(),
-                e.getExistingScheduleTime()
-        ));
-
-        scheduleFormUtils.addScheduleFormAttributes(model);  // 변경된 부분
-
-        return "regular-schedules/register";
+        return ResponseEntity.badRequest()
+                .body("<div data-error-message=\"" + e.getMessage() + "\"></div>");
     }
+
+
     @ExceptionHandler(ScheduleNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public String handleScheduleNotFoundException(ScheduleNotFoundException e, Model model) {
