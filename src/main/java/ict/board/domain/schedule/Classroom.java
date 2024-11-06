@@ -54,14 +54,14 @@ public class Classroom {
     public void addRegularSchedule(RegularSchedule schedule) {
         regularSchedules.add(schedule);
         if (schedule.getClassroom() != this) {
-            schedule.setClassroom(this);
+            schedule.changeClassroom(this);
         }
     }
 
     public void removeRegularSchedule(RegularSchedule schedule) {
         regularSchedules.remove(schedule);
         if (schedule.getClassroom() == this) {
-            schedule.setClassroom(null);
+            schedule.changeClassroom(null);
         }
     }
 

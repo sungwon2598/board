@@ -53,7 +53,7 @@ public class RegularSchedule {
     @Column(nullable = false)
     private String professorName;
 
-    public void setClassroom(Classroom newClassroom) {
+    public void changeClassroom(Classroom newClassroom) {
         Classroom oldClassroom = this.classroom;
         this.classroom = newClassroom;
 

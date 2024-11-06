@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.TreeMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,7 +96,7 @@ public class RegularScheduleService {
         }
 
         // 엔티티 연관관계 설정 및 저장
-        regularSchedule.setClassroom(classroom);
+        regularSchedule.changeClassroom(classroom);
         regularSchedule.setDepartment(department);
 
         return regularScheduleRepository.save(regularSchedule);
