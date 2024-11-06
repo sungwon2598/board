@@ -50,7 +50,7 @@ public class ScheduleController {
         );
 
         // 시간대 리스트 (9시-18시)
-        List<Integer> timeSlots = IntStream.rangeClosed(9, 18).boxed().collect(Collectors.toList());
+        List<Integer> timeSlots = IntStream.rangeClosed(9, 23).boxed().collect(Collectors.toList());
 
         // Model에 데이터 추가
         model.addAttribute("selectedDate", selectedDate);
@@ -62,25 +62,4 @@ public class ScheduleController {
         return "schedule/view";  // templates/schedule/view.html을 찾음
     }
 
-    // 특정 강의실의 전체 일정을 조회하는 API (선택적 구현)
-    @GetMapping("/classroom")
-    public String viewClassroomSchedule(Model model,
-                                        @RequestParam Integer roomNumber,
-                                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
-
-        LocalDate selectedDate = (date != null) ? date : LocalDate.now();
-        DayOfWeek dayOfWeek = selectedDate.getDayOfWeek();
-
-        List<RegularSchedule> regularSchedules = regularScheduleService
-                .findByClassroomNumberAndDayOfWeek(roomNumber, dayOfWeek.toString());
-        List<MakeupClass> makeupClasses = makeupClassService
-                .findByClassroomNumberAndDate(roomNumber, selectedDate);
-
-        model.addAttribute("selectedDate", selectedDate);
-        model.addAttribute("roomNumber", roomNumber);
-        model.addAttribute("regularSchedules", regularSchedules);
-        model.addAttribute("makeupClasses", makeupClasses);
-
-        return "schedule/classroom";  // templates/schedule/classroom.html을 찾음
-    }
 }

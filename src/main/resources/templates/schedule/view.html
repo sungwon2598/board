@@ -221,13 +221,13 @@
 
                 <div class="timetable flex">
                     <div class="time-column w-20 flex-shrink-0">
-                        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 18)}" th:text="${hour + ':00'}">9:00</div>
+                        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 23)}" th:text="${hour + ':00'}">9:00</div>
                     </div>
 
                     <div class="schedule-grid flex flex-1">
                         <!-- 201-213호 -->
                         <div class="classroom-column flex-1 min-w-[120px]" th:each="room : ${#numbers.sequence(201, 213)}">
-                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 23)}">
                                 <!-- Regular Classes -->
                                 <div th:each="schedule : ${regularSchedules}"
                                      th:if="${schedule.classroom.name == room.toString() and schedule.startTime.hour == hour}"
@@ -261,7 +261,7 @@
 
                         <!-- 215호 -->
                         <div class="classroom-column flex-1 min-w-[120px]">
-                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 23)}">
                                 <!-- Same class scheduling logic for 215 -->
                                 <!-- Regular Classes -->
                                 <div th:each="schedule : ${regularSchedules}"
@@ -310,13 +310,13 @@
 
                 <div class="timetable flex">
                     <div class="time-column w-20 flex-shrink-0">
-                        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 18)}" th:text="${hour + ':00'}">9:00</div>
+                        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 23)}" th:text="${hour + ':00'}">9:00</div>
                     </div>
 
                     <div class="schedule-grid flex flex-1">
                         <!-- 301-313호 -->
                         <div class="classroom-column flex-1 min-w-[120px]" th:each="room : ${#numbers.sequence(301, 313)}">
-                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 23)}">
                                 <!-- Regular Classes -->
                                 <div th:each="schedule : ${regularSchedules}"
                                      th:if="${schedule.classroom.name == room.toString() and schedule.startTime.hour == hour}"
@@ -350,7 +350,7 @@
 
                         <!-- 315호 -->
                         <div class="classroom-column flex-1 min-w-[120px]">
-                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 23)}">
                                 <!-- Same class scheduling logic for 315 -->
                                 <!-- Regular Classes -->
                                 <div th:each="schedule : ${regularSchedules}"
@@ -401,12 +401,12 @@
 
                 <div class="timetable flex">
                     <div class="time-column w-20 flex-shrink-0">
-                        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 18)}" th:text="${hour + ':00'}">9:00</div>
+                        <div class="time-slot" th:each="hour : ${#numbers.sequence(9, 23)}" th:text="${hour + ':00'}">9:00</div>
                     </div>
 
                     <div class="schedule-grid flex flex-1">
                         <div class="classroom-column flex-1 min-w-[120px]" th:each="room : ${#numbers.sequence(410, 413)}">
-                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 18)}">
+                            <div class="schedule-slot relative" th:each="hour : ${#numbers.sequence(9, 23)}">
                                 <!-- Regular Classes -->
                                 <div th:each="schedule : ${regularSchedules}"
                                      th:if="${schedule.classroom.name == room.toString() and schedule.startTime.hour == hour}"
