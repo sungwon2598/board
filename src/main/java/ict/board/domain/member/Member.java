@@ -1,7 +1,9 @@
 package ict.board.domain.member;
 
 import ict.board.domain.CreateTime;
+import ict.board.util.AESConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -28,9 +30,11 @@ public class Member extends CreateTime implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Convert(converter = AESConverter.class)
     @Column(nullable = false)
     private String name;
 
+    @Convert(converter = AESConverter.class)
     @Column(unique = true)
     private String email;
 
