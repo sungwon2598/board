@@ -25,38 +25,71 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MailService {
 
+    private static long hourlyRetryDelay = TimeUnit.HOURS.toMillis(1);
+
     private final JavaMailSender mailSender;
-    private final BlockingQueue<EmailRequest> retryQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<EmailRequest> immediateRetryQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<DelayedEmailRequest> hourlyRetryQueue = new LinkedBlockingQueue<>();
     private final ScheduledExecutorService retryExecutor = Executors.newScheduledThreadPool(1);
-    private final ExecutorService emailExecutor = Executors.newFixedThreadPool(2); // 동시 처리 스레드 수 2로 감소
+    private final ScheduledExecutorService hourlyRetryExecutor = Executors.newScheduledThreadPool(1);
+    private final ExecutorService emailExecutor = Executors.newFixedThreadPool(2);
 
     @Value("${spring.mail.username}")
     private String from;
 
-    private static final int MAX_BATCH_SIZE = 3; // 배치 크기 3으로 감소
-    private static final int MAX_RETRY_ATTEMPTS = 3;
-    private static final long RETRY_DELAY_MS = 2000; // 재시도 간격 2초로 증가
-    private static final long BATCH_DELAY_MS = 2000; // 배치간 딜레이 2초로 증가
+    public void setHourlyRetryDelay(long delay) {
+        this.hourlyRetryDelay = delay;
+    }
+
+    private static final int MAX_BATCH_SIZE = 3;
+    private static final int MAX_IMMEDIATE_RETRY_ATTEMPTS = 3;
+    private static final long RETRY_DELAY_MS = 2000;
+    private static final long BATCH_DELAY_MS = 2000;
+   // private static final long HOURLY_RETRY_DELAY_MS = TimeUnit.HOURS.toMillis(1);
 
     @PostConstruct
     public void init() {
-        startRetryProcessor();
+        startImmediateRetryProcessor();
+        startHourlyRetryProcessor();
     }
 
-    private void startRetryProcessor() {
+    private void startImmediateRetryProcessor() {
         retryExecutor.scheduleWithFixedDelay(() -> {
             try {
-                EmailRequest request = retryQueue.poll();
-                if (request != null && request.getRetryCount() < MAX_RETRY_ATTEMPTS) {
+                EmailRequest request = immediateRetryQueue.poll();
+                if (request != null && request.getRetryCount() < MAX_IMMEDIATE_RETRY_ATTEMPTS) {
                     Thread.sleep(RETRY_DELAY_MS);
-                    processEmail(request);
+                    processEmailWithRetry(request);
                 } else if (request != null) {
-                    log.error("Max retry attempts reached for email to: {}", request.getTo());
+                    log.info("Moving to hourly retry queue for email to: {}", request.getTo());
+                    hourlyRetryQueue.offer(new DelayedEmailRequest(request));
                 }
             } catch (Exception e) {
-                log.error("Error in retry processor: ", e);
+                log.error("Error in immediate retry processor: ", e);
             }
         }, 0, RETRY_DELAY_MS, TimeUnit.MILLISECONDS);
+    }
+
+    private void startHourlyRetryProcessor() {
+        hourlyRetryExecutor.scheduleWithFixedDelay(() -> {
+            try {
+                DelayedEmailRequest delayedRequest = hourlyRetryQueue.peek();
+                if (delayedRequest != null) {
+                    long currentTime = System.currentTimeMillis();
+                    if (currentTime >= delayedRequest.getNextRetryTime()) {
+                        delayedRequest = hourlyRetryQueue.poll();
+                        if (delayedRequest != null) {
+                            log.info("Attempting hourly retry for email to: {}", delayedRequest.getRequest().getTo());
+                            EmailRequest request = delayedRequest.getRequest();
+                            request.resetRetryCount();
+                            processEmailWithRetry(request);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                log.error("Error in hourly retry processor: ", e);
+            }
+        }, 0, 1, TimeUnit.SECONDS); // 1초마다 체크하도록 변경
     }
 
     public void sendEmail(String to, String subject, String text) {
@@ -65,10 +98,10 @@ public class MailService {
             return;
         }
         EmailRequest request = new EmailRequest(to, subject, text);
-        processEmail(request);
+        processEmailWithRetry(request);
     }
 
-    private void processEmail(EmailRequest request) {
+    private void processEmailWithRetry(EmailRequest request) {
         try {
             if (!isValidEmail(request.getTo())) {
                 log.error("Invalid email address: {}", request.getTo());
@@ -88,9 +121,11 @@ public class MailService {
             log.error("Failed to send email to: {} (Attempt {}). Error: {}",
                     request.getTo(), request.getRetryCount() + 1, e.getMessage());
 
-            if (request.getRetryCount() < MAX_RETRY_ATTEMPTS) {
-                request.incrementRetryCount();
-                retryQueue.offer(request);
+            request.incrementRetryCount();
+            if (request.getRetryCount() < MAX_IMMEDIATE_RETRY_ATTEMPTS) {
+                immediateRetryQueue.offer(request);
+            } else {
+                hourlyRetryQueue.offer(new DelayedEmailRequest(request));
             }
         }
     }
@@ -119,7 +154,7 @@ public class MailService {
     private void processBatch(List<EmailRequest> batch) {
         batch.forEach(request ->
                 CompletableFuture.runAsync(
-                        () -> processEmail(request),
+                        () -> processEmailWithRetry(request),
                         emailExecutor
                 ).exceptionally(throwable -> {
                     log.error("Async execution failed for recipient: {}. Error: {}",
@@ -154,6 +189,7 @@ public class MailService {
     @PreDestroy
     public void shutdown() {
         retryExecutor.shutdown();
+        hourlyRetryExecutor.shutdown();
         emailExecutor.shutdown();
     }
 
@@ -163,5 +199,24 @@ public class MailService {
 
     public ExecutorService getEmailExecutor() {
         return emailExecutor;
+    }
+
+    // DelayedEmailRequest 내부 클래스 추가
+    private static class DelayedEmailRequest {
+        private final EmailRequest request;
+        private final long nextRetryTime;
+
+        public DelayedEmailRequest(EmailRequest request) {
+            this.request = request;
+            this.nextRetryTime = System.currentTimeMillis() + hourlyRetryDelay;
+        }
+
+        public EmailRequest getRequest() {
+            return request;
+        }
+
+        public long getNextRetryTime() {
+            return nextRetryTime;
+        }
     }
 }

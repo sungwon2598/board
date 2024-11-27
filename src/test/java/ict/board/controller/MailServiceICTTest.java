@@ -1,17 +1,13 @@
 //package ict.board.controller;
 //
 //
-//import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 //import static org.hibernate.validator.internal.util.Contracts.assertTrue;
 //
-//import ict.board.domain.member.IctStaffMember;
 //import ict.board.domain.member.Member;
 //import ict.board.repository.IctStaffMemberRepository;
 //import ict.board.service.mail.EmailRequest;
 //import ict.board.service.mail.MailService;
 //import java.util.List;
-//import java.util.concurrent.CountDownLatch;
-//import java.util.concurrent.TimeUnit;
 //import java.util.stream.Collectors;
 //import org.junit.jupiter.api.Test;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +53,7 @@
 //        // 각 멤버당 3개의 이메일로 제한
 //        List<EmailRequest> emailRequests = baseMembers.stream()
 //                .flatMap(member -> {
-//                    return java.util.stream.IntStream.range(0, 3)
+//                    return java.util.stream.IntStream.range(0, 2)
 //                            .mapToObj(i -> new EmailRequest(
 //                                    member.getEmail(),
 //                                    "대량 테스트 이메일 #" + i,

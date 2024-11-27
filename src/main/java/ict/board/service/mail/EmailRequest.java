@@ -19,4 +19,8 @@ public class EmailRequest {
     public void incrementRetryCount() {
         this.retryCount++;
     }
+
+    public void resetRetryCount() {
+        this.retryCount = 0;
+    }
 }
