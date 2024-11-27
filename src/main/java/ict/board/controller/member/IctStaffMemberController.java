@@ -8,8 +8,9 @@ import ict.board.dto.IctStaffMemberForm;
 import ict.board.repository.IctStaffMemberRepository;
 import ict.board.repository.PendingIctStaffMemberRepository;
 import ict.board.service.IctStaffMemberService;
-import ict.board.service.MailService;
+
 import ict.board.service.MemberService;
+import ict.board.service.mail.MailService;
 import ict.board.util.CombinedRandomStringGenerator;
 import ict.board.util.cache.VerificationCodeCache;
 import jakarta.servlet.http.HttpSession;

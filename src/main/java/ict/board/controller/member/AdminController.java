@@ -11,8 +11,9 @@ import ict.board.dto.AllMembersInfo;
 import ict.board.repository.PendingIctStaffMemberRepository;
 import ict.board.service.board.BoardService;
 import ict.board.service.IctStaffMemberService;
-import ict.board.service.MailService;
+
 import ict.board.service.MemberService;
+import ict.board.service.mail.MailService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class AdminController {
     }
 
     @PostMapping("/approve-member/{id}")
-    public String approveMember(@PathVariable Long id) {
+    public String approveMember(@PathVariable Long id) throws Exception {
         PendingIctStaffMember pendingMember = pendingIctStaffMemberRepository.findById(id).orElseThrow();
         Location location = new Location(Building.BY, "214");
         IctStaffMember ictStaffMember = new IctStaffMember(

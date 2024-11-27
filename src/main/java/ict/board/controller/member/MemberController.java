@@ -5,8 +5,9 @@ import ict.board.domain.member.Location;
 import ict.board.domain.member.Member;
 import ict.board.dto.MemberForm;
 import ict.board.dto.MemberInfo;
-import ict.board.service.MailService;
+
 import ict.board.service.MemberService;
+import ict.board.service.mail.MailService;
 import ict.board.util.CombinedRandomStringGenerator;
 import ict.board.util.cache.VerificationCodeCache;
 import jakarta.servlet.http.HttpSession;
@@ -78,7 +79,7 @@ public class MemberController {
 
     @PostMapping("/members/sendVerificationCode")
     @ResponseBody
-    public Map<String, Object> sendVerificationCode(@RequestParam String email, HttpSession session) {
+    public Map<String, Object> sendVerificationCode(@RequestParam String email, HttpSession session) throws Exception {
         Map<String, Object> response = new HashMap<>();
         if (memberService.findMemberByEmail(email) != null) {
             response.put("success", false);
