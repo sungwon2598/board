@@ -1,15 +1,127 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head th:fragment="header">
-    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Bootstrap CSS -->
-    <link crossorigin="anonymous" href="/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href="/css/jumbotron-narrow.css" rel="stylesheet">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <title>ICT지원실 민원</title>
+    <!-- Google Fonts - Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <style>
+        :root {
+            --primary-color: #1a4f8b;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ffd700;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--secondary-color);
+        }
+
+        .header-banner {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+            url('/static/seoil-campus.jpg') center/cover;
+            height: 300px;
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            padding: 1rem 0;
+        }
+
+        .navbar {
+            background-color: transparent;
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        .user-info {
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .banner-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            color: white;
+        }
+    </style>
+
+    <title>ICT 지원실 민원처리</title>
 </head>
+
+<header th:fragment="top-nav">
+    <div class="header-banner">
+        <div class="header-content">
+            <nav class="navbar navbar-expand-lg">
+                <div class="container">
+                    <a class="navbar-brand" href="/">
+                        <img src="/static/seoil-logo.png" alt="서일대학교 로고" height="40" class="me-2">
+                        ICT 지원실
+                    </a>
+
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+
+                    <div class="collapse navbar-collapse" id="navbarNav">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <a class="nav-link" href="/calendar">캘린더</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/board/new">민원접수</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/search">검색</a>
+                            </li>
+                        </ul>
+
+                        <div sec:authorize="isAuthenticated()" class="user-info">
+                            <span sec:authentication="name"></span>
+                            <a href="/mypage" class="btn btn-outline-light btn-sm ms-2">마이페이지</a>
+                            <form th:action="@{/logout}" method="post" class="d-inline">
+                                <button class="btn btn-danger btn-sm ms-2">로그아웃</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <div class="banner-title">
+            <h1 class="display-4">ICT 지원실 민원처리 시스템</h1>
+        </div>
+    </div>
+</header>

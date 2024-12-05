@@ -1,534 +1,434 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-<head th:fragment="header">
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
 
-    <!-- Bootstrap CSS -->
-    <link crossorigin="anonymous" href="/css/bootstrap.min.css"
-          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" rel="stylesheet">
-    <!-- Custom styles for this template -->
-    <link href="/css/jumbotron-narrow.css" rel="stylesheet">
-    <!-- TmoneyRoundWind Font CSS -->
-    <link href="https://webfontworld.github.io/tmoney/TmoneyRoundWind.css" rel="stylesheet">
-
-    <title>ICT 지원실 민원처리</title>
-
-    <style>
-        body {
-            font-family: 'TmoneyRoundWind', sans-serif; /* 모든 폰트를 TmoneyRoundWind로 변경 */
-        }
-
-        .no-background {
-            background-color: transparent;
-            border: none;
-            color: inherit;
-            font-size: inherit;
-            padding: 0;
-            margin: 0;
-            box-shadow: none;
-        }
-
-        /* 추가된 헤더 스타일 */
-        .header {
-            background-color: #343a40;
-            color: white;
-            padding: 10px 0;
-            text-align: center;
-            font-family: 'TmoneyRoundWind', sans-serif; /* 헤더 폰트 변경 */
-        }
-
-        .header .logo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .header .navbar {
-            display: flex;
-            justify-content: center;
-            padding: 5px 0;
-        }
-
-        .header .navbar a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-        }
-
-        .header .navbar a:hover {
-            text-decoration: underline;
-        }
-
-        /* 나머지 스타일 */
-        .board-list {
-            width: 100%;
-            margin-top: 20px;
-        }
-
-        .board-list th, .board-list td {
-            padding: 12px;
-            text-align: center;
-            vertical-align: middle;
-            font-family: 'TmoneyRoundWind', sans-serif; /* 테이블 폰트 변경 */
-        }
-
-        .table {
-            border-collapse: separate;
-            border-spacing: 0 15px;
-        }
-
-        .btn {
-            margin-right: 10px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-            font-family: 'TmoneyRoundWind', sans-serif; /* 버튼 폰트 변경 */
-        }
-
-        .container {
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 10px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-            max-width: 1000px;
-            margin: auto;
-            font-family: 'TmoneyRoundWind', sans-serif; /* 컨테이너 폰트 변경 */
-        }
-
-        .thead-light th {
-            background-color: #e9ecef;
-        }
-
-        .footer {
-            background-color: #f8f9fa;
-            color: black;
-            text-align: center;
-            padding: 10px 0;
-            position: relative;
-            bottom: 0;
-            width: 100%;
-            font-size: 16px;
-            font-family: 'TmoneyRoundWind', sans-serif; /* 푸터 폰트 변경 */
-        }
-
-        .highlighted {
-            background-color: #ffcccc;
-        }
-
-        .btn-selected-date {
-            background-color: #007bff;
-            color: white;
-            border-color: #007bff;
-        }
-
-        /* 다크모드 스타일 */
-        body.dark-mode {
-            background-color: #121212;
-            color: #e0e0e0;
-        }
-
-        .header.dark-mode {
-            background-color: #1c1c1c;
-            color: #e0e0e0;
-        }
-
-        .container.dark-mode {
-            background-color: #1e1e1e;
-            box-shadow: 2px 2px 10px rgba(255, 255, 255, 0.1);
-        }
-
-        .table.dark-mode th, .table.dark-mode td {
-            background-color: #2c2c2c;
-            color: #e0e0e0;
-        }
-
-        .table.dark-mode button {
-            color: #e0e0e0; /* 다크모드 버튼 글자색 */
-        }
-
-        .footer.dark-mode {
-            background-color: #1c1c1c;
-            color: #e0e0e0;
-        }
-
-        /* 라이트모드 버튼 글자색 */
-        .table button {
-            color: #000000;
-        }
-
-        /* 반응형 스타일 */
-        @media (max-width: 768px) {
-            .header .navbar {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .header .navbar a {
-                margin: 5px 0;
-            }
-
-            .board-list th, .board-list td {
-                padding: 8px;
-            }
-
-            .container {
-                padding: 10px;
-            }
-        }
-
-        /* 날짜 버튼 스타일 수정 */
-        .table td {
-            padding: 0 !important;
-        }
-
-        .table button {
-            width: 85%;
-            height: 50px;
-            margin: 0;
-            font-size: 20px;
-            padding: 0;
-            border-color: #ffffff; /* 버튼 테두리 색상을 흰색으로 변경 */
-            font-family: 'TmoneyRoundWind', sans-serif; /* 버튼 폰트 변경 */
-        }
-
-        /* 민원 테이블 행 높이 수정 */
-        .board-list tr {
-            height: 50px; /* 민원 높이를 100px로 설정 */
-        }
-
-        /* 일요일을 연한 빨간색으로, 토요일을 연한 파란색으로 */
-        .table td.sunday button {
-            background-color: #ffcccc;
-            color: white;
-        }
-
-        .table td.saturday button {
-            background-color: #cce5ff;
-            color: white;
-        }
-
-        /* 연월과 버튼을 가운데 정렬 */
-        .calendar-header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .calendar-header button {
-            margin: 0 10px;
-        }
-    </style>
-    <script type="text/javascript">
-        document.addEventListener("DOMContentLoaded", function () {
-            const today = new Date();
-            const defaultYear = today.getFullYear();
-            const defaultMonth = String(today.getMonth() + 1).padStart(2, '0');
-            const defaultDay = String(today.getDate()).padStart(2, '0');
-
-            const currentPath = window.location.pathname;
-            const dateRegex = /\/date\/(\d{4})-(\d{2})-(\d{2})/;
-            const matches = currentPath.match(dateRegex);
-
-            let year, month, day;
-
-            if (matches) {
-                year = matches[1];
-                month = matches[2];
-                day = matches[3];
-            } else {
-                year = defaultYear;
-                month = defaultMonth;
-                day = defaultDay;
-            }
-
-            updateCalendarHeader(year, month);
-
-            const selectedDate = `${year}-${month}-${day}`;
-            const buttons = document.querySelectorAll('button[onclick="javascriptFunction(this)"]');
-
-            buttons.forEach(button => {
-                if (button.getAttribute('data-date') === selectedDate) {
-                    button.classList.add('btn-selected-date');
-                }
-            });
-
-            const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
-            const darkModeToggleButton = document.getElementById('darkModeToggle');
-
-            if (darkModeEnabled) {
-                document.body.classList.add('dark-mode');
-                document.querySelectorAll('.container').forEach(el => el.classList.add('dark-mode'));
-                document.querySelectorAll('.table').forEach(el => el.classList.add('dark-mode'));
-                document.querySelectorAll('.header').forEach(el => el.classList.add('dark-mode'));
-                document.querySelectorAll('.footer').forEach(el => el.classList.add('dark-mode'));
-                darkModeToggleButton.textContent = '라이트 모드';
-            }
-
-            document.getElementById('darkModeToggle').addEventListener('click', function () {
-                document.body.classList.toggle('dark-mode');
-                document.querySelectorAll('.container').forEach(el => el.classList.toggle('dark-mode'));
-                document.querySelectorAll('.table').forEach(el => el.classList.toggle('dark-mode'));
-                document.querySelectorAll('.header').forEach(el => el.classList.toggle('dark-mode'));
-                document.querySelectorAll('.footer').forEach(el => el.classList.toggle('dark-mode'));
-
-                if (document.body.classList.contains('dark-mode')) {
-                    localStorage.setItem('darkMode', 'enabled');
-                    darkModeToggleButton.textContent = '라이트 모드';
-                } else {
-                    localStorage.setItem('darkMode', 'disabled');
-                    darkModeToggleButton.textContent = '다크 모드';
-                }
-            });
-
-            const table = document.querySelector('.table tbody');
-            for (let row of table.rows) {
-                for (let i = 0; i < row.cells.length; i++) {
-                    if (i === 0) { // Sunday
-                        row.cells[i].classList.add('sunday');
-                    } else if (i === 6) { // Saturday
-                        row.cells[i].classList.add('saturday');
-                    }
-                }
-            }
-        });
-
-        function javascriptFunction(element) {
-            var dateString = element.getAttribute('data-date');
-            window.location.href = '/date/' + dateString;
-        }
-
-        function updateCalendarURL(year, month) {
-            window.location.href = '/date/' + year + '-' + month + '-01';
-        }
-
-        function handleStatusChange() {
-            var status = document.getElementById('statusSelect').value;
-            window.location.href = '/status/' + status;
-        }
-
-        function updateCalendarHeader(year, month) {
-            const header = document.getElementById('calendarHeader');
-            header.innerHTML = `
-                <button onclick="changeMonth(-1)" class="btn btn-secondary no-background">&laquo;</button>
-                <span>${year}년 ${month}월</span>
-                <button onclick="changeMonth(1)" class="btn btn-secondary no-background">&raquo;</button>
-            `;
-        }
-
-        function changeMonth(change) {
-            const currentPath = window.location.pathname;
-            const dateRegex = /\/date\/(\d{4})-(\d{2})-(\d{2})/;
-            const matches = currentPath.match(dateRegex);
-
-            let year = parseInt(matches[1]);
-            let month = parseInt(matches[2]);
-
-            month += change;
-
-            if (month < 1) {
-                month = 12;
-                year -= 1;
-            } else if (month > 12) {
-                month = 1;
-                year += 1;
-            }
-
-            const formattedMonth = String(month).padStart(2, '0');
-            updateCalendarURL(year, formattedMonth);
-        }
-    </script>
-
+<head th:replace="~{fragments/header :: header}">
 </head>
-<body>
 
-<!-- 수정된 헤더 -->
-<div class="header">
-    <div class="logo">
-        ICT 지원실 민원처리
+<body>
+<div class="container">
+    <!-- 상단 버튼 영역 -->
+    <div class="d-flex justify-content-end gap-2 my-3">
+        <button class="btn btn-dark rounded-pill px-3" id="darkModeToggle">다크모드</button>
+        <a href="https://www.notion.so/1fb67b7abd184956af1ae2b2ac6d768a?pvs=4"
+           class="btn btn-link p-0">
+            <img src="/notion.ico" alt="Notion Icon" class="icon" style="width: 32px; height: 32px;">
+        </a>
+        <a href="/calendar" class="btn btn-link p-0">
+            <img src="/claendar.ico" alt="Calendar Icon" class="icon" style="width: 32px; height: 32px;">
+        </a>
     </div>
-    <div class="navbar">
-        <div style="margin-left: auto; color: #FFFFFF;" sec:authorize="isAuthenticated()">
-            <input type="hidden" id="csrfToken" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <span sec:authentication="name">사용자 이름</span>님, 환영합니다!
-            <a class="btn btn-secondary" href="/mypage" style="margin-left: 10px;">MyPage</a>
-            <form id="logoutForm" method="post" style="display: inline;" th:action="@{/logout}">
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-                <button class="btn btn-danger" style="margin-left: 5px;" type="submit">Logout</button>
-            </form>
+
+    <!-- 캘린더 섹션 -->
+    <div class="calendar-section mb-4">
+        <div class="calendar-header text-center mb-3" id="calendarHeader"></div>
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>SUN</th>
+                    <th>MON</th>
+                    <th>TUE</th>
+                    <th>WED</th>
+                    <th>THU</th>
+                    <th>FRI</th>
+                    <th>SAT</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="week : ${weeks}">
+                    <td th:each="day : ${week}">
+                        <button class="btn w-100"
+                                onclick="javascriptFunction(this)"
+                                th:data-date="${day.toString()}"
+                                type="button">
+                            [[${day.dayOfMonth}]]
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
 
-<script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        // CSRF 토큰 갱신 함수
-        function refreshCsrfToken() {
-            fetch('/csrf', {
-                method: 'GET',
-                credentials: 'same-origin',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('csrfToken').value = data.token;
-                    // 로그아웃 폼의 CSRF 토큰도 함께 업데이트
-                    const logoutForm = document.getElementById('logoutForm');
-                    if (logoutForm) {
-                        const csrfInput = logoutForm.querySelector('input[type="hidden"]');
-                        if (csrfInput) {
-                            csrfInput.value = data.token;
-                        }
-                    }
-                    console.log('CSRF 토큰이 갱신되었습니다.');
-                })
-                .catch(error => console.error('CSRF 토큰 갱신 실패:', error));
-        }
-
-        // 페이지 로드 시 즉시 CSRF 토큰 갱신
-        refreshCsrfToken();
-
-        // 5분마다 CSRF 토큰 갱신
-        setInterval(refreshCsrfToken, 300000);
-
-        // 로그아웃 폼 제출 직전에 CSRF 토큰 갱신
-        const logoutForm = document.getElementById('logoutForm');
-        if (logoutForm) {
-            logoutForm.addEventListener('submit', function(event) {
-                event.preventDefault();
-                refreshCsrfToken();
-                setTimeout(() => this.submit(), 100);
-            });
-        }
-    });
-</script>
-
-<!-- 다크모드 토글 버튼 -->
-<div style="text-align: right; padding: 10px;">
-    <button class="btn btn-dark" id="darkModeToggle">다크모드</button>
-    <button class="btn" id="notionButton"
-            onclick="window.location.href='https://www.notion.so/1fb67b7abd184956af1ae2b2ac6d768a?pvs=4'"
-            style="background: none; border: none; padding: 0;">
-        <img alt="Notion Icon" src="/notion.ico" style="width: 32px; height: 32px;">
-    </button>
-    <button class="btn btn-info" id="calendarButton" onclick="window.location.href='/calendar'"
-            style="background: none; border: none; padding: 0;">
-        <img alt="Notion Icon" src="/claendar.ico" style="width: 32px; height: 32px;">
-    </button>
-</div>
-
-<div class="container my-4">
-    <div class="calendar-header" id="calendarHeader"></div>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-            <tr>
-                <th>SUN</th>
-                <th>MON</th>
-                <th>TUE</th>
-                <th>WED</th>
-                <th>THU</th>
-                <th>FRI</th>
-                <th>SAT</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr th:each="week : ${weeks}">
-                <td th:each="day : ${week}">
-                    <button class="btn btn-outline-primary" onclick="javascriptFunction(this)" th:data-date="${day.toString()}"
-                            type="button">
-                        [[${day.dayOfMonth}]]
-                    </button>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <!-- 민원 목록 테이블 -->
+    <div class="board-section">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>요청자</th>
+                    <th>위치</th>
+                    <th>내용</th>
+                    <th>상태</th>
+                    <th>예약</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 예약된 민원 -->
+                <tr class="reservation-row" th:each="reservationBoard : ${reservationBoards.content}">
+                    <td>
+                        <a th:href="@{/board/{id}(id=${reservationBoard.id})}"
+                           th:text="${reservationBoard.requester}">요청자</a>
+                    </td>
+                    <td>
+                        <a th:href="@{/board/{id}(id=${reservationBoard.id})}"
+                           th:text="${reservationBoard.requesterLocation}">위치</a>
+                    </td>
+                    <td>
+                        <a th:href="@{/board/{id}(id=${reservationBoard.id})}"
+                           th:text="${reservationBoard.title}">게시글 내용</a>
+                    </td>
+                    <td>
+                        <span class="status-badge" th:text="${reservationBoard.boardStatus.koreanName}">민원상태</span>
+                    </td>
+                    <td th:text="${#temporals.format(reservationBoard.reservationDate, 'HH:mm')}">예약 시간</td>
+                </tr>
+                <!-- 일반 민원 -->
+                <tr th:each="board : ${boards}"
+                    th:if="${!#lists.contains(reservationBoards.content, board)}">
+                    <td>
+                        <a th:href="@{/board/{id}(id=${board.id})}"
+                           th:text="${board.requester}">요청자</a>
+                    </td>
+                    <td>
+                        <a th:href="@{/board/{id}(id=${board.id})}"
+                           th:text="${board.requesterLocation}">위치</a>
+                    </td>
+                    <td>
+                        <a th:href="@{/board/{id}(id=${board.id})}"
+                           th:text="${board.title}">게시글 내용</a>
+                    </td>
+                    <td>
+                        <span class="status-badge" th:text="${board.boardStatus.koreanName}">민원상태</span>
+                    </td>
+                    <td th:text="${board instanceof T(ict.board.domain.board.ReservationBoard) ? #temporals.format(board.reservationDate, 'MM-dd HH:mm') : '-'}">-</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="mb-3">
-        <a class="btn btn-primary" href="/board/new" sec:authorize="isAuthenticated()">새 민원 접수</a>
-        <button class="btn btn-info" id="searchButton" onclick="window.location.href='/search'">검색</button>
-    </div>
-
-    <div class="table-responsive">
-        <table class="table table-bordered board-list">
-            <thead class="thead-light">
-            <tr>
-                <th>요청자</th>
-                <th>위치</th>
-                <th>내용</th>
-                <th>상태</th>
-                <th>예약</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="highlighted" th:each="reservationBoard : ${reservationBoards.content}">
-                <td>
-                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}"
-                       th:text="${reservationBoard.requester}">요청자</a>
-                </td>
-                <td>
-                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}"
-                       th:text="${reservationBoard.requesterLocation}">위치</a>
-                </td>
-                <td>
-                    <a th:href="@{/board/{id}(id=${reservationBoard.id})}" th:text="${reservationBoard.title}">게시글
-                        내용</a>
-                </td>
-                <td th:text="${reservationBoard.boardStatus.koreanName}">민원상태</td>
-                <td th:text="${#temporals.format(reservationBoard.reservationDate, 'HH:mm')}">예약 시간</td>
-            </tr>
-            <tr th:each="board : ${boards}" th:if="${!#lists.contains(reservationBoards.content, board)}">
-                <td>
-                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requester}">요청자</a>
-                </td>
-                <td>
-                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.requesterLocation}">위치</a>
-                </td>
-                <td>
-                    <a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시글 내용</a>
-                </td>
-                <td th:text="${board.boardStatus.koreanName}">민원상태</td>
-                <td th:text="${board instanceof T(ict.board.domain.board.ReservationBoard) ? #temporals.format(board.reservationDate, 'MM-dd HH:mm') : '-'}">
-                    -
-                </td>
-            </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <nav aria-label="Page navigation">
+    <!-- 페이지네이션 -->
+    <nav aria-label="Page navigation" class="my-4">
         <ul class="pagination justify-content-center">
             <li class="page-item" th:classappend="${boards.number == 0} ? 'disabled'">
-                <a aria-label="Previous"
-                   class="page-link"
-                   th:href="@{'/date/' + ${selectedDate} + '?page=' + (${boards.number - 1}) + '&size=' + ${boards.size}}">
+                <a class="page-link rounded-circle"
+                   th:href="@{'/date/' + ${selectedDate} + '?page=0&size=' + ${boards.size}}"
+                   aria-label="Previous">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
-            <li class="page-item" th:classappend="${page == boards.number} ? 'active'"
-                th:each="page : ${#numbers.sequence(0, boards.totalPages - 1)}">
-                <a class="page-link"
-                   th:href="@{'/date/' + ${selectedDate} + '?page=' + ${page} + '&size=' + ${boards.size}}"
-                   th:text="${page + 1}">1</a>
+            <li class="page-item"
+                th:each="pageNum : ${#numbers.sequence(1, boards.totalPages)}"
+                th:classappend="${pageNum == boards.number + 1} ? 'active'">
+                <a class="page-link rounded-circle mx-1"
+                   th:href="@{'/date/' + ${selectedDate} + '?page=' + ${pageNum - 1} + '&size=' + ${boards.size}}"
+                   th:text="${pageNum}">1</a>
             </li>
             <li class="page-item" th:classappend="${boards.number == boards.totalPages - 1} ? 'disabled'">
-                <a aria-label="Next"
-                   class="page-link"
-                   th:href="@{'/date/' + ${selectedDate} + '?page=' + (${boards.number + 1}) + '&size=' + ${boards.size}}">
+                <a class="page-link rounded-circle"
+                   th:href="@{'/date/' + ${selectedDate} + '?page=' + ${boards.totalPages - 1} + '&size=' + ${boards.size}}"
+                   aria-label="Next">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
         </ul>
     </nav>
-
 </div>
 
-<div class="footer">
-    <p>&copy; 2024 민원 게시판 SeoilUniv - ICT 02)490-7345.</p>
-</div>
+<style>
+    /* Calendar Container Styles */
+    .calendar-section {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        margin-bottom: 32px;
+    }
+
+    /* Calendar Header Styles */
+    .calendar-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 24px;
+        font-size: 1.25rem;
+    }
+
+    .calendar-header button {
+        background: transparent;
+        border: none;
+        padding: 8px 16px;
+        transition: all 0.2s ease;
+    }
+
+    .calendar-header button:hover {
+        background: #f5f5f5;
+        border-radius: 6px;
+    }
+
+    .calendar-header span {
+        font-weight: 600;
+        min-width: 150px;
+        text-align: center;
+    }
+
+    /* Calendar Table Styles */
+    .table {
+        border-collapse: separate;
+        border-spacing: 8px;
+        background: transparent;
+        border: none;
+    }
+
+    .table th {
+        font-weight: 500;
+        color: #666;
+        padding: 12px;
+        text-align: center;
+        border: none;
+        font-size: 0.9rem;
+    }
+
+    .table td {
+        padding: 0;
+        border: none;
+        height: 48px;
+        vertical-align: middle;
+    }
+
+    /* Calendar Button Styles */
+    .table td button {
+        width: 100%;
+        height: 40px;
+        border: 1px solid #eaeaea;
+        background: white;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .table td button:hover {
+        background: #f8f9fa;
+        border-color: #dee2e6;
+        transform: translateY(-1px);
+    }
+
+    /* Selected Date Style */
+    .btn-selected-date {
+        background: #f8f9fa !important;
+        border-color: #333 !important;
+        color: #333 !important;
+        font-weight: 600 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Today's Date Style */
+    .today button {
+        border-color: #333;
+        font-weight: 600;
+    }
+
+    /* Board Section Styles */
+    .board-section {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        padding: 24px;
+        margin-bottom: 32px;
+    }
+
+    .board-section .table tr {
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .board-section .table td,
+    .board-section .table th {
+        padding: 12px 8px;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: #f8f9fa;
+        color: #495057;
+    }
+
+    .reservation-row {
+        background-color: #fff;
+        transition: background-color 0.2s ease;
+    }
+
+    .reservation-row:hover {
+        background-color: #f8f9fa;
+    }
+
+    /* Dark Mode Styles */
+    body.dark-mode {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .calendar-section,
+    body.dark-mode .board-section {
+        background: #1e1e1e;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    body.dark-mode .table td button {
+        background: #2c2c2c;
+        border-color: #333;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .table td button:hover {
+        background: #363636;
+        border-color: #444;
+    }
+
+    body.dark-mode .btn-selected-date {
+        background: #363636 !important;
+        border-color: #666 !important;
+        color: #fff !important;
+    }
+
+    body.dark-mode .calendar-header button:hover {
+        background: #2c2c2c;
+    }
+
+    body.dark-mode .table th {
+        color: #999;
+    }
+
+    body.dark-mode .status-badge {
+        background: #2c2c2c;
+        color: #e0e0e0;
+    }
+
+    body.dark-mode .reservation-row:hover {
+        background-color: #2c2c2c;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .calendar-section,
+        .board-section {
+            padding: 16px;
+        }
+
+        .table td button {
+            height: 36px;
+            font-size: 0.9rem;
+        }
+
+        .calendar-header {
+            font-size: 1.1rem;
+        }
+    }
+</style>
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+        // 현재 날짜 설정
+        const today = new Date();
+        const defaultYear = today.getFullYear();
+        const defaultMonth = String(today.getMonth() + 1).padStart(2, '0');
+        const defaultDay = String(today.getDate()).padStart(2, '0');
+
+        // URL에서 날짜 파싱
+        const currentPath = window.location.pathname;
+        const dateRegex = /\/date\/(\d{4})-(\d{2})-(\d{2})/;
+        const matches = currentPath.match(dateRegex);
+
+        let year, month, day;
+        if (matches) {
+            [, year, month, day] = matches;
+        } else {
+            year = defaultYear;
+            month = defaultMonth;
+            day = defaultDay;
+        }
+
+        // 캘린더 헤더 업데이트
+        updateCalendarHeader(year, month);
+
+        // 선택된 날짜와 오늘 날짜 하이라이트
+        const selectedDate = `${year}-${month}-${day}`;
+        const todayDate = `${defaultYear}-${defaultMonth}-${defaultDay}`;
+
+        const buttons = document.querySelectorAll('button[onclick="javascriptFunction(this)"]');
+        buttons.forEach(button => {
+            const buttonDate = button.getAttribute('data-date');
+            if (buttonDate === selectedDate) {
+                button.classList.add('btn-selected-date');
+            }
+            if (buttonDate === todayDate) {
+                button.parentElement.classList.add('today');
+            }
+        });
+
+        // 다크모드 설정
+        initDarkMode();
+    });
+
+    function javascriptFunction(element) {
+        const dateString = element.getAttribute('data-date');
+        window.location.href = '/date/' + dateString;
+    }
+
+    function updateCalendarHeader(year, month) {
+        const header = document.getElementById('calendarHeader');
+        header.innerHTML = `
+        <button onclick="changeMonth(-1)" class="btn">&laquo;</button>
+        <span class="mx-3">${year}년 ${month}월</span>
+        <button onclick="changeMonth(1)" class="btn">&raquo;</button>
+    `;
+    }
+
+    function changeMonth(change) {
+        const currentPath = window.location.pathname;
+        const dateRegex = /\/date\/(\d{4})-(\d{2})-(\d{2})/;
+        const matches = currentPath.match(dateRegex);
+
+        let year = parseInt(matches[1]);
+        let month = parseInt(matches[2]);
+
+        month += change;
+        if (month < 1) {
+            month = 12;
+            year -= 1;
+        } else if (month > 12) {
+            month = 1;
+            year += 1;
+        }
+
+        const formattedMonth = String(month).padStart(2, '0');
+        window.location.href = '/date/' + year + '-' + formattedMonth + '-01';
+    }
+
+    function initDarkMode() {
+        const darkModeEnabled = localStorage.getItem('darkMode') === 'enabled';
+        const darkModeToggle = document.getElementById('darkModeToggle');
+
+        if (darkModeEnabled) {
+            document.body.classList.add('dark-mode');
+            darkModeToggle.textContent = '라이트 모드';
+        }
+
+        darkModeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+            this.textContent = isDarkMode ? '라이트 모드' : '다크 모드';
+        });
+    }
+</script>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
 </body>
 </html>

@@ -60,7 +60,12 @@ public class SecurityConfig {
                         .requestMatchers("/login","/logout", "/css/**", "/*.ico", "/members/new",
                                 "/members/email-verification", "/members/register",
                                 "/members/sendVerificationCode", "/staff-join/7345", "/access-denied"
-                        ,"/favicon.ico", "/resources/**", "/error").permitAll()
+                        ,"/favicon.ico", "/resources/**", "/error",
+                                "/images/**",                // 이미지 폴더 접근 허용
+                                "/static/**",                // static 폴더 전체 접근 허용
+                                "/js/**",                    // 자바스크립트 파일 접근 허용
+                                "/fonts/**"                  // 폰트 파일 접근 허용
+                        ).permitAll()
                         .requestMatchers("/access/**").hasRole("ADMIN")
                         .requestMatchers("/manage/**").hasAnyRole("ADMIN", "MANAGER")
                         .requestMatchers("/staff-only/**").hasAnyRole("ADMIN", "MANAGER", "STAFF")

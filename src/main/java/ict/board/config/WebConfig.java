@@ -13,8 +13,13 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 기존 파일 업로드 설정 유지
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:" + uploadDir + "/");
-    }
 
+        // 정적 리소스 설정 추가
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/")
+                .setCachePeriod(0);
+    }
 }
