@@ -45,7 +45,7 @@ public class MailService {
     private static final int MAX_IMMEDIATE_RETRY_ATTEMPTS = 3;
     private static final long RETRY_DELAY_MS = 2000;
     private static final long BATCH_DELAY_MS = 2000;
-   // private static final long HOURLY_RETRY_DELAY_MS = TimeUnit.HOURS.toMillis(1);
+    // private static final long HOURLY_RETRY_DELAY_MS = TimeUnit.HOURS.toMillis(1);
 
     @PostConstruct
     public void init() {
@@ -176,13 +176,19 @@ public class MailService {
 
     private MimeMessage createMimeMessage(String to, String subject, String text)
             throws Exception {
-        log.debug("Creating MimeMessage for recipient: {}", to);
+        log.debug("Creating MimeMessage:");
+        log.debug("From: {}", from + "@naver.com");
+        log.debug("To: {}", to);
+        log.debug("Subject: {}", subject);
+
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, "UTF-8");
         messageHelper.setFrom(from + "@naver.com");
         messageHelper.setTo(to);
         messageHelper.setSubject(subject);
         messageHelper.setText(text);
+
+        log.debug("MimeMessage created successfully");
         return mimeMessage;
     }
 
@@ -191,14 +197,6 @@ public class MailService {
         retryExecutor.shutdown();
         hourlyRetryExecutor.shutdown();
         emailExecutor.shutdown();
-    }
-
-    public ScheduledExecutorService getRetryExecutor() {
-        return retryExecutor;
-    }
-
-    public ExecutorService getEmailExecutor() {
-        return emailExecutor;
     }
 
     // DelayedEmailRequest 내부 클래스 추가

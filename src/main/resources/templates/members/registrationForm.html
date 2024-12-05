@@ -83,34 +83,33 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script th:inline="javascript">
     $(document).ready(function () {
+        var csrfToken = /*[[${_csrf.token}]]*/ null;
+        var csrfHeader = /*[[${_csrf.headerName}]]*/ null;
+
         $('#sendVerificationCodeBtn').click(function () {
             var email = $('#username').val();
             if (!validateEmail(email)) {
                 alert("유효한 이메일 주소를 입력하세요.");
                 return;
             }
-            var csrfToken = $("input[name='_csrf']").val();
             $.ajax({
                 url: '/members/sendVerificationCode',
                 type: 'POST',
                 data: {email: email},
-                dataType: 'json',
                 beforeSend: function(xhr) {
-                    xhr.setRequestHeader("X-CSRF-TOKEN", csrfToken);
+                    xhr.setRequestHeader(csrfHeader, csrfToken);
                 },
                 success: function (response) {
                     console.log("Response: ", response);
-                    if (response && response.success) {
+                    if (response.success) {
                         $('#verificationCodeSection').show();
-                        alert(response.message || "인증 코드가 이메일로 발송되었습니다.");
+                        alert("인증 코드가 이메일로 발송되었습니다.");
                     } else {
-                        alert(response && response.message ? response.message : "인증 코드 발송에 실패했습니다.");
+                        alert(response.message || "인증 코드 발송에 실패했습니다.");
                     }
                 },
                 error: function (xhr, status, error) {
                     console.log("Error: ", error);
-                    console.log("Status: ", status);
-                    console.log("Response: ", xhr.responseText);
                     alert("인증 코드 발송에 실패했습니다. 다시 시도해 주세요.");
                 }
             });

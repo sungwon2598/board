@@ -7,7 +7,6 @@
 
 <div class="container">
     <h1>직원 회원 가입</h1>
-    <!-- 회원 정보 입력 폼 -->
     <form action="/staff-join/7345" id="memberForm" method="post" th:object="${memberForm}">
         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
         <div class="form-group">
@@ -20,10 +19,8 @@
             <p class="text-success">인증 코드가 이메일로 발송되었습니다. 코드를 확인하고 입력하세요.</p>
             <div class="form-group">
                 <label th:for="verificationCode">인증 코드</label>
-                <input class="form-control" id="verificationCode" placeholder="이메일로 받은 인증 코드를 입력하세요" th:field="*{verificationCode}"
-                       type="text">
-                <div class="text-danger" th:errors="*{verificationCode}"
-                     th:if="${#fields.hasErrors('verificationCode')}"></div>
+                <input class="form-control" id="verificationCode" placeholder="이메일로 받은 인증 코드를 입력하세요" th:field="*{verificationCode}" type="text">
+                <div class="text-danger" th:errors="*{verificationCode}" th:if="${#fields.hasErrors('verificationCode')}"></div>
                 <div class="text-danger" id="codeError" th:text="${codeError}"></div>
             </div>
         </div>
@@ -33,28 +30,34 @@
             <input class="form-control" placeholder="이름을 입력하세요" th:field="*{name}" type="text">
             <div class="text-danger" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></div>
         </div>
+
         <div class="form-group">
             <label th:for="password">비밀번호</label>
-            <input class="form-control" placeholder="비밀번호를 입력하세요" th:field="*{password}" type="password">
+            <input class="form-control" placeholder="비밀번호를 입력하세요" th:field="*{password}" type="password" id="password">
             <div class="text-danger" th:errors="*{password}" th:if="${#fields.hasErrors('password')}"></div>
+            <div class="text-danger" id="passwordFormatError" style="display: none;">비밀번호는 최소 8자 이상이며, 최소 하나의 문자, 하나의 숫자 및 하나의 특수 문자를 포함해야 합니다.</div>
         </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">비밀번호 확인</label>
+            <input class="form-control" placeholder="비밀번호를 다시 입력하세요" type="password" id="confirmPassword">
+            <div class="text-danger" id="passwordMismatch" style="display: none;">비밀번호가 일치하지 않습니다.</div>
+        </div>
+
         <div class="form-group">
             <label th:for="memberNumber">학번 / 사번</label>
             <input class="form-control" placeholder="학번/사번을 입력하세요" th:field="*{memberNumber}" type="text">
             <div class="text-danger" th:errors="*{memberNumber}" th:if="${#fields.hasErrors('memberNumber')}"></div>
         </div>
 
-        <!-- 주간 야간 선택 라디오 버튼 추가 -->
         <div class="form-group">
             <label>근무 시간</label>
             <div class="form-check">
-                <input checked class="form-check-input" id="dayShift" name="dayShift" th:field="*{dayShift}"
-                       type="radio" value="DAY">
+                <input checked class="form-check-input" id="dayShift" name="dayShift" th:field="*{dayShift}" type="radio" value="DAY">
                 <label class="form-check-label" for="dayShift">주간</label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" id="nightShift" name="dayShift" th:field="*{dayShift}" type="radio"
-                       value="NIGHT">
+                <input class="form-check-input" id="nightShift" name="dayShift" th:field="*{dayShift}" type="radio" value="NIGHT">
                 <label class="form-check-label" for="nightShift">야간</label>
             </div>
         </div>
@@ -71,6 +74,7 @@
         var csrfToken = /*[[${_csrf.token}]]*/ null;
         var csrfHeader = /*[[${_csrf.headerName}]]*/ null;
 
+        // 이메일 인증 코드 발송
         $('#sendVerificationCodeBtn').click(function () {
             var email = $('#email').val();
             if (!validateEmail(email)) {
@@ -85,7 +89,7 @@
                     xhr.setRequestHeader(csrfHeader, csrfToken);
                 },
                 success: function (response) {
-                    console.log("Response: ", response); // 응답 로그 출력
+                    console.log("Response: ", response);
                     if (response.success) {
                         $('#verificationCodeSection').show();
                         alert("인증 코드가 이메일로 발송되었습니다.");
@@ -94,10 +98,57 @@
                     }
                 },
                 error: function (xhr, status, error) {
-                    console.log("Error: " + error); // 오류 로그 출력
+                    console.log("Error: " + error);
                     alert("인증 코드 발송에 실패했습니다. 다시 시도해 주세요.");
                 }
             });
+        });
+
+        // 비밀번호 형식 검증
+        $('#password').on('input', function() {
+            var password = $(this).val();
+            var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+            if (!passwordRegex.test(password)) {
+                $('#passwordFormatError').show();
+            } else {
+                $('#passwordFormatError').hide();
+            }
+        });
+
+        // 비밀번호 확인 검증
+        $('#password, #confirmPassword').on('input', function() {
+            var password = $('#password').val();
+            var confirmPassword = $('#confirmPassword').val();
+
+            if (password && confirmPassword) {
+                if (password !== confirmPassword) {
+                    $('#passwordMismatch').show();
+                } else {
+                    $('#passwordMismatch').hide();
+                }
+            }
+        });
+
+        // 폼 제출 시 최종 검증
+        $('#memberForm').submit(function(e) {
+            var password = $('#password').val();
+            var confirmPassword = $('#confirmPassword').val();
+            var passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+
+            if (!passwordRegex.test(password)) {
+                e.preventDefault();
+                $('#passwordFormatError').show();
+                alert("비밀번호 형식이 올바르지 않습니다.");
+                return false;
+            }
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                $('#passwordMismatch').show();
+                alert("비밀번호가 일치하지 않습니다.");
+                return false;
+            }
         });
     });
 
