@@ -64,7 +64,9 @@ public class SecurityConfig {
                                 "/images/**",                // 이미지 폴더 접근 허용
                                 "/static/**",                // static 폴더 전체 접근 허용
                                 "/js/**",                    // 자바스크립트 파일 접근 허용
-                                "/fonts/**"                  // 폰트 파일 접근 허용
+                                "/fonts/**",
+                                "/seoil-campus.jpg",    // 개별 이미지 파일들도 직접 허용
+                                "/seoil-logo.png" // 폰트 파일 접근 허용
                         ).permitAll()
                         .requestMatchers("/access/**").hasRole("ADMIN")
                         .requestMatchers("/manage/**").hasAnyRole("ADMIN", "MANAGER")
