@@ -1,82 +1,280 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/login-header :: header"></head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - ICT 지원실</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #1a4f8b;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ffd700;
+        }
 
-<div class="container">
-    <h1>회원 가입</h1>
-    <!-- 회원 정보 입력 폼 -->
-    <form action="/members/new" id="memberForm" method="post" th:object="${memberForm}">
-        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <div class="form-group">
-            <label th:for="username">이메일(학교 메일만 가능)</label>
-            <input class="form-control" id="username" placeholder="이메일을 입력하세요" th:field="*{username}" type="email">
-            <div class="text-danger" th:errors="*{username}" th:if="${#fields.hasErrors('username')}"></div>
-            <button class="btn btn-info" id="sendVerificationCodeBtn" type="button">인증 코드 발송</button>
-        </div>
-        <div id="verificationCodeSection" style="display: none;">
-            <p class="text-success">인증 코드가 이메일로 발송되었습니다. 코드를 확인하고 입력하세요.</p>
-            <div class="form-group">
-                <label th:for="verificationCode">인증 코드</label>
-                <input class="form-control" id="verificationCode" placeholder="이메일로 받은 인증 코드를 입력하세요" th:field="*{verificationCode}"
-                       type="text">
-                <div class="text-danger" th:errors="*{verificationCode}"
-                     th:if="${#fields.hasErrors('verificationCode')}"></div>
-                <div class="text-danger" id="codeError" th:text="${codeError}"></div>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: var(--secondary-color);
+        }
+
+        .header-banner {
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+            url('/seoil-campus.jpg') center/cover;
+            height:200px; /* 300px에서 200px로 줄임 */
+            position: relative;
+            margin-bottom: 1rem; /* 2rem에서 1rem으로 줄임 */
+        }
+
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            padding: 1rem 0;
+        }
+
+        .navbar {
+            background-color: transparent;
+            padding: 1rem 0;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: white !important;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        .user-info {
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .banner-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+<!-- 헤더 시작 -->
+<div class="header-banner">
+    <div class="header-content">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <img src="/seoil-logo.png" alt="서일대학교 로고" height="10" class="me-2">
+                </a>
+
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/calendar">캘린더</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/board/new">민원접수</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/search">검색</a>
+                        </li>
+                    </ul>
+
+                    <div sec:authorize="isAuthenticated()" class="user-info">
+                        <span sec:authentication="name"></span>
+                        <a href="/mypage" class="btn btn-outline-light btn-sm ms-2">마이페이지</a>
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button class="btn btn-danger btn-sm ms-2">로그아웃</button>
+                        </form>
+                    </div>
+                </div>
             </div>
+        </nav>
+    </div>
+
+    <div class="banner-title">
+        <h1 class="display-4"></h1>
+    </div>
+</div>
+<div class="flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+    <div class="max-w-2xl w-full space-y-4 bg-white p-4 rounded-lg shadow-md animate__animated animate__fadeIn">
+        <div class="text-center">
+            <h2 class="text-2xl font-bold text-gray-900">회원가입</h2>
+            <p class="mt-1 text-sm text-gray-600">서일대학교 커뮤니티에 오신 것을 환영합니다</p>
         </div>
 
-        <div class="form-group">
-            <label th:for="name">이름</label>
-            <input class="form-control" placeholder="이름을 입력하세요" th:field="*{name}" type="text">
-            <div class="text-danger" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></div>
-        </div>
-        <div class="form-group">
-            <label th:for="password">비밀번호</label>
-            <input class="form-control" placeholder="비밀번호를 입력하세요" th:field="*{password}" type="password" id="password">
-            <div class="text-danger" th:errors="*{password}" th:if="${#fields.hasErrors('password')}"></div>
-            <div class="text-danger" id="passwordFormatError" style="display: none;">비밀번호는 최소 8자 이상이며, 최소 하나의 문자, 하나의 숫자 및 하나의 특수 문자를 포함해야 합니다.</div>
-        </div>
-        <div class="form-group">
-            <label for="confirmPassword">비밀번호 확인</label>
-            <input class="form-control" placeholder="비밀번호를 다시 입력하세요" type="password" id="confirmPassword">
-            <div class="text-danger" id="passwordMismatch" style="display: none;">비밀번호가 일치하지 않습니다.</div>
-        </div>
-        <div class="form-group">
-            <label th:for="team">소속</label>
-            <input class="form-control" placeholder="소속을 입력하세요" th:field="*{team}" type="text">
-            <div class="text-danger" th:errors="*{team}" th:if="${#fields.hasErrors('team')}"></div>
-        </div>
-        <div class="form-group">
-            <label>소속건물</label>
+        <form class="mt-8 space-y-6" action="/members/new" id="memberForm" method="post" th:object="${memberForm}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+            <!-- 이메일 섹션 -->
             <div>
-                <th:block th:each="building, iterStat : ${T(ict.board.domain.member.Building).values()}">
-                    <input th:field="*{building}" th:id="${'building'+iterStat.index}" th:value="${building.name()}"
-                           type="radio"/>
-                    <label th:for="${'building'+iterStat.index}" th:text="${building.getKoreanName()}">Building
-                        Name</label>
-                </th:block>
+                <label class="block text-sm font-medium text-gray-700" th:for="username">이메일 (학교 메일만 가능)</label>
+                <div class="mt-1 flex gap-2">
+                    <input type="email"
+                           id="username"
+                           th:field="*{username}"
+                           class="flex-1 appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                           placeholder="이메일을 입력하세요">
+                    <button type="button"
+                            id="sendVerificationCodeBtn"
+                            class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        인증코드 발송
+                    </button>
+                </div>
+                <div class="text-red-600 text-sm mt-1" th:errors="*{username}" th:if="${#fields.hasErrors('username')}"></div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label th:for="roomNumber">호수</label>
-            <input class="form-control" placeholder="호수를 입력하세요" th:field="*{roomNumber}" type="text" pattern="[0-9]*" inputmode="numeric">
-            <div class="text-danger" id="roomNumberError" style="display: none;">호수는 숫자만 입력 가능합니다.</div>
-        </div>
+            <!-- 인증 코드 섹션 -->
+            <div id="verificationCodeSection" style="display: none;">
+                <div class="rounded-md bg-blue-50 p-4 mb-4">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-blue-700">인증 코드가 이메일로 발송되었습니다. 코드를 확인하고 입력하세요.</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700" th:for="verificationCode">인증 코드</label>
+                    <input type="text"
+                           id="verificationCode"
+                           th:field="*{verificationCode}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           placeholder="이메일로 받은 인증 코드를 입력하세요">
+                    <div class="text-red-600 text-sm mt-1" th:errors="*{verificationCode}" th:if="${#fields.hasErrors('verificationCode')}"></div>
+                </div>
+            </div>
 
-        <div class="form-group">
-            <label th:for="memberNumber">학번 / 사번</label>
-            <input class="form-control" placeholder="학번/사번을 입력하세요" th:field="*{memberNumber}" type="text" pattern="[0-9]*" inputmode="numeric">
-            <div class="text-danger" th:errors="*{memberNumber}" th:if="${#fields.hasErrors('memberNumber')}"></div>
-            <div class="text-danger" id="memberNumberError" style="display: none;">학번/사번은 숫자만 입력 가능합니다.</div>
-        </div>
+            <!-- 이름과 소속 -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700" th:for="name">이름</label>
+                    <input type="text"
+                           th:field="*{name}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           placeholder="이름을 입력하세요">
+                    <div class="text-red-600 text-sm mt-1" th:errors="*{name}" th:if="${#fields.hasErrors('name')}"></div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700" th:for="team">소속</label>
+                    <input type="text"
+                           th:field="*{team}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           placeholder="소속을 입력하세요">
+                    <div class="text-red-600 text-sm mt-1" th:errors="*{team}" th:if="${#fields.hasErrors('team')}"></div>
+                </div>
+            </div>
 
-        <button class="btn btn-primary" type="submit">가입 완료</button>
-    </form>
+            <!-- 비밀번호 섹션 -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700" th:for="password">비밀번호</label>
+                    <input type="password"
+                           id="password"
+                           th:field="*{password}"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           placeholder="비밀번호를 입력하세요">
+                    <div id="passwordFormatError" class="text-red-600 text-sm mt-1" style="display: none;">
+                        비밀번호는 최소 8자 이상이며, 최소 하나의 문자, 하나의 숫자 및 하나의 특수 문자를 포함해야 합니다.
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">비밀번호 확인</label>
+                    <input type="password"
+                           id="confirmPassword"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           placeholder="비밀번호를 다시 입력하세요">
+                    <div id="passwordMismatch" class="text-red-600 text-sm mt-1" style="display: none;">
+                        비밀번호가 일치하지 않습니다.
+                    </div>
+                </div>
+            </div>
+
+            <!-- 소속건물 라디오 버튼 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">소속건물</label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <th:block th:each="building, iterStat : ${T(ict.board.domain.member.Building).values()}">
+                        <label class="inline-flex items-center">
+                            <input type="radio"
+                                   th:field="*{building}"
+                                   th:id="${'building'+iterStat.index}"
+                                   th:value="${building.name()}"
+                                   class="form-radio text-blue-600">
+                            <span class="ml-2" th:text="${building.getKoreanName()}">Building Name</span>
+                        </label>
+                    </th:block>
+                </div>
+            </div>
+
+            <!-- 호수와 학번/사번 -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700" th:for="roomNumber">호수</label>
+                    <input type="text"
+                           th:field="*{roomNumber}"
+                           pattern="[0-9]*"
+                           inputmode="numeric"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           placeholder="호수를 입력하세요">
+                    <div id="roomNumberError" class="text-red-600 text-sm mt-1" style="display: none;">
+                        호수는 숫자만 입력 가능합니다.
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700" th:for="memberNumber">학번 / 사번</label>
+                    <input type="text"
+                           th:field="*{memberNumber}"
+                           pattern="[0-9]*"
+                           inputmode="numeric"
+                           class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                           placeholder="학번/사번을 입력하세요">
+                    <div id="memberNumberError" class="text-red-600 text-sm mt-1" style="display: none;">
+                        학번/사번은 숫자만 입력 가능합니다.
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <button type="submit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    가입 완료
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <div th:replace="fragments/footer :: footer"></div>
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script th:inline="javascript">
