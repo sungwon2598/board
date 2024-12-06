@@ -151,8 +151,13 @@ public class BoardService {
                 userDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_STAFF"));
 
         List<Reply> comments = replyService.getCommentsByPostId(id);
+
         PostDetail postDetail = new PostDetail(isLogin, isManager, userDetails.getUsername(), board, comments);
 
+        List<Reply> replies = postDetail.replies;
+        for (Reply reply : replies) {
+            log.info(reply.getMember().getName());
+        }
         model.addAttribute("postDetail", postDetail);
         model.addAttribute("imagePath", board.getImagePath());
     }

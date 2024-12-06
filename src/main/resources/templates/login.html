@@ -41,6 +41,24 @@
             color: white !important;
         }
 
+        .form-check {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-check-input {
+            margin: 0;
+            width: 16px;
+            height: 16px;
+        }
+
+        .form-check-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
         .header-title {
             position: absolute;
             bottom: 2rem;
@@ -207,6 +225,10 @@
 
             <form th:action="@{/login}" method="post">
                 <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+                <div class="form-check mb-3">
+                    <input type="checkbox" id="remember-me" name="remember-me" class="form-check-input">
+                    <label class="form-check-label" for="remember-me">로그인 상태 유지</label>
+                </div>
                 <div class="_loginInputWrap">
                     <div class="_loginInput">
                         <div class="_inputArea">
@@ -226,14 +248,14 @@
                     <span>회원가입을 하시려면</span>
                     <a href="/members/new">회원가입</a>
                 </li>
-                <li>
-                    <span>아이디를 잊으셨습니까?</span>
-                    <a href="/find-id">아이디 찾기</a>
-                </li>
-                <li>
-                    <span>비밀번호를 잊으셨습니까?</span>
-                    <a href="/reset-password">비밀번호찾기</a>
-                </li>
+<!--                <li>-->
+<!--                    <span>아이디를 잊으셨습니까?</span>-->
+<!--                    <a href="/find-id">아이디 찾기</a>-->
+<!--                </li>-->
+<!--                <li>-->
+<!--                    <span>비밀번호를 잊으셨습니까?</span>-->
+<!--                    <a href="/reset-password">비밀번호찾기</a>-->
+<!--                </li>-->
             </ul>
 
             <!-- Info -->
